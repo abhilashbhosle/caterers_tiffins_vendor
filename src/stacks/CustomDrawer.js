@@ -14,19 +14,27 @@ import {Flex} from 'native-base';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
 import F6Icons from 'react-native-vector-icons/FontAwesome6';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CustomDrawer(props) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {routeNames, index} = props.state;
   const focused = routeNames[index];
+   const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      props.navigation.navigate('OnboardStack', {screen: 'Welcome'});
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props} showsVerticalScrollIndicator={false}>
-        <Flex
-          direction="row"
-          justifyContent="space-between"
-          style={[gs.ph15]}>
+        <Flex direction="row" justifyContent="space-between" style={[gs.ph15]}>
           <Flex direction="row">
             <Image
               resizeMode="cover"
@@ -53,7 +61,9 @@ export default function CustomDrawer(props) {
               </Text>
             </View>
           </Flex>
-          <MaterialIcons name="logout" style={[gs.fs30, {color: theme}]} />
+          <TouchableOpacity activeOpacity={0.7} onPress={handleLogout}>
+            <MaterialIcons name="logout" style={[gs.fs30, {color: theme}]} />
+          </TouchableOpacity>
         </Flex>
         <Text
           style={[
@@ -602,12 +612,15 @@ export default function CustomDrawer(props) {
           }}
           labelStyle={styles.label}
           inactiveTintColor={ts.primarytext}
-          style={[{
-            ...styles.labelcontainer,
-            backgroundColor: focused !== 'Settings' ? '#f5f5f5' : theme,
-            borderWidth: focused !== 'Settings' ? 0.5 : 0,
-            borderColor: focused !== 'Settings' ? '#999' : '#fff',
-          },gs.mb20]}
+          style={[
+            {
+              ...styles.labelcontainer,
+              backgroundColor: focused !== 'Settings' ? '#f5f5f5' : theme,
+              borderWidth: focused !== 'Settings' ? 0.5 : 0,
+              borderColor: focused !== 'Settings' ? '#999' : '#fff',
+            },
+            gs.mb20,
+          ]}
           icon={() => (
             <MaterialIcons
               name="settings"

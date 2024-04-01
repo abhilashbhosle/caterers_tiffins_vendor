@@ -3,7 +3,7 @@ import React from 'react';
 import {ScaledSheet} from 'react-native-size-matters';
 import {ts} from '../../ThemeStyles';
 import {useSelector} from 'react-redux';
-import { TextInput } from 'react-native-paper';
+import {TextInput} from 'react-native-paper';
 
 export default function CredInputs(props) {
   const flow = useSelector(state => state.common.flow);
@@ -16,7 +16,15 @@ export default function CredInputs(props) {
       outlineStyle={{borderRadius: 40}}
       activeOutlineColor={theme}
       returnKeyLabel="done"
-	  right={props.right}
+      right={props.right}
+      keyboardType={props.keyboardType}
+      value={props.value}
+      onChangeText={props.onChangeText}
+      defaultValue={props.defaultValue}
+      maxLength={props.maxLength}
+      onBlur={props.onBlur}
+      name={props.name}
+      secureTextEntry={props.secureTextEntry}
     />
   );
 }

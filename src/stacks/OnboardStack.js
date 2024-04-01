@@ -8,7 +8,7 @@ const Stack=createNativeStackNavigator()
 export default function OnboardStack() {
   return (
 	<>
-	<Stack.Navigator screenOptions={{headerShown:false}}>
+	<Stack.Navigator screenOptions={{headerShown:false,gestureEnabled:false}}>
 		<Stack.Screen name='Welcome' component={Welcome}/>
 		<Stack.Screen name='OnboardNested' component={OnboardNested}/>
 	</Stack.Navigator>

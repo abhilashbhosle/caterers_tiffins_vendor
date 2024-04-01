@@ -224,9 +224,13 @@ export default function Settings({navigation}) {
           <Text style={styles.heading}>Links</Text>
           {/* ====ABOUT US====== */}
           <View style={[gs.mv10]}>
-            <TouchableOpacity style={styles.labelcontainer} onPress={()=>navigation.navigate('PageStack', {
-            screen: 'AboutUs',
-          })}>
+            <TouchableOpacity
+              style={styles.labelcontainer}
+              onPress={() =>
+                navigation.navigate('PageStack', {
+                  screen: 'AboutUs',
+                })
+              }>
               <Flex
                 direction="row"
                 alignItems="center"
@@ -244,9 +248,13 @@ export default function Settings({navigation}) {
               </Flex>
             </TouchableOpacity>
             {/* =====FAQ'S======= */}
-            <TouchableOpacity style={styles.labelcontainer} onPress={()=>navigation.navigate('PageStack', {
-            screen: 'Faq',
-          })}>
+            <TouchableOpacity
+              style={styles.labelcontainer}
+              onPress={() =>
+                navigation.navigate('PageStack', {
+                  screen: 'Faq',
+                })
+              }>
               <Flex
                 direction="row"
                 alignItems="center"
@@ -264,9 +272,13 @@ export default function Settings({navigation}) {
           </View>
           <Divider style={[gs.mv20, {backgroundColor: theme}]} />
           <Text style={styles.heading}>Help Desk / Support</Text>
-          <TouchableOpacity style={[gs.mv20]} onPress={()=>navigation.navigate('PageStack', {
-            screen: 'HelpDesk',
-          })}>
+          <TouchableOpacity
+            style={[gs.mv20]}
+            onPress={() =>
+              navigation.navigate('PageStack', {
+                screen: 'HelpDesk',
+              })
+            }>
             <ThemeSepBtn
               themecolor={theme}
               btntxt="Raise a Ticket"

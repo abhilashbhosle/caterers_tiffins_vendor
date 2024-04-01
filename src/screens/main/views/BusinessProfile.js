@@ -36,7 +36,7 @@ export default function BusinessProfile({navigation}) {
             Business Information
           </Text>
         </Center>
-        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10,gs.mh10]}>
+        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
           <Center>
             <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: theme}}>
@@ -48,7 +48,7 @@ export default function BusinessProfile({navigation}) {
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -61,13 +61,13 @@ export default function BusinessProfile({navigation}) {
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
           </Center>
         </Card>
         {/* ======ADDRESS======= */}
-        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10,gs.mh10]}>
+        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
           <Center>
             <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: theme}}>
@@ -79,7 +79,7 @@ export default function BusinessProfile({navigation}) {
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -90,7 +90,7 @@ export default function BusinessProfile({navigation}) {
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -101,7 +101,7 @@ export default function BusinessProfile({navigation}) {
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -112,155 +112,167 @@ export default function BusinessProfile({navigation}) {
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
           </Center>
         </Card>
         {/* =======ABOUT=========== */}
-        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10,gs.mh10]}>
+        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
           <Center>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: theme}}>
-                About
-              </Text>
+              <Text style={{...styles.subtitke, color: theme}}>About</Text>
               <TextInput
-                style={{...styles.input, width: width - 80,height:height/5}}
+                style={{...styles.input, width: width - 80, height: height / 5}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				multiline
-				numberOfLines={10}
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
-				textAlignVertical='top'
+                multiline
+                numberOfLines={10}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                textAlignVertical="top"
               />
             </View>
-			<View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: theme}}>Working Since</Text>
+            <View style={[gs.mv10]}>
+              <Text style={{...styles.subtitke, color: theme}}>
+                Working Since
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 placeholder="Eg. 1987"
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
           </Center>
         </Card>
-		{/* ======CONTACT DETAILS====== */}
-		<Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10,gs.mh10]}>
-		<Center>
-          <Text
-            style={[
-              gs.fs21,
-              {color: ts.primarytext, fontFamily: ts.primarymedium},
-            ]}>
-           Contact Details
-          </Text>
-        </Center>
+        {/* ======CONTACT DETAILS====== */}
+        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+          <Center>
+            <Text
+              style={[
+                gs.fs21,
+                {color: ts.primarytext, fontFamily: ts.primarymedium},
+              ]}>
+              Contact Details
+            </Text>
+          </Center>
           <Center>
             <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: theme}}>
-              Business Email Id
+                Business Email Id
               </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: theme}}>Business Phone Number</Text>
+              <Text style={{...styles.subtitke, color: theme}}>
+                Business Phone Number
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: theme}}>Alternative Phone Number / Landline Number</Text>
+              <Text style={{...styles.subtitke, color: theme}}>
+                Alternative Phone Number / Landline Number
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: theme}}>Whatsapp Business Number</Text>
+              <Text style={{...styles.subtitke, color: theme}}>
+                Whatsapp Business Number
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
           </Center>
         </Card>
-		{/* ======OTHERS====== */}
-		<Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10,gs.mh10]}>
-		<Center>
-          <Text
-            style={[
-              gs.fs21,
-              {color: ts.primarytext, fontFamily: ts.primarymedium},
-            ]}>
-           Others
-          </Text>
-        </Center>
+        {/* ======OTHERS====== */}
+        <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+          <Center>
+            <Text
+              style={[
+                gs.fs21,
+                {color: ts.primarytext, fontFamily: ts.primarymedium},
+              ]}>
+              Others
+            </Text>
+          </Center>
           <Center>
             <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: ts.teritary}}>
-			  Website link (optional)
+                Website link (optional)
               </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: ts.teritary}}>Twitter ID (optional)</Text>
+              <Text style={{...styles.subtitke, color: ts.teritary}}>
+                Twitter ID (optional)
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: ts.teritary}}>Instagram link (optional)</Text>
+              <Text style={{...styles.subtitke, color: ts.teritary}}>
+                Instagram link (optional)
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
             <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: ts.teritary}}>Facebook link (optional)</Text>
+              <Text style={{...styles.subtitke, color: ts.teritary}}>
+                Facebook link (optional)
+              </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
                 outlineColor={ts.secondarytext}
                 activeOutlineColor={theme}
                 mode="outlined"
-				outlineStyle={{color:ts.secondarytext,borderRadius:10}}
+                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
               />
             </View>
           </Center>
         </Card>
-		<TouchableOpacity style={[styles.updatebtncontainer,gs.mh10]}>
+        <TouchableOpacity style={[styles.updatebtncontainer, gs.mh10]}>
           <Updatebtn btntxt="Update" />
         </TouchableOpacity>
       </KeyboardAwareScrollView>
@@ -282,8 +294,8 @@ const styles = ScaledSheet.create({
     marginBottom: '10@ms',
     lineHeight: '18@ms',
   },
-  updatebtncontainer:{
-	marginBottom:'60@ms',
-	marginTop:'10@ms'
-  }
+  updatebtncontainer: {
+    marginBottom: '60@ms',
+    marginTop: '10@ms',
+  },
 });

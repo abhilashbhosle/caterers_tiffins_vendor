@@ -20,6 +20,7 @@ import ThemeSepBtn from '../../components/ThemeSepBtn';
 import * as Animatable from 'react-native-animatable';
 import { setFlow } from '../controllers/WelcomeController';
 import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Welcome({navigation}) {
   const {height, width} = Dimensions.get('screen');
@@ -77,7 +78,10 @@ export default function Welcome({navigation}) {
                     ]}>
                     Please choose your service
                   </Text>
-                  <TouchableWithoutFeedback onPress={()=>setFlow('catering',dispatch,navigation)}>
+                  <TouchableWithoutFeedback onPress={()=>{
+                    setFlow('catering',dispatch,navigation)
+                    AsyncStorage.setItem('flow','catering')
+                    }}>
                     <View style={[gs.mv15]}>
                       <ThemeSepBtn
                         btntxt="Catering Service"
@@ -87,7 +91,10 @@ export default function Welcome({navigation}) {
                       />
                     </View>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback onPress={()=>setFlow('tiffin',dispatch,navigation)}>
+                  <TouchableWithoutFeedback onPress={()=>{
+                    setFlow('tiffin',dispatch,navigation)
+                    AsyncStorage.setItem('tiffin','catering')
+                    }}>
                     <View style={[gs.mb20]}>
                       <ThemeSepBtn
                         btntxt="Tiffin Service"
