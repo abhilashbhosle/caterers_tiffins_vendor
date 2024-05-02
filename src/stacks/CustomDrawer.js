@@ -1,12 +1,12 @@
 import {View, Text, Image, SafeAreaView} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
 import {ScaledSheet} from 'react-native-size-matters';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../ThemeStyles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {gs} from '../../GlobalStyles';
@@ -16,32 +16,55 @@ import F6Icons from 'react-native-vector-icons/FontAwesome6';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {logout, startLoader} from '../redux/slicers/CommomSlicer';
+import { getVendorDetails } from '../screens/services/AuthServices';
 
 export default function CustomDrawer(props) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {routeNames, index} = props.state;
   const focused = routeNames[index];
-   const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear();
-      props.navigation.navigate('OnboardStack', {screen: 'Welcome'});
-    } catch (error) {
-      console.log(error);
-    }
+  const dispatch = useDispatch();
+  const [details,setDetails]=useState({})
+
+  useEffect(()=>{
+    (async()=>{
+      let detail=await getVendorDetails(dispatch)
+      setDetails(detail.data.data)
+    })()
+  },[])
+
+  const handleLogout =async () => {
+    await AsyncStorage.clear();
+    dispatch(startLoader(true));
+    props.navigation.toggleDrawer()
+    setTimeout(()=>{
+    dispatch(logout(true));
+    },1000)
+    setTimeout(() => {
+      props.navigation.reset({
+        index: 0,
+        routes: [{name: 'OnboardStack'}],
+      });
+      dispatch(logout(false));
+    }, 2000);
   };
+  // console.log(details)
 
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props} showsVerticalScrollIndicator={false}>
         <Flex direction="row" justifyContent="space-between" style={[gs.ph15]}>
-          <Flex direction="row">
-            <Image
+          <Flex direction="row" alignItems='center'>
+            {/* <Image
               resizeMode="cover"
               source={require('../assets/drawer/profile.jpg')}
               alt="profile"
               style={styles.profileimg}
-            />
+            /> */}
+            <View style={{...styles.profileimg,backgroundColor:theme}}>
+              <Text style={[gs.fs22,{color:'#fff',fontFamily:ts.secondarysemibold}]}>{details?.point_of_contact_name?.slice(0,1)}</Text>
+            </View>
             <View style={[gs.ph10, {width: '65%'}]}>
               <Text
                 style={[
@@ -50,14 +73,14 @@ export default function CustomDrawer(props) {
                   gs.mb5,
                 ]}
                 numberOfLines={1}>
-                John Doe
+                {details?.point_of_contact_name}
               </Text>
               <Text
                 style={[
                   gs.fs12,
                   {fontFamily: ts.secondaryregular, color: ts.teritary},
                 ]}>
-                9003451965
+                {details?.phone_number}
               </Text>
             </View>
           </Flex>
@@ -656,6 +679,8 @@ const styles = ScaledSheet.create({
   profileimg: {
     height: '45@ms',
     width: '45@ms',
-    borderRadius: '5@ms',
+    borderRadius: '50@ms',
+    justifyContent:'center',
+    alignItems:'center'
   },
 });

@@ -1,21 +1,37 @@
 import {View, Text, ScrollView} from 'react-native';
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {ScaledSheet} from 'react-native-size-matters';
 import {gs} from '../../../../GlobalStyles';
 import {Center, Flex} from 'native-base';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {color} from 'native-base/lib/typescript/theme/styled-system';
 import {places} from '../../../constants/Constant';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Addbtn from '../../../components/Addbtn';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import {getCuisine} from '../../controllers/CuisineController';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function ManageCuisine({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
+  const dispatch = useDispatch();
+  const cuisine = useSelector(state => state.cuisine?.cuisines);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getCuisine());
+    }, []),
+  );
+  useEffect(() => {
+    (async () => {
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+    })();
+  }, []);
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -36,7 +52,7 @@ export default function ManageCuisine({navigation}) {
             ]}>
             Cuisines You Cater
           </Text>
-          <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} />
+          {/* <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} /> */}
         </Flex>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Flex
@@ -44,23 +60,31 @@ export default function ManageCuisine({navigation}) {
             flexWrap="wrap"
             alignItems="center"
             style={[gs.mt20]}>
-            {places.map((e, i) => (
-              <View
-                key={i}
-                style={{...styles.cuisinebtn, backgroundColor: theme}}>
-                <Text
-                  style={[gs.fs16, {color: '#fff', fontFamily: ts.secondary}]}>
-                  {e}
-                </Text>
-              </View>
-            ))}
+            {cuisine.map((e, i) =>
+              e.children.map((item, index) => (
+                item.selected==1&&
+                <View
+                  key={index}
+                  style={{...styles.cuisinebtn, backgroundColor: theme}}>
+                  <Text
+                    style={[
+                      gs.fs16,
+                      {color: '#fff', fontFamily: ts.secondary},
+                    ]}>
+                    {item.name}
+                  </Text>
+                </View>
+              )),
+            )}
           </Flex>
         </ScrollView>
         <TouchableOpacity
           style={[gs.mb20]}
-          onPress={()=>navigation.navigate('PageStack', {
-            screen: 'AddCuisine',
-          })}>
+          onPress={() =>
+            navigation.navigate('PageStack', {
+              screen: 'AddCuisine',
+            })
+          }>
           <Addbtn btntxt="Add more Cuisines" />
         </TouchableOpacity>
       </View>

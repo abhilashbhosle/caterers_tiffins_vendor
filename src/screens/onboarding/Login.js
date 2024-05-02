@@ -18,7 +18,8 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import {loginSchema} from '../../components/Validations';
-import {getLoginOtp, verifyLoginOtp} from '../controllers/AuthControllers';
+import {getLoginOtp, resendLoginOtp, verifyLoginOtp} from '../controllers/AuthControllers';
+import { resendLoginOtpService } from '../services/AuthServices';
 
 export default function Login() {
   const flow = useSelector(state => state.common.flow);
@@ -53,6 +54,13 @@ export default function Login() {
     }
     return () => clearInterval(time);
   }, [enableSubmitOtp]);
+
+  const handleResendOtp = values => {
+    setTimer(30);
+    setValue('');
+    dispatch(resendLoginOtp({ companyId:values.companyId,password:values.password}));
+  };
+
   return (
     <View style={styles.container}>
       <Text style={[styles.heading]}>Welcome Back</Text>
@@ -122,7 +130,10 @@ export default function Login() {
                 {errors.password}
               </Text>
             )}
-            <CodeField
+            {
+              enableSubmitOtp?
+
+              <CodeField
               ref={ref}
               {...props}
               // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
@@ -145,6 +156,12 @@ export default function Login() {
                 </Text>
               )}
             />
+            :
+            <View style={[gs.mt20]}>
+
+            </View>
+            }
+         
             <Center>
               {!enableSubmitOtp ? (
                 <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7}>
@@ -191,9 +208,9 @@ export default function Login() {
               {timer == 0 && (
                 <TouchableOpacity
                   activeOpacity={0.7}
-                  // onPress={() => {
-                  //   handleResendOtp(values);
-                  // }}
+                  onPress={() => {
+                    handleResendOtp(values);
+                  }}
                 >
                   <Text
                     style={[

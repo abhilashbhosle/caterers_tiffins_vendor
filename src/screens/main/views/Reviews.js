@@ -1,15 +1,20 @@
 import {View, Text, FlatList, Image} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
-import {Flex} from 'native-base';
+import {Center, Flex, Skeleton} from 'native-base';
 import {gs} from '../../../../GlobalStyles';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {ScaledSheet} from 'react-native-size-matters';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
-import {review_data} from '../../../constants/Constant';
+import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getReviews} from '../../controllers/ReviewController';
+import LottieView from 'lottie-react-native';
+import ReviewSkel from '../../../components/ReviewSkel';
+import moment from 'moment';
 
 export default function Reviews({navigation}) {
   const data = [
@@ -17,10 +22,94 @@ export default function Reviews({navigation}) {
     {label: 'Newest first', value: 'Newest first'},
     {label: 'Oldest first', value: 'Oldest first'},
   ];
-  const [value, setValue] = useState(data[0].value);
+  const dispatch = useDispatch();
+  const [value, setValue] = useState(data[1].value);
   const [isFocus, setIsFocus] = useState(false);
   const flow = useSelector(state => state.common.flow);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+  const [reviews, setReviews] = useState([]);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
+  let {review} = useSelector(state => state.review);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showSkell, setShowSkell] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+    })();
+    if (page == 1) {
+      setShowSkell(true);
+    }
+    if (page == 1) {
+      setTimeout(() => {
+        dispatch(
+          getReviews({
+            limit,
+            page,
+            sort: value == 'Newest First' ? 'newest_first' : 'oldest_first',
+          }),
+        );
+      }, 1000);
+    } else {
+      dispatch(
+        getReviews({
+          limit,
+          page,
+          sort: value == 'Newest First' ? 'newest_first' : 'oldest_first',
+        }),
+      );
+    }
+  }, [page]);
+  useEffect(() => {
+    if (review?.data?.length > 0) {
+      setReviews([...reviews, ...review.data]);
+      setRefreshing(false);
+      setShowSkell(false);
+    } else {
+      setShowSkell(false);
+      setRefreshing(false);
+    }
+  }, [review]);
+  // =========FETCH MORE DATA=========//
+  const fetchMoreData = () => {
+    if (reviews.length < review.total) {
+      setPage(page + 1);
+    }
+  };
+  // =======LIST FOOTER COMPONENT=========//
+  const renderFooter = () => {
+    return (
+      review?.loading && (
+        <Center>
+          {' '}
+          <LottieView
+            source={require('../../../assets/Loader/lottie1.json')}
+            autoPlay
+            loop
+            style={{height: 30, width: 60, bottom: 10}}
+          />
+        </Center>
+      )
+    );
+  };
+  // =======HANDLE REFRESH=========//
+  handleRefresh = () => {
+    setPage(1);
+    setReviews([]);
+  };
+  // =======SROTING CHANGES=========//
+  handleSortChange = item => {
+    setValue(item.value);
+    handleRefresh();
+    setIsFocus(false);
+  };
+  // =======PULL TO REFRESH========//
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleRefresh();
+  };
 
   const renderReviews = ({item}) => {
     return (
@@ -28,7 +117,11 @@ export default function Reviews({navigation}) {
         <Flex direction="row" width={'100%'}>
           {/* ====PROFILE======= */}
           <View width={'10%'}>
-            <Image source={item.img} style={styles.profileimg} alt="profile" />
+            <Image
+              source={require('../../../assets/drawer/profile.jpg')}
+              style={styles.profileimg}
+              alt="profile"
+            />
           </View>
           <View width={'85%'} style={[gs.ml10]}>
             <Flex
@@ -40,12 +133,25 @@ export default function Reviews({navigation}) {
                   gs.fs15,
                   {color: ts.teritary, fontFamily: ts.secondaryregular},
                 ]}>
-                {item.name}
+                Andrew Hernandez
               </Text>
-              <Text style={[gs.fs11,{color:theme,fontFamily:ts.secondaryregular}]}>{item.date}</Text>
+              <Text
+                style={[
+                  gs.fs11,
+                  {color: theme, fontFamily: ts.secondaryregular},
+                ]}>
+                {/* Jan 28th, 4:30pm */}
+                {moment(item?.review_data).format('MMM DD, hh:mm A')}
+              </Text>
             </Flex>
             <View style={[gs.mt10]}>
-              <Text style={[gs.fs11,{color:ts.secondarytext,fontFamily:ts.secondaryregular}]}>{item.review}</Text>
+              <Text
+                style={[
+                  gs.fs11,
+                  {color: ts.secondarytext, fontFamily: ts.secondaryregular},
+                ]}>
+                {item.review_text}
+              </Text>
             </View>
           </View>
         </Flex>
@@ -86,17 +192,48 @@ export default function Reviews({navigation}) {
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={item => {
-                setValue(item.value);
-                setIsFocus(false);
+                handleSortChange(item);
+                // setValue(item.value);
+                // setIsFocus(false);
               }}
             />
           </Flex>
         </View>
+
+        {showSkell &&
+          [1, 2, 3, 4, 5].map((e, i) => {
+            return <ReviewSkel key={i} />;
+          })}
+
         <FlatList
-          data={review_data}
+          data={reviews}
           keyExtractor={(item, index) => String(index)}
           showsVerticalScrollIndicator={false}
           renderItem={renderReviews}
+          onEndReachedThreshold={0.6}
+          onEndReached={fetchMoreData}
+          ListFooterComponent={renderFooter}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          ListEmptyComponent={() => {
+            return (
+              !reviews && !showSkell&&
+              <Center>
+                <View style={[gs.mt10]}>
+                  <Text
+                    style={[
+                      gs.fs11,
+                      {
+                        color: ts.secondarytext,
+                        fontFamily: ts.secondaryregular,
+                      },
+                    ]}>
+                    No review
+                  </Text>
+                </View>
+              </Center>
+            );
+          }}
         />
       </View>
     </ScreenWrapper>

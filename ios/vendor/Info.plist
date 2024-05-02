@@ -35,8 +35,14 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Caterings and Tiffins would like to access your Camera.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string>Caterings and Tiffins would like to access your current Location.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Caterings and Tiffins would like to access your Microphone.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Caterings and Tiffins would like to access your Photo Gallery.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

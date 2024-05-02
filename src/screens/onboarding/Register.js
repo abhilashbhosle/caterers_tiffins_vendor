@@ -120,7 +120,9 @@ export default function Register() {
                 {errors.phoneNumber}
               </Text>
             )}
-            <CodeField
+            {
+              enableSubmitOtp &&
+              <CodeField
               ref={ref}
               {...props}
               // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
@@ -143,9 +145,11 @@ export default function Register() {
                 </Text>
               )}
             />
+            }
+            
             <Center>
               {!enableSubmitOtp ? (
-                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7}>
+                <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7} style={[gs.mt20]}>
                   <ThemeSepBtn
                     btntxt="Get Otp"
                     themecolor={theme}

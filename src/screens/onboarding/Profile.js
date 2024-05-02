@@ -55,9 +55,9 @@ export default function Profile({navigation}) {
                 profileUpdate({
                   serviceName: values.serviceName,
                   name: values.name,
-                  companyPhone: values.companyPhone,
-                  landline1: values.landline1,
-                  landline2: values.landline2,
+                  companyPhone: `+91-${values.companyPhone}`,
+                  landline1: `080-${values.landline1}`,
+                  landline2: `+91-${values.landline2}`,
                   navigation,
                 }),
               );
@@ -148,6 +148,7 @@ export default function Profile({navigation}) {
                   outlineStyle={gs.br7}
                   keyboardType="numeric"
                   name="landline2"
+                  maxLength={10}
                   value={values.landline2}
                   onChangeText={handleChange('landline2')}
                   onBlur={handleBlur('landline2')}

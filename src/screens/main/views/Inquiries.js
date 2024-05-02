@@ -1,21 +1,117 @@
 import {View, Text, FlatList, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {gs} from '../../../../GlobalStyles';
-import {Flex} from 'native-base';
+import {Center, Flex} from 'native-base';
 import {ScaledSheet} from 'react-native-size-matters';
 import {ts} from '../../../../ThemeStyles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {TextInput} from 'react-native-paper';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import ThemeSepBtn from '../../../components/ThemeSepBtn';
 import {inquiryData} from '../../../constants/Constant';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFlow } from '../../../redux/slicers/CommomSlicer';
+import { getInquiry } from '../../controllers/InquiryController';
+import LottieView from 'lottie-react-native';
+import ReviewSkel from '../../../components/ReviewSkel';
+import moment from 'moment';
+import InquirySkel from '../../../components/InquirySkel';
 export default function Inquiries({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
+  const dispatch=useDispatch()
+  const [page, setPage] = useState(1);
+  const [inquiries, setInquiries] = useState([]);
+  const [showSkell,setShowSkell]=useState(false)
+  const [date,setDate]=useState('2024-04-02')
+  const [search,setSearch]=useState('')
+  const [limit,setLimit]=useState(10)
+  let {inquiry} = useSelector(state => state.inquiry);
+  const [refreshing,setRefreshing]=useState(false)
+
+  useEffect(()=>{
+    (async () => {
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+    })();
+    if (page == 1) {
+      setShowSkell(true);
+      setTimeout(() => {
+        dispatch(
+          getInquiry({
+            limit,
+            page,
+            sort:'newest_first',
+            date,
+            search
+          }),
+        );
+      }, 1000);
+    } else {
+      dispatch(
+        getInquiry({
+          limit,
+          page,
+          sort:'newest_first',
+          date,
+          search
+        }),
+      );
+    }
+  },[page])
+  useEffect(() => {
+    if (inquiry?.data?.length > 0) {
+      setInquiries([...inquiries, ...inquiry.data]);
+      setRefreshing(false);
+      setShowSkell(false);
+    } else {
+      setShowSkell(false);
+      setRefreshing(false);
+    }
+  }, [inquiry]);
+  // =========FETCH MORE DATA=========//
+  const fetchMoreData = () => {
+    console.log('fetch more data called')
+    if (inquiries.length < inquiry.total) {
+      setPage(page + 1);
+    }
+  };
+  // =======LIST FOOTER COMPONENT=========//
+  const renderFooter = () => {
+    return (
+      inquiry?.loading && (
+        <Center>
+          {' '}
+          <LottieView
+            source={require('../../../assets/Loader/lottie1.json')}
+            autoPlay
+            loop
+            style={{height: 30, width: 60, bottom: 10}}
+          />
+        </Center>
+      )
+    );
+  };
+  // =======HANDLE REFRESH=========//
+  handleRefresh = () => {
+    setPage(1);
+    setInquiries([]);
+  };
+  // =======SROTING CHANGES=========//
+  handleSortChange = item => {
+    // setValue(item.value);
+    // handleRefresh();
+    // setIsFocus(false);
+  };
+  // =======PULL TO REFRESH========//
+  const onRefresh = () => {
+    setRefreshing(true);
+    handleRefresh();
+  };
+
   const renderItem = ({item}) => {
     return (
       <View style={{...styles.cardContainer,marginHorizontal:3}}>
@@ -25,7 +121,7 @@ export default function Inquiries({navigation}) {
               gs.fs17,
               {color: ts.primarytext, fontFamily: ts.secondarymedium},
             ]}>
-            {item.name}
+            {item?.user_name}
           </Text>
           <Text
             style={[
@@ -33,7 +129,7 @@ export default function Inquiries({navigation}) {
               {color: ts.secondarytext, fontFamily: ts.secondaryregular},
               gs.mv10,
             ]}>
-            {item.detail}
+            {item?.description}
           </Text>
           <Flex
             direction="row"
@@ -44,7 +140,7 @@ export default function Inquiries({navigation}) {
                 gs.fs13,
                 {color: ts.secondarytext, fontFamily: ts.secondaryregular},
               ]}>
-              {item.timing}
+                {moment(item?.enquiry_date).format('MMM DD, hh:mm A')}
             </Text>
             <TouchableOpacity style={styles.phonecontainer}>
               <Flex direction="row" alignItems="center">
@@ -123,11 +219,39 @@ export default function Inquiries({navigation}) {
             />
           </Flex>
         </View>
+        {showSkell &&
+          [1, 2, 3, 4, 5].map((e, i) => {
+            return <InquirySkel key={i} />;
+          })}
         <FlatList
+          data={inquiries}
           keyExtractor={(item, index) => String(index)}
-          data={inquiryData}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
+          onEndReachedThreshold={0.6}
+          onEndReached={fetchMoreData}
+          ListFooterComponent={renderFooter}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          ListEmptyComponent={() => {
+            return (
+              !inquiries && !showSkell&&
+              <Center>
+                <View style={[gs.mt10]}>
+                  <Text
+                    style={[
+                      gs.fs11,
+                      {
+                        color: ts.secondarytext,
+                        fontFamily: ts.secondaryregular,
+                      },
+                    ]}>
+                    No Inquiries
+                  </Text>
+                </View>
+              </Center>
+            );
+          }}
         />
       </View>
     </ScreenWrapper>

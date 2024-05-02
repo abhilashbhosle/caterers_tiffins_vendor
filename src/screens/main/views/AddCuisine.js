@@ -1,63 +1,174 @@
-import {View, Text, ScrollView, FlatList, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+  Pressable,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeader from '../../../components/ThemeHeader';
 import {List, TextInput} from 'react-native-paper';
 import {gs} from '../../../../GlobalStyles';
 import {ScaledSheet} from 'react-native-size-matters';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {cuisine_data} from '../../../constants/Constant';
 import {Flex} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Addbtn from '../../../components/Addbtn';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import {getCuisine} from '../../controllers/CuisineController';
+import { updateCuisinesService } from '../../services/CuisineService';
 
 export default function AddCuisine({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
+  const cuisine = useSelector(state => state.cuisine?.cuisines);
+  const [expanded, setExpanded] = useState(-1);
+  const [cuisineData, setCuisineData] = useState([]);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    (async () => {
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+      dispatch(getCuisine());
+    })();
+  }, []);
+  useEffect(() => {
+    if (cuisine.length) {
+      setCuisineData(cuisine);
+    }
+  }, [cuisine]);
+
+  // =====SETTING PARENT CUISINES=======//
+  const handleParentCuisines = index => {
+    let data = [...cuisineData];
+    setExpanded(index);
+    const updatedData = data.map((item, i) => {
+      if (i === index) {
+        return {...item, selected: item.selected === '0' ? '1' : '0'};
+      }
+      return item;
+    });
+    const updatedChilds = data[index].children.map((item, i) => {
+      return {...item, selected:updatedData[index].selected === '1' ? '1' : '0'};
+    });
+    updatedData[index].children = updatedChilds;
+    setCuisineData(updatedData);
+  };
+  // =====SETTING CHILDREN CUISINES=======//
+  const handleChildrenCuisines = (pi, i) => {
+    const data = [...cuisineData];
+    if (data[pi].children[i].selected === '0') {
+      data[pi].children[i].selected = '1';
+    } else {
+      data[pi].children[i].selected = '0';
+    }
+    setCuisineData(data);
+   let check= data[pi].children.filter((e,i)=>{
+    return e.selected=="1"
+    })
+    // ===IF SINGLE CHECKBOX IS CHECKED MARKING PARENT AS CHECKED IF SINGLE CHILD IS UNCHECKED MAKING PARENT AS UNCHECKED=======//
+    if(check.length==data[pi].children.length){
+      data.map((e,i)=>{
+        if(i==pi){
+          e.selected="1"
+        }
+      })
+      setCuisineData(data)
+    }else{
+      data[pi].selected=="0"
+      data.map((e,i)=>{
+        if(i==pi){
+          e.selected="0"
+        }
+      })
+      setCuisineData(data)
+    }
+  };
+
   const renderItem = ({item, index}) => {
     return (
-      <List.AccordionGroup>
-        <List.Accordion
-          title={
-            <Flex direction="row" alignItems="center">
-              <MaterialIcons
-                name="check-box-outline-blank"
-                style={[gs.fs22, {...styles.checkicon, color: ts.primarytext}]}
-              />
-              <Text style={styles.accordianTitle}>{item.type}</Text>
-            </Flex>
-          }
-          id={String(index)}
-          style={styles.labelcontainer}
-          titleStyle={styles.accordianTitle}>
-          <View style={styles.accordianitem}>
-            {item.subtype.map((e, i) => (
-              <TouchableOpacity key={i}>
-                <Flex direction="row" alignItems="center" style={[gs.mb15,gs.ml20]}>
-                  <MaterialIcons
-                    name="check-box-outline-blank"
-                    style={[
-                      gs.fs22,
-                      {...styles.checkicon, color: ts.primarytext},
-                    ]}
-                  />
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondaryregular},
-                    ]}>
-                    {e.type}
-                  </Text>
-                </Flex>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </List.Accordion>
-      </List.AccordionGroup>
+      <List.Accordion
+        key={index}
+        onPress={() => {
+          handleParentCuisines(index);
+        }}
+        expanded={expanded==index?true:false}
+        title={
+          <Flex direction="row" alignItems="center">
+            <MaterialIcons
+              name={
+                item.selected == 0 ? 'check-box-outline-blank' : 'check-box'
+              }
+              style={[
+                gs.fs22,
+                {
+                  ...styles.checkicon,
+                  color: item.selected == 0 ? ts.primarytext : theme,
+                },
+              ]}
+            />
+            <Text style={styles.accordianTitle}>{item.name}</Text>
+          </Flex>
+        }
+        id={String(index)}
+        style={styles.labelcontainer}
+        titleStyle={styles.accordianTitle}>
+        <View style={styles.accordianitem}>
+          {item.children.map((e, i) => (
+            <TouchableOpacity
+              key={i}
+              onPress={() => {
+                handleChildrenCuisines(index, i);
+              }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                style={[gs.mb15, gs.ml20]}>
+                <MaterialIcons
+                  name={
+                    e.selected == 0 ? 'check-box-outline-blank' : 'check-box'
+                  }
+                  style={[
+                    gs.fs22,
+                    {
+                      ...styles.checkicon,
+                      color: e.selected == 0 ? ts.primarytext : theme,
+                    },
+                  ]}
+                />
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.primarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {e.name}
+                </Text>
+              </Flex>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </List.Accordion>
     );
   };
+  const handleAddCuisine=()=>{
+    let finalData=[]
+    cuisineData.map((e,i)=>{
+      finalData.push({cuisine_id:Number(e.id),selected:Number(e.selected)})
+      e.children.map((item)=>{
+        finalData.push({cuisine_id:Number(item.id),selected:Number(item.selected)})
+      })
+    })
+    updateCuisinesService({finalData,dispatch,navigation})
+  }
   return (
     <ScreenWrapper>
       <ThemeHeader
@@ -82,14 +193,14 @@ export default function AddCuisine({navigation}) {
           keyExtractor={(item, index) => {
             String(index);
           }}
-          data={cuisine_data}
+          data={cuisineData}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[gs.mt10]}
+          contentContainerStyle={styles.contentContainerStyle}
         />
-		<TouchableOpacity style={[gs.mb10]}>
-		<Addbtn btntxt='Add Cuisines'/>
-		</TouchableOpacity>
+        <TouchableOpacity style={[gs.mb10]} onPress={handleAddCuisine}>
+          <Addbtn btntxt="Add Cuisines" />
+        </TouchableOpacity>
       </View>
     </ScreenWrapper>
   );
@@ -135,5 +246,9 @@ const styles = ScaledSheet.create({
   checkicon: {
     top: '2@ms',
     marginRight: '5@ms',
+  },
+  contentContainerStyle: {
+    marginTop: '10@ms',
+    paddingBottom: '70@ms',
   },
 });

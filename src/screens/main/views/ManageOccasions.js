@@ -4,31 +4,45 @@ import {
   useWindowDimensions,
   FlatList,
   ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import {Center, Flex} from 'native-base';
 import {gs} from '../../../../GlobalStyles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {occasions} from '../../../constants/Constant';
 import {ScaledSheet} from 'react-native-size-matters';
 import {Card} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
 import Addbtn from '../../../components/Addbtn';
+import {getOccasions} from '../../controllers/OccassionController';
+import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ManageOccasions({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
+  const dispatch = useDispatch();
+  const occassions = useSelector(state => state.occassion?.occassions);
+  useFocusEffect(useCallback(() => {
+    dispatch(getOccasions());
+  },[]))
+  useEffect(() => {
+    (async () => {
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+    })();
+  }, []);
   const renderItem = ({item}) => {
     return (
       <Card style={[{backgroundColor: '#fff'}, gs.mb10, gs.mh5]}>
         <ImageBackground
-          source={item.img}
+          source={{uri: item.file_name.large || item.file_name.medium}}
           style={[
             {...styles.img, width: width / 2.2, justifyContent: 'flex-end'},
           ]}
@@ -78,12 +92,12 @@ export default function ManageOccasions({navigation}) {
                 ]}>
                 Occasions You Cater
               </Text>
-              <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} />
+              {/* <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} /> */}
             </Flex>
           </View>
           <Center width={width}>
             <FlatList
-              data={occasions.slice(0, 4)}
+              data={occassions.filter((e,i)=>e.selected==1)}
               renderItem={renderItem}
               showsVerticalScrollIndicator={false}
               keyExtractor={(item, index) => String(index)}
@@ -111,7 +125,7 @@ export default function ManageOccasions({navigation}) {
 }
 const styles = ScaledSheet.create({
   contentContainerStyle: {
-    paddingBottom: 20,
+    paddingBottom: '120@ms',
     paddingTop: '15@ms',
     position: 'relative',
   },

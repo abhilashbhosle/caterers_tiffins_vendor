@@ -86,6 +86,7 @@ export default function Kyc({navigation}) {
                   value={values.aadharNo}
                   onChangeText={handleChange('aadharNo')}
                   onBlur={handleBlur('aadharNo')}
+                  maxLength={12}
                 />
                 {errors.aadharNo && touched.aadharNo && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -111,6 +112,7 @@ export default function Kyc({navigation}) {
                   value={values.panNo}
                   onChangeText={handleChange('panNo')}
                   onBlur={handleBlur('panNo')}
+                  maxLength={10}
                 />
                 {errors.panNo && touched.panNo && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -136,6 +138,7 @@ export default function Kyc({navigation}) {
                   value={values.gstinNo}
                   onChangeText={handleChange('gstinNo')}
                   onBlur={handleBlur('gstinNo')}
+                  maxLength={15}
                 />
                 <Text
                   style={[
