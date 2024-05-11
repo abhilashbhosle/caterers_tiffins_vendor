@@ -50,7 +50,7 @@ export default function ManualLocation({navigation}) {
       let temp={
       street_name:tempData[0],
       area:tempData[1],
-      pincode:111,
+      pincode:'111111',
       latitude:geometry.location.lat,
       longitude:geometry.location.lng,
       address:selectedData.description,
@@ -60,6 +60,7 @@ export default function ManualLocation({navigation}) {
       formatted_address:selectedData.description,
       place_id:selectedData.place_id
       }
+
       await updateLocationService({temp,navigation})
     }catch(error){
       showMessage({
@@ -88,19 +89,6 @@ export default function ManualLocation({navigation}) {
           />
         </TouchableOpacity>
         <Text style={[styles.heading]}>Enter your area or address</Text>
-        {/* <TextInput
-          label="Try A2B, Mg road, Bangalore, etc."
-          mode="outlined"
-          style={styles.input}
-          outlineColor="#999"
-          activeOutlineColor={theme}
-          outlineStyle={{borderRadius: 8}}
-          left={
-            <TextInput.Icon
-              icon={() => <EvilIcons name="search" style={styles.icon} />}
-            />
-          }
-        /> */}
         <ScrollView
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{flexGrow: 1}}>

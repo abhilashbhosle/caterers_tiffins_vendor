@@ -3,47 +3,39 @@ import axios from 'axios';
 import {endpoints} from '../../endpoints';
 import {showMessage} from 'react-native-flash-message';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
-import { Platform } from 'react-native';
 
-
-// =====UPDATE BUSINESS-SERVICE========//
-
-export const insertLogoService = async ({res,dispatch}) => {
+// =====SUBMIT TICKET========//
+export const submitTicketService = async ({issue, comments, dispatch}) => {
   try {
-    // dispatch(startLoader(true));
-	const formData = new FormData();
-	formData.append('id', '');
-	formData.append('image',
-  {
-     uri:res.path,
-     name:res.filename,
-     type:res.mime
-  });
-	formData.append('action_type', 'insert')
+    let body = {
+      issue,
+      comments,
+    };
+    dispatch(startLoader(true));
     let token = await AsyncStorage.getItem('token');
-    let result = await axios.post(
-      `${endpoints.baseUrl}upload-vendor-brand-logo`,
-      formData,
+    let res = await axios.post(
+      `${endpoints.baseUrl}vendor-raise-ticket`,
+      body,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: `Bearer ${token}`,
         },
       },
     );
-    if (result.data.status == 'success') {
+    if (res.data.status == 'success') {
       showMessage({
         message: 'Success!',
-        description: 'Logo Updated Successfully.',
+        description: 'Request Submitted.',
         type: 'success',
       });
     }
-    return result;
+    return res;
   } catch (error) {
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',
-        description:error.response.data.message,
+        description: error.response.data.message,
         type: 'danger',
       });
       return error.response.data;
@@ -51,6 +43,6 @@ export const insertLogoService = async ({res,dispatch}) => {
       return error.message;
     }
   } finally {
-    // dispatch(startLoader(false));
+    dispatch(startLoader(false));
   }
 };

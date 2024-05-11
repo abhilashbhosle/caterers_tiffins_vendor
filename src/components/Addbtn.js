@@ -15,14 +15,13 @@ export default function Addbtn(props) {
             width: '100%',
             justifyContent: 'center',
             alignItems: 'center',
-			shadowColor:'#000',
-			shadowOffset:{x:0,y:1},
-			shadowOpacity:0.5,
-			shadowRadius:2
+            shadowColor: '#000',
+            shadowOffset: {x: 0, y: 1},
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
           },
           gs.pv10,
           gs.br10,
-		  
         ]}>
         <Flex direction="row" alignItems="center">
           <MaterialIcons

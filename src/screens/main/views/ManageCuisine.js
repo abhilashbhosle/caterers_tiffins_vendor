@@ -54,6 +54,7 @@ export default function ManageCuisine({navigation}) {
           </Text>
           {/* <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} /> */}
         </Flex>
+
         <ScrollView showsVerticalScrollIndicator={false}>
           <Flex
             direction="row"
@@ -61,20 +62,23 @@ export default function ManageCuisine({navigation}) {
             alignItems="center"
             style={[gs.mt20]}>
             {cuisine.map((e, i) =>
-              e.children.map((item, index) => (
-                item.selected==1&&
-                <View
-                  key={index}
-                  style={{...styles.cuisinebtn, backgroundColor: theme}}>
-                  <Text
-                    style={[
-                      gs.fs16,
-                      {color: '#fff', fontFamily: ts.secondary},
-                    ]}>
-                    {item.name}
-                  </Text>
-                </View>
-              )),
+              e.children.map(
+                (item, index) =>
+                  item.selected == 1 && (
+                    <View
+                      key={index}
+                      style={{...styles.cuisinebtn, backgroundColor: theme}}>
+                      <Text
+                        style={[
+                          gs.fs16,
+                          {color: '#fff', fontFamily: ts.secondary},
+                        ]}>
+                        {item.name}
+                      </Text>
+                    </View>
+                  ),
+              )
+     
             )}
           </Flex>
         </ScrollView>

@@ -52,7 +52,7 @@ export default function Reviews({navigation}) {
           }),
         );
       }, 1000);
-    } else {
+    } else if(page) {
       dispatch(
         getReviews({
           limit,
@@ -96,7 +96,10 @@ export default function Reviews({navigation}) {
   };
   // =======HANDLE REFRESH=========//
   handleRefresh = () => {
+    setPage(0)
+    setTimeout(()=>{
     setPage(1);
+    },1000)
     setReviews([]);
   };
   // =======SROTING CHANGES=========//
@@ -217,18 +220,18 @@ export default function Reviews({navigation}) {
           onRefresh={onRefresh}
           ListEmptyComponent={() => {
             return (
-              !reviews && !showSkell&&
+              reviews?.length==0 && !showSkell&&
               <Center>
                 <View style={[gs.mt10]}>
                   <Text
                     style={[
-                      gs.fs11,
+                      gs.fs14,
                       {
                         color: ts.secondarytext,
                         fontFamily: ts.secondaryregular,
                       },
                     ]}>
-                    No review
+                    No reviews
                   </Text>
                 </View>
               </Center>

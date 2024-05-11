@@ -1,4 +1,4 @@
-import {View, Text, useWindowDimensions, TouchableOpacity} from 'react-native';
+import {View, Text, useWindowDimensions, TouchableOpacity, ScrollView} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeader from '../../../components/ThemeHeader';
@@ -76,10 +76,11 @@ export default function AddBranch({navigation,route}) {
         lefttxt="Enter your New Branch Details"
         navigation={navigation}
       />
-      <KeyboardAwareScrollView
-        style={[{flex: 1, backgroundColor: '#fff'}, gs.ph20]}
-        enableOnAndroid
-        showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={[{flexGrow: 1, backgroundColor: '#fff'}, gs.ph20]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        >
         <Formik
           initialValues={{
             serviceName:route?.params?.editData?route.params.editData.catering_service_name:'',
@@ -178,7 +179,7 @@ export default function AddBranch({navigation,route}) {
                       setLoc({
                         street_name: '',
                         area: '',
-                        pincode: 111,
+                        pincode: '1111111',
                         latitude: '',
                         longitude: '',
                         city: '',
@@ -195,6 +196,7 @@ export default function AddBranch({navigation,route}) {
                 placeholder="Try A2B, Mg road, Bangalore, etc."
                 fetchDetails={true}
                 onPress={(data, details) => {
+                  console.log("pressed")
                   let tempData = data.description.split(',');
                   let geo = details?.geometry;
                   setLoc({
@@ -245,7 +247,7 @@ export default function AddBranch({navigation,route}) {
             </View>
           )}
         </Formik>
-      </KeyboardAwareScrollView>
+      </ScrollView>
     </ScreenWrapper>
   );
 }

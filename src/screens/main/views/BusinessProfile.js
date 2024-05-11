@@ -15,7 +15,7 @@ import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import {getProfile} from '../../controllers/ProfileController';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {GOOGLE_KEY} from '@env';
-import { businessUpdateService } from '../../services/BusinessService';
+import {businessUpdateService} from '../../services/BusinessService';
 
 export default function BusinessProfile({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -70,7 +70,10 @@ export default function BusinessProfile({navigation}) {
         since: profileDetails?.working_since,
         bEmail: profileDetails?.business_email,
         bPhone: profileDetails?.business_phone_number?.split('-')[1],
-        landlineNumber: profileDetails?.landline_number?.split('-')[1],
+        landlineNumber:
+          profileDetails?.landline_number?.split('-')?.length > 1
+            ? profileDetails?.landline_number?.split('-')[1]
+            : profileDetails?.landline_number,
         whatsappNumber:
           profileDetails?.whatsapp_business_phone_number?.split('-')[1],
         area: profileDetails?.area,
@@ -79,7 +82,7 @@ export default function BusinessProfile({navigation}) {
         address: profileDetails?.formatted_address,
         latitude: profileDetails?.latitude,
         longitude: profileDetails?.longitude,
-        pincode: profileDetails?.pincode||"111",
+        pincode: profileDetails?.pincode || '111111',
         placeId: profileDetails?.place_id,
         state: profileDetails?.state,
         streetName: profileDetails?.street_name,
@@ -124,10 +127,9 @@ export default function BusinessProfile({navigation}) {
       twitter_id: profile?.twitter,
       instagram_link: profile?.instagram,
       facebook_link: profile?.facebook,
-      point_of_contact_name:profile?.contactPersonName
+      point_of_contact_name: profile?.contactPersonName,
     };
-    console.log(temp)
-    businessUpdateService({body:temp,dispatch})
+    businessUpdateService({body: temp, dispatch});
   };
   return (
     <ScreenWrapper>
@@ -214,7 +216,7 @@ export default function BusinessProfile({navigation}) {
                 activeOutlineColor={theme}
                 mode="outlined"
                 outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
-                value={profile?.staffs.toString()}
+                value={profile?.staffs?.toString()}
                 onChangeText={text => {
                   setProfile({...profile, staffs: text});
                 }}
@@ -306,11 +308,11 @@ export default function BusinessProfile({navigation}) {
                 activeOutlineColor={theme}
                 mode="outlined"
                 outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
-                value={profile?.since.toString()}
+                value={profile?.since?.toString()}
                 onChangeText={text => {
                   setProfile({...profile, since: text});
                 }}
-                keyboardType='numeric'
+                keyboardType="numeric"
                 maxLength={4}
               />
             </View>

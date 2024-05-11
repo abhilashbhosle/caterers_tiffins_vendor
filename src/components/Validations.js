@@ -30,7 +30,7 @@ export const loginSchema = yup.object().shape({
   password: yup.string().required('Password is required'),
 });
 export const branchSchema = yup.object().shape({
-  serviceName: yup.string().required('Catering Service Name is required'),
+  serviceName: yup.string().required('Service Name is required'),
   personName: yup.string().required('Person Name is required'),
   phone: yup.string().required('Phone Number is required')
   .min(10, ({min}) => `Phone Number must be at least ${min} characters`)

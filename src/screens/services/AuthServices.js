@@ -409,6 +409,7 @@ export const updateLocationService = async ({temp, navigation}) => {
         description: error.response.data.message,
         type: 'danger',
       });
+      console.log('inside error in manual location', error.response.data);
       return error.response.data;
     } else {
       return error.message;
@@ -417,7 +418,7 @@ export const updateLocationService = async ({temp, navigation}) => {
 };
 
 // =======GET VENDOR========//
-export const getVendorDetails = async (dispatch) => {
+export const getVendorDetails = async dispatch => {
   try {
     dispatch(startLoader(true));
     let token = await AsyncStorage.getItem('token');
@@ -435,6 +436,84 @@ export const getVendorDetails = async (dispatch) => {
         description: error.response.data.message,
         type: 'danger',
       });
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};
+// =======GET VENDOR========//
+export const getVendorPassword = async () => {
+  try {
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.get(`${endpoints.baseUrl}get-vendor-infos`, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const responseData = res?.data?.data?.password;
+    console.log(responseData, 'responseData responseData');
+
+    if (typeof responseData === 'string') {
+      // Define the regular expression pattern
+      let pattern = /%&\^\$(.*?)\^#*/;
+
+      // Extract the substring using match
+      let match = responseData.match(pattern);
+
+      // Extract the password from the captured group
+      let password = match ? match[1] : null;
+      return password;
+    }
+    // return res.data.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+    }
+  }
+};
+
+// =======RESET PASSWORD SERVICE========//
+export const resetPasswordService = async ({password, dispatch}) => {
+  let body = {
+    new_password: password,
+  };
+  try {
+    let token = await AsyncStorage.getItem('token');
+    dispatch(startLoader(true));
+    let res = await axios.post(
+      `${endpoints.baseUrl}change-vendor-password`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (res.data.status == 'success') {
+      showMessage({
+        message: 'Success!',
+        description: `Password changed to ${password}`,
+        type: 'success',
+      });
+    }
+    return res;
+  } catch (error) {
+    console.log(error.response.data)
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.data_validation_errors.map((e)=>e.msg),
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
     }
   }finally{
     dispatch(startLoader(false))

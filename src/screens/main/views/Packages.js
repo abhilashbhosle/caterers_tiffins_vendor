@@ -16,6 +16,7 @@ import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import {getPackage, packageUpdate} from '../../controllers/PackageController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { packageUpdateService } from '../../services/PackageService';
+import TiffinPackages from './TiffinPackages';
 
 export default function Packages({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -29,6 +30,7 @@ export default function Packages({navigation}) {
     maxPlatesCap: '',
     minPrice: '',
   });
+  
   useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
@@ -81,7 +83,7 @@ export default function Packages({navigation}) {
     const servingTypes=packs.servingTypes.map((e,i)=>{
       return {id:Number(e.id),selected:Number(e.selected)}
     })
-    const foodTypes=packs.serviceTypes.map((e,i)=>{
+    const foodTypes=packs.foodTypes.map((e,i)=>{
       return {id:Number(e.id),selected:Number(e.selected)}
     })
     const body={
@@ -94,7 +96,7 @@ export default function Packages({navigation}) {
     }
     packageUpdateService({body,dispatch})
   }
-console.log(values)
+  console.log(flow)
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -103,291 +105,297 @@ console.log(values)
         navigation={navigation}
         notifyIcon={false}
       />
-      {packs?.foodTypes && (
-        <KeyboardAwareScrollView
-          enableOnAndroid={true}
-          showsVerticalScrollIndicator={false}
-          style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}>
-          {/* =======CHOOSE TYPE========= */}
-          <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mb10, gs.mh10]}>
-            <Center>
-              <Text style={styles.title}>Choose your food type below</Text>
-              <Text style={styles.subtitke}>
-                If you provide both Veg & Non-Veg, check both checkboxes.
-              </Text>
-              <Flex
-                direction="row"
-                alignItems="center"
-                justifyContent="space-around"
-                width={'80%'}
-                style={[gs.mt15]}>
-                {packs?.foodTypes.map(
-                  (e, i) =>
-                    e.food_type_name !== 'Vegan' && (
-                      <Flex direction="row" alignItems="center" key={i}>
-                        <Text
-                          style={[
-                            gs.fs14,
-                            {
-                              color:
-                                e.food_type_name == 'Veg'
-                                  ? ts.accent3
-                                  : ts.accent4,
-                              fontFamily: ts.secondaryregular,
-                            },
-                          ]}>
-                          {e.food_type_name}
-                        </Text>
-                        <TouchableOpacity
-                          activeOpacity={0.7}
-                          onPress={() => {
-                            handleFoodType(i);
-                          }}>
-                          <FontAwesomeIcon
-                            name={
-                              e.selected == '1' ? 'toggle-on' : 'toggle-off'
-                            }
-                            style={[
-                              gs.ml10,
-                              {
-                                ...styles.toggleicon,
-                                color:
-                                  e.selected == '1' ? theme : ts.secondarytext,
-                              },
-                            ]}
-                          />
-                        </TouchableOpacity>
-                      </Flex>
-                    ),
-                )}
-              </Flex>
-            </Center>
-          </Card>
-          {/* =======CHOOSE YOUR CATERING TYPE========= */}
-          <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
-            <Center>
-              <Text style={styles.title}>Choose your Catering type below</Text>
-              <Text style={styles.subtitke}>
-                If you provide both table & buffet service, check both.
-              </Text>
-              <Flex
-                direction="row"
-                alignItems="center"
-                justifyContent="space-around"
-                width={'80%'}
-                style={[gs.mt15]}>
-                {packs?.servingTypes?.map((e, i) => (
-                  <Flex direction="row" alignItems="center" key={i}>
-                    <Text
-                      style={[
-                        gs.fs14,
-                        {color: theme, fontFamily: ts.secondaryregular},
-                      ]}>
-                      {e.serving_type_name == 'Buffet Service'
-                        ? 'Buffet'
-                        : e.serving_type_name}
-                    </Text>
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      onPress={() => {
-                        handleCateringType(i);
-                      }}>
-                      <FontAwesomeIcon
-                        name={e.selected == '0' ? 'toggle-off' : 'toggle-on'}
-                        style={[
-                          gs.ml10,
-                          {
-                            ...styles.toggleicon,
-                            color: e.selected == '1' ? theme : ts.secondarytext,
-                          },
-                        ]}
-                      />
-                    </TouchableOpacity>
-                  </Flex>
-                ))}
-              </Flex>
-            </Center>
-          </Card>
-          {/* =====ENTER CATERING CAPACITY========= */}
-          <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
-            <Center>
-              <Text style={styles.title}>
-                Enter your Catering Capacity below
-              </Text>
-              <View
-                style={[
-                  {justifyContent: 'center', alignItems: 'center'},
-                  gs.mt10,
-                ]}>
-                <Text style={styles.subtitke}>Minimum Capacity</Text>
-                <TextInput
-                  style={{...styles.input, width: width - 80}}
-                  placeholder="Enter Minimum Capacity - Eg: 100 plates"
-                  outlineColor={ts?.secondarytext}
-                  activeOutlineColor={theme}
-                  value={values?.miniPlatesCap?.toString()}
-                  onChangeText={text => {
-                    setValues({...values, miniPlatesCap: text});
-                  }}
-                  mode="outlined"
-                  keyboardType="numeric"
-                />
-              </View>
-              <View
-                style={[
-                  {justifyContent: 'center', alignItems: 'center'},
-                  gs.mt20,
-                ]}>
-                <Text style={styles.subtitke}>Maximum Capacity</Text>
-                <TextInput
-                  style={{...styles.input, width: width - 80}}
-                  placeholder="Enter Maximum Capacity - Eg: 700 plates"
-                  outlineColor={ts.secondarytext}
-                  activeOutlineColor={theme}
-                  mode="outlined"
-                  value={values?.maxPlatesCap?.toString()}
-                  onChangeText={text => {
-                    setValues({...values, maxPlatesCap: text});
-                  }}
-                  keyboardType="numeric"
-                />
-              </View>
-            </Center>
-          </Card>
-          {/* =====CHOOSE SERVICE TYPE========= */}
-          <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
-            <Center>
-              <Text style={styles.title}>Choose your Service type below</Text>
-              <Flex
-                direction="row"
-                alignItems="center"
-                justifyContent="space-around"
-                width={'95%'}
-                style={[gs.mt15]}>
-                <Flex alignItems="center">
-                  <Image
-                    source={require('../../../assets/Packages/delivery.png')}
-                    style={styles.serviceicon}
-                  />
-                  <Flex direction="row" alignItems="center">
-                    <Text
-                      style={[
-                        gs.fs14,
-                        {color: theme, fontFamily: ts.secondaryregular},
-                      ]}>
-                      {packs?.serviceTypes[0]?.service_type_name}
-                    </Text>
-                    <TouchableOpacity onPress={() => handleServiceType(0)}>
-                      <FontAwesomeIcon
-                        name={
-                          packs?.serviceTypes[0].selected == '0'
-                            ? 'toggle-off'
-                            : 'toggle-on'
-                        }
-                        style={[
-                          gs.ml10,
-                          {
-                            ...styles.toggleicon,
-                            color:
-                              packs?.serviceTypes[0].selected == '1'
-                                ? theme
-                                : ts.secondarytext,
-                          },
-                        ]}
-                      />
-                    </TouchableOpacity>
-                  </Flex>
-                </Flex>
-                <Flex alignItems="center">
-                  <Image
-                    source={require('../../../assets/Packages/takeaway.png')}
-                    style={styles.serviceicon}
-                  />
-                  <Flex direction="row" alignItems="center">
-                    <Text
-                      style={[
-                        gs.fs14,
-                        {color: theme, fontFamily: ts.secondaryregular},
-                      ]}>
-                      {packs?.serviceTypes[1]?.service_type_name}
-                    </Text>
-                    <TouchableOpacity onPress={() => handleServiceType(1)}>
-                    <FontAwesomeIcon
-                        name={
-                          packs?.serviceTypes[1].selected == '0'
-                            ? 'toggle-off'
-                            : 'toggle-on'
-                        }
-                        style={[
-                          gs.ml10,
-                          {
-                            ...styles.toggleicon,
-                            color:
-                              packs?.serviceTypes[1].selected == '1'
-                                ? theme
-                                : ts.secondarytext,
-                          },
-                        ]}
-                      />
-                    </TouchableOpacity>
-                  </Flex>
-                </Flex>
-              </Flex>
-            </Center>
-          </Card>
-          {/* =====ENTER STARTING PRICE / PLATE========= */}
-          <Card
-            style={[
-              gs.p15,
-              {backgroundColor: '#fff'},
-              gs.mt10,
-              gs.mb20,
-              gs.mh10,
-            ]}>
-            <Center>
-              <Text style={styles.title}>Enter Starting price / plate</Text>
-              {/* <View
-                style={[
-                  {justifyContent: 'center', alignItems: 'center'},
-                  gs.mt10,
-                ]}>
-                <Text style={styles.subtitke}>Minimum Capacity</Text>
-                <TextInput
-                  style={{...styles.input, width: width - 80}}
-                  placeholder="Eg: 250"
-                  outlineColor={ts.secondarytext}
-                  activeOutlineColor={theme}
-                  mode="outlined"
-                />
-              </View> */}
-              <View
-                style={[
-                  {justifyContent: 'center', alignItems: 'center'},
-                  gs.mt20,
-                ]}>
+      {
+        flow=='catering'?
+        packs?.foodTypes && (
+          <KeyboardAwareScrollView
+            enableOnAndroid={true}
+            showsVerticalScrollIndicator={false}
+            style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}>
+            {/* =======CHOOSE TYPE========= */}
+            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mb10, gs.mh10]}>
+              <Center>
+                <Text style={styles.title}>Choose your food type below</Text>
                 <Text style={styles.subtitke}>
-                  Enter Starting price / plate
+                  If you provide both Veg & Non-Veg, check both checkboxes.
                 </Text>
-                <TextInput
-                  style={{...styles.input, width: width - 80}}
-                  placeholder="Eg: 350"
-                  outlineColor={ts.secondarytext}
-                  activeOutlineColor={theme}
-                  mode="outlined"
-                  value={values?.minPrice}
-                  onChangeText={text => {
-                    setValues({...values, minPrice: text});
-                  }}
-                  keyboardType="numeric"
-                />
-              </View>
-            </Center>
-          </Card>
-          <TouchableOpacity style={[styles.updatebtncontainer, gs.mh10]} onPress={handleUpdate}>
-            <Updatebtn btntxt="Update" />
-          </TouchableOpacity>
-        </KeyboardAwareScrollView>
-      )}
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-around"
+                  width={'80%'}
+                  style={[gs.mt15]}>
+                  {packs?.foodTypes.map(
+                    (e, i) =>
+                      e.food_type_name !== 'Vegan' && (
+                        <Flex direction="row" alignItems="center" key={i}>
+                          <Text
+                            style={[
+                              gs.fs14,
+                              {
+                                color:
+                                  e.food_type_name == 'Veg'
+                                    ? ts.accent3
+                                    : ts.accent4,
+                                fontFamily: ts.secondaryregular,
+                              },
+                            ]}>
+                            {e.food_type_name}
+                          </Text>
+                          <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={() => {
+                              handleFoodType(i);
+                            }}>
+                            <FontAwesomeIcon
+                              name={
+                                e.selected == '1' ? 'toggle-on' : 'toggle-off'
+                              }
+                              style={[
+                                gs.ml10,
+                                {
+                                  ...styles.toggleicon,
+                                  color:
+                                    e.selected == '1' ? theme : ts.secondarytext,
+                                },
+                              ]}
+                            />
+                          </TouchableOpacity>
+                        </Flex>
+                      ),
+                  )}
+                </Flex>
+              </Center>
+            </Card>
+            {/* =======CHOOSE YOUR CATERING TYPE========= */}
+            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+              <Center>
+                <Text style={styles.title}>Choose your Catering type below</Text>
+                <Text style={styles.subtitke}>
+                  If you provide both table & buffet service, check both.
+                </Text>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-around"
+                  width={'80%'}
+                  style={[gs.mt15]}>
+                  {packs?.servingTypes?.map((e, i) => (
+                    <Flex direction="row" alignItems="center" key={i}>
+                      <Text
+                        style={[
+                          gs.fs14,
+                          {color: theme, fontFamily: ts.secondaryregular},
+                        ]}>
+                        {e.serving_type_name == 'Buffet Service'
+                          ? 'Buffet'
+                          : e.serving_type_name}
+                      </Text>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          handleCateringType(i);
+                        }}>
+                        <FontAwesomeIcon
+                          name={e.selected == '0' ? 'toggle-off' : 'toggle-on'}
+                          style={[
+                            gs.ml10,
+                            {
+                              ...styles.toggleicon,
+                              color: e.selected == '1' ? theme : ts.secondarytext,
+                            },
+                          ]}
+                        />
+                      </TouchableOpacity>
+                    </Flex>
+                  ))}
+                </Flex>
+              </Center>
+            </Card>
+            {/* =====ENTER CATERING CAPACITY========= */}
+            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+              <Center>
+                <Text style={styles.title}>
+                  Enter your Catering Capacity below
+                </Text>
+                <View
+                  style={[
+                    {justifyContent: 'center', alignItems: 'center'},
+                    gs.mt10,
+                  ]}>
+                  <Text style={styles.subtitke}>Minimum Capacity</Text>
+                  <TextInput
+                    style={{...styles.input, width: width - 80}}
+                    placeholder="Enter Minimum Capacity - Eg: 100 plates"
+                    outlineColor={ts?.secondarytext}
+                    activeOutlineColor={theme}
+                    value={values?.miniPlatesCap?.toString()}
+                    onChangeText={text => {
+                      setValues({...values, miniPlatesCap: text});
+                    }}
+                    mode="outlined"
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View
+                  style={[
+                    {justifyContent: 'center', alignItems: 'center'},
+                    gs.mt20,
+                  ]}>
+                  <Text style={styles.subtitke}>Maximum Capacity</Text>
+                  <TextInput
+                    style={{...styles.input, width: width - 80}}
+                    placeholder="Enter Maximum Capacity - Eg: 700 plates"
+                    outlineColor={ts.secondarytext}
+                    activeOutlineColor={theme}
+                    mode="outlined"
+                    value={values?.maxPlatesCap?.toString()}
+                    onChangeText={text => {
+                      setValues({...values, maxPlatesCap: text});
+                    }}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </Center>
+            </Card>
+            {/* =====CHOOSE SERVICE TYPE========= */}
+            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+              <Center>
+                <Text style={styles.title}>Choose your Service type below</Text>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-around"
+                  width={'95%'}
+                  style={[gs.mt15]}>
+                  <Flex alignItems="center">
+                    <Image
+                      source={require('../../../assets/Packages/delivery.png')}
+                      style={styles.serviceicon}
+                    />
+                    <Flex direction="row" alignItems="center">
+                      <Text
+                        style={[
+                          gs.fs14,
+                          {color: theme, fontFamily: ts.secondaryregular},
+                        ]}>
+                        {packs?.serviceTypes[0]?.service_type_name}
+                      </Text>
+                      <TouchableOpacity onPress={() => handleServiceType(0)}>
+                        <FontAwesomeIcon
+                          name={
+                            packs?.serviceTypes[0].selected == '0'
+                              ? 'toggle-off'
+                              : 'toggle-on'
+                          }
+                          style={[
+                            gs.ml10,
+                            {
+                              ...styles.toggleicon,
+                              color:
+                                packs?.serviceTypes[0].selected == '1'
+                                  ? theme
+                                  : ts.secondarytext,
+                            },
+                          ]}
+                        />
+                      </TouchableOpacity>
+                    </Flex>
+                  </Flex>
+                  <Flex alignItems="center">
+                    <Image
+                      source={require('../../../assets/Packages/takeaway.png')}
+                      style={styles.serviceicon}
+                    />
+                    <Flex direction="row" alignItems="center">
+                      <Text
+                        style={[
+                          gs.fs14,
+                          {color: theme, fontFamily: ts.secondaryregular},
+                        ]}>
+                        {packs?.serviceTypes[1]?.service_type_name}
+                      </Text>
+                      <TouchableOpacity onPress={() => handleServiceType(1)}>
+                      <FontAwesomeIcon
+                          name={
+                            packs?.serviceTypes[1].selected == '0'
+                              ? 'toggle-off'
+                              : 'toggle-on'
+                          }
+                          style={[
+                            gs.ml10,
+                            {
+                              ...styles.toggleicon,
+                              color:
+                                packs?.serviceTypes[1].selected == '1'
+                                  ? theme
+                                  : ts.secondarytext,
+                            },
+                          ]}
+                        />
+                      </TouchableOpacity>
+                    </Flex>
+                  </Flex>
+                </Flex>
+              </Center>
+            </Card>
+            {/* =====ENTER STARTING PRICE / PLATE========= */}
+            <Card
+              style={[
+                gs.p15,
+                {backgroundColor: '#fff'},
+                gs.mt10,
+                gs.mb20,
+                gs.mh10,
+              ]}>
+              <Center>
+                <Text style={styles.title}>Enter Starting price / plate</Text>
+                {/* <View
+                  style={[
+                    {justifyContent: 'center', alignItems: 'center'},
+                    gs.mt10,
+                  ]}>
+                  <Text style={styles.subtitke}>Minimum Capacity</Text>
+                  <TextInput
+                    style={{...styles.input, width: width - 80}}
+                    placeholder="Eg: 250"
+                    outlineColor={ts.secondarytext}
+                    activeOutlineColor={theme}
+                    mode="outlined"
+                  />
+                </View> */}
+                <View
+                  style={[
+                    {justifyContent: 'center', alignItems: 'center'},
+                    gs.mt20,
+                  ]}>
+                  <Text style={styles.subtitke}>
+                    Enter Starting price / plate
+                  </Text>
+                  <TextInput
+                    style={{...styles.input, width: width - 80}}
+                    placeholder="Eg: 350"
+                    outlineColor={ts.secondarytext}
+                    activeOutlineColor={theme}
+                    mode="outlined"
+                    value={values?.minPrice}
+                    onChangeText={text => {
+                      setValues({...values, minPrice: text});
+                    }}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </Center>
+            </Card>
+            <TouchableOpacity style={[styles.updatebtncontainer, gs.mh10]} onPress={handleUpdate}>
+              <Updatebtn btntxt="Update" />
+            </TouchableOpacity>
+          </KeyboardAwareScrollView>
+        )
+        :
+        <TiffinPackages/>
+      }
+     
     </ScreenWrapper>
   );
 }

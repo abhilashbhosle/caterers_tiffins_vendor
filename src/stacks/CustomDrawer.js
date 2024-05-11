@@ -33,7 +33,6 @@ export default function CustomDrawer(props) {
       setDetails(detail.data.data)
     })()
   },[])
-
   const handleLogout =async () => {
     await AsyncStorage.clear();
     dispatch(startLoader(true));

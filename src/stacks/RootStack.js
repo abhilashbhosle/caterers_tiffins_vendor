@@ -10,6 +10,7 @@ import FlashMessage from 'react-native-flash-message';
 import {gs} from '../../GlobalStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow, startLoader} from '../redux/slicers/CommomSlicer';
+import { addEventListener } from "@react-native-community/netinfo";
 
 const Stack = createNativeStackNavigator();
 export default function RootStack() {
@@ -20,10 +21,15 @@ export default function RootStack() {
   const [profileUpdate, setProfleUpdate] = useState(null);
   const dispatch = useDispatch();
   let logout = useSelector(state => state.common.logout);
+  const [checkConnection,setCheckConnection]=useState(true)
 
   useEffect(() => {
+    const unsubscribe = addEventListener(state => {
+      console.log("Connection type", state.type);
+      console.log("Is connected?", state.isConnected);
+      setCheckConnection(state.isConnected)
+    });
     (async () => {
-      
       let token = await AsyncStorage.getItem('token');
       let profile = await AsyncStorage.getItem('profileUpdated');
       let refreshToken = await AsyncStorage.getItem('refreshToken');
@@ -34,6 +40,7 @@ export default function RootStack() {
       setProfleUpdate(profile);
       setNavDetails(true);
     })();
+    return unsubscribe()
   }, []);
   useEffect(() => {
     if (logout) {
@@ -46,7 +53,9 @@ export default function RootStack() {
   if (!navdetails) {
     return;
   }
+  
   return (
+    checkConnection?
     <>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {!tk && <Stack.Screen name="OnboardStack" component={OnboardStack} />}
@@ -64,7 +73,7 @@ export default function RootStack() {
             alignItems: 'center',
           }}>
           <LottieView
-            source={require('../assets/Loader/lottie1.json')}
+            source={require('../assets/Loader/spinner.json')}
             autoPlay
             loop
             style={{height: 210, width: 150, bottom: 10}}
@@ -80,5 +89,22 @@ export default function RootStack() {
         }}
       />
     </>
+    :
+    <View
+    style={{
+      width,
+      height,
+      position: 'absolute',
+      backgroundColor: '#fffe',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}>
+    <LottieView
+      source={require('../assets/Loader/nonetwork.json')}
+      autoPlay
+      loop
+      style={{height: 210, width: 150, bottom: 10}}
+    />
+  </View>
   );
 }

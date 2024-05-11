@@ -1,5 +1,5 @@
 import {View, Text, FlatList, TouchableOpacity} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {gs} from '../../../../GlobalStyles';
@@ -10,29 +10,26 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useDispatch, useSelector} from 'react-redux';
 import {TextInput} from 'react-native-paper';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import ThemeSepBtn from '../../../components/ThemeSepBtn';
-import {inquiryData} from '../../../constants/Constant';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getFlow } from '../../../redux/slicers/CommomSlicer';
-import { getInquiry } from '../../controllers/InquiryController';
+import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import {getInquiry} from '../../controllers/InquiryController';
 import LottieView from 'lottie-react-native';
-import ReviewSkel from '../../../components/ReviewSkel';
 import moment from 'moment';
 import InquirySkel from '../../../components/InquirySkel';
 export default function Inquiries({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [inquiries, setInquiries] = useState([]);
-  const [showSkell,setShowSkell]=useState(false)
-  const [date,setDate]=useState('2024-04-02')
-  const [search,setSearch]=useState('')
-  const [limit,setLimit]=useState(10)
+  const [showSkell, setShowSkell] = useState(false);
+  const [date, setDate] = useState('2024-04-02');
+  const [search, setSearch] = useState('');
+  const [limit, setLimit] = useState(10);
   let {inquiry} = useSelector(state => state.inquiry);
-  const [refreshing,setRefreshing]=useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
       dispatch(getFlow(flow));
@@ -44,24 +41,24 @@ export default function Inquiries({navigation}) {
           getInquiry({
             limit,
             page,
-            sort:'newest_first',
+            sort: 'newest_first',
             date,
-            search
+            search,
           }),
         );
       }, 1000);
-    } else {
+    } else if(page) {
       dispatch(
         getInquiry({
           limit,
           page,
-          sort:'newest_first',
+          sort: 'newest_first',
           date,
-          search
+          search,
         }),
       );
     }
-  },[page])
+  }, [page]);
   useEffect(() => {
     if (inquiry?.data?.length > 0) {
       setInquiries([...inquiries, ...inquiry.data]);
@@ -74,7 +71,7 @@ export default function Inquiries({navigation}) {
   }, [inquiry]);
   // =========FETCH MORE DATA=========//
   const fetchMoreData = () => {
-    console.log('fetch more data called')
+    // console.log('fetch more data called');
     if (inquiries.length < inquiry.total) {
       setPage(page + 1);
     }
@@ -97,8 +94,11 @@ export default function Inquiries({navigation}) {
   };
   // =======HANDLE REFRESH=========//
   handleRefresh = () => {
-    setPage(1);
     setInquiries([]);
+    setPage(0)
+    setTimeout(()=>{
+      setPage(1)
+    },1000)
   };
   // =======SROTING CHANGES=========//
   handleSortChange = item => {
@@ -109,13 +109,18 @@ export default function Inquiries({navigation}) {
   // =======PULL TO REFRESH========//
   const onRefresh = () => {
     setRefreshing(true);
-    handleRefresh();
+    setTimeout(()=>{
+      handleRefresh();
+    },1000)
+  };
+  const handleSearch = () => {
+      handleRefresh()
   };
 
   const renderItem = ({item}) => {
     return (
-      <View style={{...styles.cardContainer,marginHorizontal:3}}>
-        <View style={{...styles.detailscontainer,borderLeftColor:theme}}>
+      <View style={{...styles.cardContainer, marginHorizontal: 3}}>
+        <View style={{...styles.detailscontainer, borderLeftColor: theme}}>
           <Text
             style={[
               gs.fs17,
@@ -140,11 +145,14 @@ export default function Inquiries({navigation}) {
                 gs.fs13,
                 {color: ts.secondarytext, fontFamily: ts.secondaryregular},
               ]}>
-                {moment(item?.enquiry_date).format('MMM DD, hh:mm A')}
+              {moment(item?.enquiry_date).format('MMM DD, hh:mm A')}
             </Text>
             <TouchableOpacity style={styles.phonecontainer}>
               <Flex direction="row" alignItems="center">
-                <MaterialIcons name="phone" style={[gs.fs18,gs.mr5,{color:'#fff'}]}/>
+                <MaterialIcons
+                  name="phone"
+                  style={[gs.fs18, gs.mr5, {color: '#fff'}]}
+                />
                 <Text
                   style={[
                     gs.fs14,
@@ -210,13 +218,32 @@ export default function Inquiries({navigation}) {
               }
               style={styles.input}
               outlineColor="#999"
+              value={search}
+              onChangeText={text => {
+                setSearch(text);
+              }}
             />
-            <ThemeSepBtn
-              width="28%"
-              themecolor={theme}
-              btntxt="Search"
-              height={styles.input.height}
-            />
+            <TouchableOpacity
+              style={[
+                {
+                  width: '28%',
+                  height: styles.input.height,
+                  backgroundColor: theme,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 10,
+                },
+              ]}
+              activeOpacity={0.7}
+              onPress={handleSearch}>
+              <Text
+                style={[
+                  gs.fs15,
+                  {color: '#fff', fontFamily: ts.secondarymedium},
+                ]}>
+                Search
+              </Text>
+            </TouchableOpacity>
           </Flex>
         </View>
         {showSkell &&
@@ -235,21 +262,23 @@ export default function Inquiries({navigation}) {
           onRefresh={onRefresh}
           ListEmptyComponent={() => {
             return (
-              !inquiries && !showSkell&&
-              <Center>
-                <View style={[gs.mt10]}>
-                  <Text
-                    style={[
-                      gs.fs11,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    No Inquiries
-                  </Text>
-                </View>
-              </Center>
+              inquiries?.length==0 &&
+              !showSkell && (
+                <Center>
+                  <View style={[gs.mt10]}>
+                    <Text
+                      style={[
+                        gs.fs14,
+                        {
+                          color: ts.secondarytext,
+                          fontFamily: ts.secondaryregular,
+                        },
+                      ]}>
+                      No Inquiries
+                    </Text>
+                  </View>
+                </Center>
+              )
             );
           }}
         />
@@ -268,14 +297,15 @@ const styles = ScaledSheet.create({
     color: ts.secondarytext,
     fontSize: '14@ms',
     height: '40@ms',
-    backgroundColor:'#fff'
+    backgroundColor: '#fff',
+    bottom: 2.5,
   },
   cardContainer: {
     padding: '15@ms',
     backgroundColor: '#f9f9f9',
     marginVertical: '3@ms',
-    borderColor:'#ccc',
-    borderWidth:0.5,
+    borderColor: '#ccc',
+    borderWidth: 0.5,
   },
   phonecontainer: {
     backgroundColor: ts.accent3,
@@ -283,8 +313,8 @@ const styles = ScaledSheet.create({
     paddingVertical: '5@ms',
     borderRadius: '10@ms',
   },
-  detailscontainer:{
-    borderLeftWidth:'4@ms',
-    paddingLeft:'10@ms'
-  }
+  detailscontainer: {
+    borderLeftWidth: '4@ms',
+    paddingLeft: '10@ms',
+  },
 });

@@ -2186,6 +2186,11 @@
     prompts "^2.4.0"
     semver "^7.5.2"
 
+"@react-native-community/netinfo@^11.3.1":
+  version "11.3.1"
+  resolved "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-11.3.1.tgz"
+  integrity sha512-UBnJxyV0b7i9Moa97Av+HKho1ByzX0DtbJXzUQS5E3xhQs6P2D/Os0iw3ouy7joY1TVd6uIhplPbr7l1SJNaNQ==
+
 "@react-native/assets-registry@^0.72.0":
   version "0.72.0"
   resolved "https://registry.npmjs.org/@react-native/assets-registry/-/assets-registry-0.72.0.tgz"
@@ -7333,7 +7338,7 @@ react-native-vector-icons@*, react-native-vector-icons@^10.0.3:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.72.6, "react-native@>= 0.59", react-native@>=0.40.0, react-native@>=0.42.0, react-native@>=0.46, react-native@>=0.48.4, react-native@>=0.6.0, react-native@>=0.60, react-native@>=0.64.0, react-native@>=0.69:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.72.6, "react-native@>= 0.59", react-native@>=0.40.0, react-native@>=0.42.0, react-native@>=0.46, react-native@>=0.48.4, react-native@>=0.59, react-native@>=0.6.0, react-native@>=0.60, react-native@>=0.64.0, react-native@>=0.69:
   version "0.72.6"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.72.6.tgz"
   integrity sha512-RafPY2gM7mcrFySS8TL8x+TIO3q7oAlHpzEmC7Im6pmXni6n1AuufGaVh0Narbr1daxstw7yW7T9BKW5dpVc2A==
