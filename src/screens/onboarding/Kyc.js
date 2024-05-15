@@ -87,6 +87,8 @@ export default function Kyc({navigation}) {
                   onChangeText={handleChange('aadharNo')}
                   onBlur={handleBlur('aadharNo')}
                   maxLength={12}
+                  keyboardType='numeric'
+                  textColor={ts.primarytext}
                 />
                 {errors.aadharNo && touched.aadharNo && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -113,6 +115,7 @@ export default function Kyc({navigation}) {
                   onChangeText={handleChange('panNo')}
                   onBlur={handleBlur('panNo')}
                   maxLength={10}
+                  textColor={ts.primarytext}
                 />
                 {errors.panNo && touched.panNo && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -126,7 +129,7 @@ export default function Kyc({navigation}) {
                     gs.mb5,
                     gs.mt10,
                   ]}>
-                  GSTIN Number
+                  GSTIN Number (Optional)
                 </Text>
                 <TextInput
                   mode="outlined"
@@ -139,7 +142,13 @@ export default function Kyc({navigation}) {
                   onChangeText={handleChange('gstinNo')}
                   onBlur={handleBlur('gstinNo')}
                   maxLength={15}
+                  textColor={ts.primarytext}
                 />
+                 {errors.gstinNo && touched.gstinNo && (
+                  <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
+                    {errors.gstinNo}
+                  </Text>
+                )}
                 <Text
                   style={[
                     gs.fs15,
@@ -147,7 +156,7 @@ export default function Kyc({navigation}) {
                     gs.mb5,
                     gs.mt10,
                   ]}>
-                  FSSAI License Number
+                  FSSAI License Number (Optional)
                 </Text>
                 <TextInput
                   mode="outlined"
@@ -159,7 +168,15 @@ export default function Kyc({navigation}) {
                   value={values.fssaiNo}
                   onChangeText={handleChange('fssaiNo')}
                   onBlur={handleBlur('fssaiNo')}
+                  textColor={ts.primarytext}
+                  maxLength={14}
+                  keyboardType='numeric'
                 />
+                 {errors.fssaiNo && touched.fssaiNo && (
+                  <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
+                    {errors.fssaiNo}
+                  </Text>
+                )}
                 <Center>
                   <TouchableOpacity
                     activeOpacity={0.7}
@@ -206,7 +223,7 @@ const styles = ScaledSheet.create({
     backgroundColor: '#fff',
     fontSize: '13@ms',
     fontFamily: ts.secondaryregular,
-    color: ts.primarytext,
+    // color: ts.primarytext,
     borderRadius: '12@ms',
     marginBottom: '10@ms',
   },

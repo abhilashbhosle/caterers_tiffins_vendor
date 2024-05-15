@@ -3,6 +3,7 @@ import axios from 'axios';
 import {endpoints} from '../../endpoints';
 import {showMessage} from 'react-native-flash-message';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
+import { Text } from 'react-native';
 
 
 // =====UPDATE BUSINESS-SERVICE========//
@@ -35,7 +36,7 @@ export const businessUpdateService = async ({body, dispatch}) => {
       console.log(error.response.data)
       showMessage({
         message: 'Request Failed!',
-        description:error.response.data.data_validation_errors.map((e,i)=>e.msg),
+        description:error.response.data?.data_validation_errors.map((e,i)=><Text>{e.msg}</Text>),
         type: 'danger',
       });
       return error.response.data;

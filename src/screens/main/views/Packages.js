@@ -15,7 +15,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import {getPackage, packageUpdate} from '../../controllers/PackageController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { packageUpdateService } from '../../services/PackageService';
+import {packageUpdateService} from '../../services/PackageService';
 import TiffinPackages from './TiffinPackages';
 
 export default function Packages({navigation}) {
@@ -30,7 +30,7 @@ export default function Packages({navigation}) {
     maxPlatesCap: '',
     minPrice: '',
   });
-  
+
   useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
@@ -76,27 +76,26 @@ export default function Packages({navigation}) {
     );
     setPacks({...packs, serviceTypes: updatedFoodTypes});
   };
-  const handleUpdate=()=>{
-    const serviceTypes=packs.serviceTypes.map((e,i)=>{
-      return {id:Number(e.id),selected:Number(e.selected)}
-    })
-    const servingTypes=packs.servingTypes.map((e,i)=>{
-      return {id:Number(e.id),selected:Number(e.selected)}
-    })
-    const foodTypes=packs.foodTypes.map((e,i)=>{
-      return {id:Number(e.id),selected:Number(e.selected)}
-    })
-    const body={
-      foodTypes:JSON.stringify(foodTypes),
-      servingTypes:JSON.stringify(servingTypes),
-      serviceTypes:JSON.stringify(serviceTypes),
-      maximumCapacity:values.maxPlatesCap,
-      minimumCapacity:values.miniPlatesCap,
-      startPrice:values.minPrice
-    }
-    packageUpdateService({body,dispatch})
-  }
-  console.log(flow)
+  const handleUpdate = () => {
+    const serviceTypes = packs.serviceTypes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const servingTypes = packs.servingTypes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const foodTypes = packs.foodTypes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const body = {
+      foodTypes: JSON.stringify(foodTypes),
+      servingTypes: JSON.stringify(servingTypes),
+      serviceTypes: JSON.stringify(serviceTypes),
+      maximumCapacity: values.maxPlatesCap,
+      minimumCapacity: values.miniPlatesCap,
+      startPrice: values.minPrice,
+    };
+    packageUpdateService({body, dispatch});
+  };
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -105,8 +104,7 @@ export default function Packages({navigation}) {
         navigation={navigation}
         notifyIcon={false}
       />
-      {
-        flow=='catering'?
+      {flow == 'catering' ? (
         packs?.foodTypes && (
           <KeyboardAwareScrollView
             enableOnAndroid={true}
@@ -156,7 +154,9 @@ export default function Packages({navigation}) {
                                 {
                                   ...styles.toggleicon,
                                   color:
-                                    e.selected == '1' ? theme : ts.secondarytext,
+                                    e.selected == '1'
+                                      ? theme
+                                      : ts.secondarytext,
                                 },
                               ]}
                             />
@@ -170,7 +170,9 @@ export default function Packages({navigation}) {
             {/* =======CHOOSE YOUR CATERING TYPE========= */}
             <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
               <Center>
-                <Text style={styles.title}>Choose your Catering type below</Text>
+                <Text style={styles.title}>
+                  Choose your Catering type below
+                </Text>
                 <Text style={styles.subtitke}>
                   If you provide both table & buffet service, check both.
                 </Text>
@@ -197,12 +199,13 @@ export default function Packages({navigation}) {
                           handleCateringType(i);
                         }}>
                         <FontAwesomeIcon
-                          name={e.selected == '0' ? 'toggle-off' : 'toggle-on'}
+                          name={e?.selected == '0' ? 'toggle-off' : 'toggle-on'}
                           style={[
                             gs.ml10,
                             {
                               ...styles.toggleicon,
-                              color: e.selected == '1' ? theme : ts.secondarytext,
+                              color:
+                                e?.selected == '1' ? theme : ts.secondarytext,
                             },
                           ]}
                         />
@@ -263,78 +266,108 @@ export default function Packages({navigation}) {
               <Center>
                 <Text style={styles.title}>Choose your Service type below</Text>
                 <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-around"
+                  // direction="row"s
+                  // alignItems="center"
+                  // justifyContent="space-around"
                   width={'95%'}
                   style={[gs.mt15]}>
-                  <Flex alignItems="center">
+                  <Flex direction="row" alignItems="center">
                     <Image
                       source={require('../../../assets/Packages/delivery.png')}
                       style={styles.serviceicon}
                     />
-                    <Flex direction="row" alignItems="center">
-                      <Text
+                    <Text
+                      style={[
+                        gs.fs14,
+                        {color: theme, fontFamily: ts.secondaryregular,width:'30%'},
+                      ]}>
+                      {packs?.serviceTypes[0]?.service_type_name}
+                    </Text>
+                    <TouchableOpacity onPress={() => handleServiceType(0)}>
+                      <FontAwesomeIcon
+                        name={
+                          packs?.serviceTypes[0].selected == '0'
+                            ? 'toggle-off'
+                            : 'toggle-on'
+                        }
                         style={[
-                          gs.fs14,
-                          {color: theme, fontFamily: ts.secondaryregular},
-                        ]}>
-                        {packs?.serviceTypes[0]?.service_type_name}
-                      </Text>
-                      <TouchableOpacity onPress={() => handleServiceType(0)}>
-                        <FontAwesomeIcon
-                          name={
-                            packs?.serviceTypes[0].selected == '0'
-                              ? 'toggle-off'
-                              : 'toggle-on'
-                          }
-                          style={[
-                            gs.ml10,
-                            {
-                              ...styles.toggleicon,
-                              color:
-                                packs?.serviceTypes[0].selected == '1'
-                                  ? theme
-                                  : ts.secondarytext,
-                            },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    </Flex>
+                          gs.ml10,
+                          {
+                            ...styles.toggleicon,
+                            color:
+                              packs?.serviceTypes[0].selected == '1'
+                                ? theme
+                                : ts.secondarytext,
+                          },
+                        ]}
+                      />
+                    </TouchableOpacity>
                   </Flex>
-                  <Flex alignItems="center">
+
+                  <Flex direction="row" alignItems="center">
                     <Image
                       source={require('../../../assets/Packages/takeaway.png')}
                       style={styles.serviceicon}
                     />
-                    <Flex direction="row" alignItems="center">
-                      <Text
-                        style={[
-                          gs.fs14,
-                          {color: theme, fontFamily: ts.secondaryregular},
-                        ]}>
-                        {packs?.serviceTypes[1]?.service_type_name}
-                      </Text>
-                      <TouchableOpacity onPress={() => handleServiceType(1)}>
+                    <Text
+                      style={[
+                        gs.fs14,
+                        {color: theme, fontFamily: ts.secondaryregular,width:'30%'},
+                      ]}>
+                      {packs?.serviceTypes[1]?.service_type_name}
+                    </Text>
+                    <TouchableOpacity onPress={() => handleServiceType(1)}>
                       <FontAwesomeIcon
-                          name={
-                            packs?.serviceTypes[1].selected == '0'
-                              ? 'toggle-off'
-                              : 'toggle-on'
-                          }
-                          style={[
-                            gs.ml10,
-                            {
-                              ...styles.toggleicon,
-                              color:
-                                packs?.serviceTypes[1].selected == '1'
-                                  ? theme
-                                  : ts.secondarytext,
-                            },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    </Flex>
+                        name={
+                          packs?.serviceTypes[1].selected == '0'
+                            ? 'toggle-off'
+                            : 'toggle-on'
+                        }
+                        style={[
+                          gs.ml10,
+                          {
+                            ...styles.toggleicon,
+                            color:
+                              packs?.serviceTypes[1].selected == '1'
+                                ? theme
+                                : ts.secondarytext,
+                          },
+                        ]}
+                      />
+                    </TouchableOpacity>
+                  </Flex>
+
+                  <Flex direction="row" alignItems="center">
+                    <Image
+                      source={require('../../../assets/Packages/takeaway.png')}
+                      style={styles.serviceicon}
+                    />
+                    <Text
+                      style={[
+                        gs.fs14,
+                        {color: theme, fontFamily: ts.secondaryregular,width:'30%'},
+                      ]}>
+                      {packs?.serviceTypes[2]?.service_type_name}
+                    </Text>
+                    <TouchableOpacity onPress={() => handleServiceType(2)}>
+                      <FontAwesomeIcon
+                        name={
+                          packs?.serviceTypes[2].selected == '0'
+                            ? 'toggle-off'
+                            : 'toggle-on'
+                        }
+                        style={[
+                          gs.ml10,
+                          {
+                            ...styles.toggleicon,
+                            color:
+                              packs?.serviceTypes[2].selected == '1'
+                                ? theme
+                                : ts.secondarytext,
+                          },
+                        ]}
+                      />
+                    </TouchableOpacity>
                   </Flex>
                 </Flex>
               </Center>
@@ -387,15 +420,16 @@ export default function Packages({navigation}) {
                 </View>
               </Center>
             </Card>
-            <TouchableOpacity style={[styles.updatebtncontainer, gs.mh10]} onPress={handleUpdate}>
+            <TouchableOpacity
+              style={[styles.updatebtncontainer, gs.mh10]}
+              onPress={handleUpdate}>
               <Updatebtn btntxt="Update" />
             </TouchableOpacity>
           </KeyboardAwareScrollView>
         )
-        :
-        <TiffinPackages/>
-      }
-     
+      ) : (
+        <TiffinPackages />
+      )}
     </ScreenWrapper>
   );
 }
@@ -428,6 +462,7 @@ const styles = ScaledSheet.create({
     height: '35@ms',
     width: '35@ms',
     marginBottom: '10@ms',
+    marginRight: '10@ms',
   },
   updatebtncontainer: {
     marginBottom: '60@ms',

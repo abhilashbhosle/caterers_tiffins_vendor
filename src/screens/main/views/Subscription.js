@@ -16,19 +16,25 @@ import {ScaledSheet} from 'react-native-size-matters';
 import {Card} from 'react-native-paper';
 import {plan_data} from '../../../constants/Constant';
 import Carousel from 'react-native-reanimated-carousel';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 export default function Subscription({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
   const [activeIndex, setActiveindex] = useState(0);
+  const [monthly,setMonthly]=useState(false)
   //========REFS========//
   const topRef = useRef(null);
   const bottomRef = useRef(null);
   const renderItem = ({item, index}) => {
     return (
-      <TouchableOpacity style={[gs.mh15]} onPress={()=>{scrollToIndex(index)}}>
+      <TouchableOpacity
+        style={[gs.mh15]}
+        onPress={() => {
+          scrollToIndex(index);
+        }}>
         <Text
           style={[
             gs.fs16,
@@ -36,7 +42,6 @@ export default function Subscription({navigation}) {
               fontFamily: ts.secondaryregular,
               color: activeIndex === index ? ts.primarytext : '#999',
             },
-			
           ]}>
           {item.name}
         </Text>
@@ -47,38 +52,74 @@ export default function Subscription({navigation}) {
     return (
       <View
         style={[
-          {width: width, height: height, backgroundColor: '#fff'},
+          {
+            width: width,
+            height: height,
+            backgroundColor: '#fff',
+            alignItems: 'center',
+          },
           gs.p10,
         ]}>
         <Card
           style={[
-            {width: width - 23, height: height / 1.5, backgroundColor: '#fff'},
+            {width: width - 100, height: height / 1.5, backgroundColor: '#fff'},
             gs.br20,
           ]}>
           <View style={[styles.header, {backgroundColor: item.color}]}>
             <Text style={[styles.headtxt]}>{item.name}</Text>
           </View>
           <Center>
-            <Flex direction='row' alignItems='center' style={[gs.mv20]}>
-              <MaterialIcons name='currency-rupee' style={[gs.fs22]}/>
-              <Text style={[{color:ts.primarytext,fontFamily:ts.secondarymedium},gs.fs22]}>{item.price}</Text>
-              <Text style={{...styles.heading,top:5}}>  month</Text>
+            <Flex direction="row" alignItems="center" style={[gs.mv20]}>
+              <MaterialIcons name="currency-rupee" style={[gs.fs22]} />
+              <Text
+                style={[
+                  {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  gs.fs22,
+                ]}>
+                {item.price}
+              </Text>
+              <Text style={{...styles.heading, top: 5}}> month</Text>
             </Flex>
             <Text style={styles.heading}>{item.listing}</Text>
           </Center>
-          <View style={[gs.mh20,gs.mt15]}>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>Benifits:</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Gets clean dashboard</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Track your incomes</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Gets clean order PDF</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Includes calender feature so you never missout any info reading dates</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Gets notify via email, SMS, app notification</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Phone/chat feature with customers</Text>
-          <Text style={[{...styles.heading,color:ts.primarytext},gs.mv3]}>- Data analysis/improvement recommendation</Text>
+          <View style={[gs.mh20, gs.mt15]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              Benifits:
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Gets clean dashboard
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Track your incomes
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Gets clean order PDF
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Includes calender feature so you never missout any info reading
+              dates
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Gets notify via email, SMS, app notification
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Phone/chat feature with customers
+            </Text>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+              - Data analysis/improvement recommendation
+            </Text>
           </View>
           <Center>
-            <TouchableOpacity style={{...styles.subscribebtn,backgroundColor:item.color}} activeOpacity={0.7}>
-              <Text style={[gs.fs15,{color:'#fff',fontFamily:ts.secondarymedium}]}>Subscribe Now</Text>
+            <TouchableOpacity
+              style={{...styles.subscribebtn, backgroundColor: item.color}}
+              activeOpacity={0.7}>
+              <Text
+                style={[
+                  gs.fs15,
+                  {color: '#fff', fontFamily: ts.secondarymedium},
+                ]}>
+                Subscribe Now
+              </Text>
             </TouchableOpacity>
           </Center>
         </Card>
@@ -88,17 +129,17 @@ export default function Subscription({navigation}) {
   const scrollToIndex = idx => {
     setActiveindex(idx);
     bottomRef.current.scrollTo({index: idx});
-	if (idx * (width/2) > width / 2) {
-		topRef.current.scrollToOffset({
-		  offset: idx * (width/2) + width / 4 - width / 2,
-		  animated: true,
-		});
-	  } else {
-		topRef.current.scrollToOffset({
-		  offset: idx,
-		  animated: true,
-		});
-	  }
+    if (idx * (width / 2) > width / 2) {
+      topRef.current.scrollToOffset({
+        offset: idx * (width / 2) + width / 4 - width / 2,
+        animated: true,
+      });
+    } else {
+      topRef.current.scrollToOffset({
+        offset: idx,
+        animated: true,
+      });
+    }
   };
   return (
     <ScreenWrapper>
@@ -110,18 +151,28 @@ export default function Subscription({navigation}) {
       />
       <View style={{backgroundColor: '#fff', flex: 1}}>
         <View style={[gs.m15]}>
-          <Center>
-            <Text
-              style={[
-                gs.fs20,
-                {fontFamily: ts.primarymedium, color: ts.primarytext},
-                gs.mb5,
-              ]}
-              numberOfLines={1}>
-              Subscription Plans
-            </Text>
+          <Flex direction="row" justify="space-between" align='center'>
             <Text style={styles.heading}>Choose your subscription types</Text>
-          </Center>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setMonthly(!monthly)
+              }}
+              style={{justifyContent:'center',alignItems:'center'}}
+              >
+              <FontAwesomeIcon
+                name={!monthly ? 'toggle-on' : 'toggle-off'}
+                style={[
+                  // gs.ml10,
+                  {
+                    ...styles.toggleicon,
+                    color: !monthly ? theme : ts.secondarytext,
+                  },
+                ]}
+              />
+              <Text style={styles.heading}>{!monthly?'Monthly':'Yearly'}</Text>
+            </TouchableOpacity>
+          </Flex>
         </View>
         <View>
           <FlatList
@@ -141,6 +192,7 @@ export default function Subscription({navigation}) {
           data={plan_data}
           onSnapToItem={index => scrollToIndex(index)}
           renderItem={renderPlans}
+          style={[gs.mt10]}
         />
       </View>
     </ScreenWrapper>
@@ -164,12 +216,16 @@ const styles = ScaledSheet.create({
     color: '#fff',
     fontFamily: ts.secondaryregular,
   },
-  subscribebtn:{
-    height:'40@ms',
-    width:'170@ms',
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:'20@ms',
-    marginTop:'50@ms'
-  }
+  subscribebtn: {
+    height: '40@ms',
+    width: '170@ms',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '20@ms',
+    marginTop: '50@ms',
+  },
+  toggleicon: {
+    fontSize: '35@ms',
+    color: ts.secondarytext,
+  },
 });

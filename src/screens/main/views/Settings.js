@@ -335,7 +335,7 @@ export default function Settings({navigation}) {
         </TouchableOpacity>
         <Divider style={[gs.mv20, {backgroundColor: theme}]} />
         <Text style={styles.heading}>Documents</Text>
-        <View style={[gs.mv10]}>
+        <View style={[gs.mv10,{backgroundColor:'#fff'}]}>
           {/* =====AADHAR CARD====== */}
           <List.AccordionGroup>
             <List.Accordion

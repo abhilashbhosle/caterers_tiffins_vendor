@@ -77,3 +77,44 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+
+
+
+
+
+
+
+<!-- TEXT INPUT CONTENT SCROLL -->
+
+1. COMMENT OUT PADDING OUT FROM react-native-paper/src/components/TextInput/TextInputOutlined.tsx
+
+
+
+
+
+<!-- FOR AUTOCOMPLETE INPUT TURNING YELLOW -->
+
+Create a xml file with the name of your choice, for example autofill_highlight.xml in android/app/src/main/res/drawable
+
+Put this code inside :
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" />
+</shape>
+Here, the color set is transparent ("@android:color/transparent"), replace it with your color.
+
+In android/app/src/main/res/values/styles.xml, add this line to your app theme (make sure to provide your own file name if you don't call it autofill_highlight like in my example)
+
+<resources>
+     <!-- Base application theme. -->
+     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+         <!-- ... your other theme customization ...  -->
+
+         <!-- ADD THE FOLLOWING LINE -->
+         <item name="android:autofilledHighlight">@drawable/autofill_highlight</item>
+
+    </style>
+</resources>

@@ -189,6 +189,7 @@ export default function AddCuisine({navigation}) {
             />
           }
         />
+        
         <FlatList
           keyExtractor={(item, index) => {
             String(index);
@@ -209,7 +210,6 @@ const styles = ScaledSheet.create({
   input: {
     color: ts.secondarytext,
     fontSize: '14@ms',
-    backgroundColor: '#fff',
   },
   icon: {
     fontSize: '24@ms',
@@ -250,6 +250,7 @@ const styles = ScaledSheet.create({
   contentContainerStyle: {
     marginTop: '10@ms',
     paddingBottom: '70@ms',
+    backgroundColor:'#fff'
   },
 });
 

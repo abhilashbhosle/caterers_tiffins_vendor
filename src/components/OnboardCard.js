@@ -1,4 +1,4 @@
-import {View, Text, useWindowDimensions} from 'react-native';
+import {View, Text, useWindowDimensions, Platform} from 'react-native';
 import React from 'react';
 import {Card} from 'react-native-paper';
 import {Center} from 'native-base';
@@ -15,7 +15,7 @@ export default function OnboardCard(props) {
           <Card
             style={[
               {
-                height: height / 1.48,
+                height:Platform.OS=='ios'?height/1.45: height / 1.3,
                 backgroundColor: '#fff',
                 width: width - 30,
               },

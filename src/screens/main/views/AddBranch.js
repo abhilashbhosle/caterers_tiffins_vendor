@@ -253,7 +253,7 @@ export default function AddBranch({navigation,route}) {
 }
 const styles = ScaledSheet.create({
   input: {
-    color: ts.secondarytext,
+    color: '#333',
     fontSize: '12@ms',
     fontFamily: ts.secondaryregular,
     height: '40@ms',

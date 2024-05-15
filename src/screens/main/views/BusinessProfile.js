@@ -205,7 +205,9 @@ export default function BusinessProfile({navigation}) {
                 }}
               />
             </View>
-            <View style={[gs.mv10]}>
+            {
+              flow=='catering'&&
+              <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: theme}}>
                 Total No.of Staffs Approx
               </Text>
@@ -223,6 +225,8 @@ export default function BusinessProfile({navigation}) {
                 keyboardType="numeric"
               />
             </View>
+            }
+     
           </Center>
         </Card>
         {/* ======ADDRESS======= */}

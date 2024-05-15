@@ -25,6 +25,7 @@ export default function CredInputs(props) {
       onBlur={props.onBlur}
       name={props.name}
       secureTextEntry={props.secureTextEntry}
+      textColor={ts.secondarytext}
     />
   );
 }
@@ -34,7 +35,6 @@ const styles = ScaledSheet.create({
     height: '55@ms',
     fontSize: '17@ms',
     fontFamily: ts.secondaryregular,
-    color: ts.secondarytext,
     marginTop: '10@ms',
   },
 });

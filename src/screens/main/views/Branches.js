@@ -46,12 +46,11 @@ export default function Branches({navigation}) {
   useEffect(() => {
     if (branch?.length > 0) {
       setBranches(branch);
-      
     }
   }, [branch]);
   const handleToggle = item => {
     let id = item.id;
-    let status = item?.status == 'active' || item.status== 1 ? 0 : 1;
+    let status = item?.status == 'active' || item.status == 1 ? 0 : 1;
     // console.log(status)
     updateStatusService({id, status, dispatch});
   };
@@ -71,24 +70,30 @@ export default function Branches({navigation}) {
                   {
                     fontFamily: ts.secondaryregular,
                     color:
-                      item.status == 'active' ||item.status== 1 ? ts.accent3 : ts.accent4,
+                      item.status == 'active' || item.status == 1
+                        ? ts.accent3
+                        : ts.accent4,
                   },
                 ]}>
-                {item?.status == 'active' || item.status==1 ? 'Active' : 'InActive'}
+                {item?.status == 'active' || item.status == 1
+                  ? 'Active'
+                  : 'InActive'}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => handleToggle(item)}>
                 <FontAwesomeIcon
                   name={
-                    item?.status === 'active' || item.status==1  ? 'toggle-on' : 'toggle-off'
+                    item?.status === 'active' || item.status == 1
+                      ? 'toggle-on'
+                      : 'toggle-off'
                   }
                   style={[
                     gs.ml10,
                     {
                       ...styles.toggleIcon,
                       color:
-                        item?.status === 'active' || item.status==1 
+                        item?.status === 'active' || item.status == 1
                           ? ts.accent3
                           : ts.accent4,
                     },
@@ -96,14 +101,15 @@ export default function Branches({navigation}) {
                 />
               </TouchableOpacity>
             </Flex>
-            <TouchableOpacity activeOpacity={0.7} onPress={() =>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() =>
                 navigation.navigate('PageStack', {
                   screen: 'AddBranch',
-                  params:{editData:item}
+                  params: {editData: item},
                 })
-              }
-            >
-            <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} />
+              }>
+              <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} />
             </TouchableOpacity>
           </Flex>
           <Text
@@ -160,6 +166,13 @@ export default function Branches({navigation}) {
           data={branches}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => {
+            return (
+              <Text style={[gs.fs14, {color: ts.secondarytext}, gs.m15]}>
+                You have no Branches added.
+              </Text>
+            );
+          }}
         />
         <TouchableOpacity
           style={[gs.mb20, gs.ph20]}

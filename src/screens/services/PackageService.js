@@ -70,3 +70,44 @@ export const packageUpdateService = async ({body, dispatch}) => {
     dispatch(startLoader(false));
   }
 };
+
+// =======UPDATE TIFFIN PACKAGE========//
+export const packageTiffinUpdateService = async ({body, dispatch}) => {
+  console.log(body)
+  try {
+    dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.post(
+      `${endpoints.baseUrl}update-tiffin-package-details`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (res.data.status == 'success') {
+      showMessage({
+        message: 'Success!',
+        description: 'Packages Updated Successfully.',
+        type: 'success',
+      });
+    }
+    return res;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      console.log(error.response.data)
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};

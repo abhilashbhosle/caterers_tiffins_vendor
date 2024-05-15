@@ -1,5 +1,5 @@
 import {View, Text, ScrollView} from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {ScaledSheet} from 'react-native-size-matters';
@@ -8,7 +8,7 @@ import {Center, Flex} from 'native-base';
 import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {places} from '../../../constants/Constant';
+import {cuisine_data, places} from '../../../constants/Constant';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Addbtn from '../../../components/Addbtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,6 +21,7 @@ export default function ManageCuisine({navigation}) {
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const dispatch = useDispatch();
   const cuisine = useSelector(state => state.cuisine?.cuisines);
+  const [isEmpty, setIsEmpty] = useState(false);
   useFocusEffect(
     useCallback(() => {
       dispatch(getCuisine());
@@ -32,6 +33,23 @@ export default function ManageCuisine({navigation}) {
       dispatch(getFlow(flow));
     })();
   }, []);
+  useEffect(() => {
+    if (cuisine?.length) {
+      let arr = [];
+      cuisine.map((e, i) => {
+        e.children.filter(item => {
+          if (item.selected == 1) {
+            arr.push(item);
+          }
+        });
+      });
+      if (arr?.length == 0) {
+        setIsEmpty(true);
+      } else {
+        setIsEmpty(false);
+      }
+    }
+  }, [cuisine]);
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -56,31 +74,38 @@ export default function ManageCuisine({navigation}) {
         </Flex>
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Flex
-            direction="row"
-            flexWrap="wrap"
-            alignItems="center"
-            style={[gs.mt20]}>
-            {cuisine.map((e, i) =>
-              e.children.map(
-                (item, index) =>
-                  item.selected == 1 && (
-                    <View
-                      key={index}
-                      style={{...styles.cuisinebtn, backgroundColor: theme}}>
-                      <Text
-                        style={[
-                          gs.fs16,
-                          {color: '#fff', fontFamily: ts.secondary},
-                        ]}>
-                        {item.name}
-                      </Text>
-                    </View>
-                  ),
-              )
-     
-            )}
-          </Flex>
+          {!isEmpty ? (
+            <Flex
+              direction="row"
+              flexWrap="wrap"
+              alignItems="center"
+              style={[gs.mt20]}>
+              {cuisine.map((e, i) =>
+                e.children.map(
+                  (item, index) =>
+                    item.selected == 1 && (
+                      <View
+                        key={index}
+                        style={{...styles.cuisinebtn, backgroundColor: theme}}>
+                        <Text
+                          style={[
+                            gs.fs16,
+                            {color: '#fff', fontFamily: ts.secondary},
+                          ]}>
+                          {item.name}
+                        </Text>
+                      </View>
+                    ),
+                ),
+              )}
+            </Flex>
+          ) : (
+            <Center>
+              <Text style={[gs.fs14, {color: ts.secondarytext}, gs.mt20]}>
+                You have no cuisines added.
+              </Text>
+            </Center>
+          )}
         </ScrollView>
         <TouchableOpacity
           style={[gs.mb20]}

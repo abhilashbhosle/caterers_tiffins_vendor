@@ -6,7 +6,7 @@ import {
   ImageBackground,
   TouchableOpacity,
 } from 'react-native';
-import React, { useCallback, useEffect } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {useDispatch, useSelector} from 'react-redux';
@@ -21,7 +21,7 @@ import Addbtn from '../../../components/Addbtn';
 import {getOccasions} from '../../controllers/OccassionController';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 
 export default function ManageOccasions({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -29,9 +29,12 @@ export default function ManageOccasions({navigation}) {
   const {height, width} = useWindowDimensions();
   const dispatch = useDispatch();
   const occassions = useSelector(state => state.occassion?.occassions);
-  useFocusEffect(useCallback(() => {
-    dispatch(getOccasions());
-  },[]))
+  const [isEmpty, setIsEmpty] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getOccasions());
+    }, []),
+  );
   useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
@@ -97,12 +100,20 @@ export default function ManageOccasions({navigation}) {
           </View>
           <Center width={width}>
             <FlatList
-              data={occassions.filter((e,i)=>e.selected==1)}
+              data={occassions.filter((e, i) => e.selected == 1)}
               renderItem={renderItem}
               showsVerticalScrollIndicator={false}
               keyExtractor={(item, index) => String(index)}
               contentContainerStyle={styles.contentContainerStyle}
               numColumns={2}
+              ListEmptyComponent={() => {
+                return (
+                  <Text
+                    style={[gs.fs14, {color: ts.secondarytext}, gs.mt15]}>
+                    You have no Occasions added.
+                  </Text>
+                );
+              }}
             />
           </Center>
         </View>

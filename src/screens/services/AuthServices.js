@@ -285,6 +285,7 @@ export const profileUpdateService = async ({
     return res;
   } catch (error) {
     if (error.response && error.response.data) {
+      console.log(error.response.data)
       showMessage({
         message: 'Request Failed!',
         description: error.response.data.message,
@@ -406,7 +407,7 @@ export const updateLocationService = async ({temp, navigation}) => {
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',
-        description: error.response.data.message,
+        description: error.response.data?.data_validation_errors.map((e,i)=><Text>{e.msg}</Text>),
         type: 'danger',
       });
       console.log('inside error in manual location', error.response.data);

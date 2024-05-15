@@ -56,8 +56,8 @@ export default function Profile({navigation}) {
                   serviceName: values.serviceName,
                   name: values.name,
                   companyPhone: `+91-${values.companyPhone}`,
-                  landline1: `080-${values.landline1}`,
-                  landline2: `+91-${values.landline2}`,
+                  landline1: `${values.landline1}`,
+                  landline2: values?.landline2?`+91-${values.landline2}`:'',
                   navigation,
                 }),
               );
@@ -84,6 +84,8 @@ export default function Profile({navigation}) {
                   value={values.name}
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
+                  textColor={ts.secondarytext}
+
                 />
                 {errors.name && touched.name && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -101,6 +103,8 @@ export default function Profile({navigation}) {
                   value={values.serviceName}
                   onChangeText={handleChange('serviceName')}
                   onBlur={handleBlur('serviceName')}
+                  textColor={ts.secondarytext}
+
                 />
                 {errors.serviceName && touched.serviceName && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -120,6 +124,7 @@ export default function Profile({navigation}) {
                   value={values.companyPhone}
                   onChangeText={handleChange('companyPhone')}
                   onBlur={handleBlur('companyPhone')}
+                  textColor={ts.secondarytext}
                 />
                 {errors.companyPhone && touched.companyPhone && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -138,6 +143,9 @@ export default function Profile({navigation}) {
                   value={values.landline1}
                   onChangeText={handleChange('landline1')}
                   onBlur={handleBlur('landline1')}
+                  textColor={ts.secondarytext}
+                  maxLength={12}
+
                 />
                 <TextInput
                   label="Add Whatsapp Business No. (Optional)"
@@ -152,6 +160,8 @@ export default function Profile({navigation}) {
                   value={values.landline2}
                   onChangeText={handleChange('landline2')}
                   onBlur={handleBlur('landline2')}
+                  textColor={ts.secondarytext}
+
                 />
                 <Center>
                   <TouchableOpacity
@@ -197,7 +207,7 @@ const styles = ScaledSheet.create({
   input: {
     height: '40@ms',
     backgroundColor: '#fff',
-    fontSize: '13@ms',
+    fontSize: '13@ms', 
     fontFamily: ts.secondaryregular,
     color: ts.primarytext,
     borderRadius: '12@ms',

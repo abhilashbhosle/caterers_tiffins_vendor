@@ -110,7 +110,9 @@ export default function ManualLocation({navigation}) {
             }}
             styles={{
               textInput: {...styles.input, borderColor: theme},
+              description:{color:ts.primarytext}
             }}
+            
             // listEmptyComponent={
             //   <Text style={styles.notfound}>Result Not found</Text>
             // }
@@ -132,7 +134,7 @@ export default function ManualLocation({navigation}) {
         </TouchableOpacity>
         </View>
         <Center>
-          <TouchableOpacity activeOpacity={0.7} style={[gs.mt15]} onPress={handleNext}>
+          <TouchableOpacity activeOpacity={0.7} style={{marginTop:height/3}} onPress={handleNext}>
             <ThemeSepBtn
               themecolor={theme}
               height={height / 18}
@@ -149,7 +151,7 @@ const styles = ScaledSheet.create({
   container: {
     padding: 20,
     justifyContent:'space-between',
-    height:'100%'
+    // height:'100%'
   },
   heading: {
     fontSize: '24@ms',

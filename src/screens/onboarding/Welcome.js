@@ -122,5 +122,6 @@ const styles = ScaledSheet.create({
   },
   bottomcard: {
     marginBottom: '120@ms',
+    backgroundColor:'#fff'
   },
 });

@@ -50,7 +50,7 @@ export default function OnboardNested() {
               <Text style={[gs.fs28, styles.title]}>TIFFIN SERVICE</Text>
             )}
           </View>
-          <View style={[styles.mainContainer, {height: height / 1.4, width}]}>
+          <View style={[styles.mainContainer, {height: height / 1, width}]}>
             <Stack.Navigator screenOptions={{headerShown: false}}>
               <Stack.Screen
                 name="Credentials"

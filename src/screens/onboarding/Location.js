@@ -43,9 +43,9 @@ export default function Location({navigation}) {
           }>
             <ThemeSepBtn
               themecolor={theme}
-              btntxt="ALLOW LOCATION ACCESS"
+              btntxt="Allow Location Access"
               height={height / 18}
-              // width={width / 1.5}
+              width={width / 1.3}
             />
           </TouchableOpacity>
 		  <TouchableOpacity onPress={()=>navigation.navigate('ManualLocation')}>
