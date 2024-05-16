@@ -1,4 +1,10 @@
-import {View, Text, useWindowDimensions, TouchableOpacity, ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  useWindowDimensions,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeader from '../../../components/ThemeHeader';
@@ -15,26 +21,29 @@ import {Formik} from 'formik';
 import {branchSchema} from '../../../components/Validations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
-import {addBranchService, editBranchService} from '../../services/BranchService';
+import {
+  addBranchService,
+  editBranchService,
+} from '../../services/BranchService';
 import {getBranch} from '../../controllers/BranchController';
 
-export default function AddBranch({navigation,route}) {
+export default function AddBranch({navigation, route}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
   const [locFilled, setLocFilled] = useState(true);
   const dispatch = useDispatch();
   const ref = useRef();
-  
+
   useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
       dispatch(getFlow(flow));
     })();
   }, []);
-  useEffect(()=>{
-    let data=route?.params?.editData
-    if(data){
+  useEffect(() => {
+    let data = route?.params?.editData;
+    if (data) {
       setLoc({
         street_name: data.street_name,
         area: data.area,
@@ -46,10 +55,10 @@ export default function AddBranch({navigation,route}) {
         country: 'India',
         formatted_address: data.formatted_address,
         place_id: data.place_id,
-      })
+      });
       ref.current?.setAddressText(data.formatted_address);
     }
-  },[route])
+  }, [route]);
   const [loc, setLoc] = useState({
     street_name: '',
     area: '',
@@ -79,33 +88,38 @@ export default function AddBranch({navigation,route}) {
       <ScrollView
         style={[{flexGrow: 1, backgroundColor: '#fff'}, gs.ph20]}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        >
+        keyboardShouldPersistTaps="handled">
         <Formik
           initialValues={{
-            serviceName:route?.params?.editData?route.params.editData.catering_service_name:'',
-             personName: route?.params?.editData?route.params.editData.point_of_contact_name:'',
-              phone: route?.params?.editData?route.params.editData.phone_number.split('-')[1]:'',
-            }}
+            serviceName: route?.params?.editData
+              ? route.params.editData.catering_service_name
+              : '',
+            personName: route?.params?.editData
+              ? route.params.editData.point_of_contact_name
+              : '',
+            phone: route?.params?.editData
+              ? route.params.editData.phone_number.split('-')[1]
+              : '',
+          }}
           onSubmit={values => {
-            let body
-            if(route?.params?.editData?.catering_service_name){
-               body = {
+            let body;
+            if (route?.params?.editData?.catering_service_name) {
+              body = {
                 catering_service_name: values.serviceName,
                 point_of_contact_name: values.personName,
                 phone_number: `+91-${values.phone}`,
-                branch_id:route?.params?.editData?.id,
+                branch_id: route?.params?.editData?.id,
                 ...loc,
               };
-              editBranchService({body,dispatch,navigation})
-            }else{
-               body = {
+              editBranchService({body, dispatch, navigation});
+            } else {
+              body = {
                 catering_service_name: values.serviceName,
                 point_of_contact_name: values.personName,
                 phone_number: `+91-${values.phone}`,
                 ...loc,
               };
-            addBranchService({body, dispatch, navigation});
+              addBranchService({body, dispatch, navigation});
             }
           }}
           validationSchema={branchSchema}>
@@ -129,6 +143,7 @@ export default function AddBranch({navigation,route}) {
                 value={values.serviceName}
                 onChangeText={handleChange('serviceName')}
                 onBlur={handleBlur('serviceName')}
+                textColor={ts.secondarytext}
               />
               {errors.serviceName && touched.serviceName && (
                 <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -145,6 +160,7 @@ export default function AddBranch({navigation,route}) {
                 value={values.personName}
                 onChangeText={handleChange('personName')}
                 onBlur={handleBlur('personName')}
+                textColor={ts.secondarytext}
               />
               {errors.personName && touched.personName && (
                 <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -163,6 +179,7 @@ export default function AddBranch({navigation,route}) {
                 onBlur={handleBlur('phone')}
                 keyboardType="numeric"
                 maxLength={10}
+                textColor={ts.secondarytext}
               />
               {errors.phone && touched.phone && (
                 <Text style={[{color: 'red'}, gs.fs12, gs.mb10, gs.ml10]}>
@@ -196,7 +213,7 @@ export default function AddBranch({navigation,route}) {
                 placeholder="Try A2B, Mg road, Bangalore, etc."
                 fetchDetails={true}
                 onPress={(data, details) => {
-                  console.log("pressed")
+                  console.log('pressed');
                   let tempData = data.description.split(',');
                   let geo = details?.geometry;
                   setLoc({
@@ -225,6 +242,9 @@ export default function AddBranch({navigation,route}) {
                     borderWidth: 1,
                     borderColor: '#999',
                     borderRadius: 8,
+                  },
+                  description: {
+                    color: ts.secondarytext,
                   },
                 }}
                 // listEmptyComponent={

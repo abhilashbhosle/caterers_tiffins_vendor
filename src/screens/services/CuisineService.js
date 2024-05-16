@@ -57,7 +57,7 @@ export const updateCuisinesService = async ({finalData, dispatch,navigation}) =>
 		navigation.goBack()
     }
   } catch (error) {
-	console.log(error)
+	console.log(error.response.data)
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',

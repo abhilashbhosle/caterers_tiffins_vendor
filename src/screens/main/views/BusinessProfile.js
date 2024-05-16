@@ -16,6 +16,8 @@ import {getProfile} from '../../controllers/ProfileController';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {GOOGLE_KEY} from '@env';
 import {businessUpdateService} from '../../services/BusinessService';
+import { ScrollView } from 'react-native-gesture-handler';
+import { BusinessProfileValidation } from '../../../components/Validations';
 
 export default function BusinessProfile({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -91,11 +93,12 @@ export default function BusinessProfile({navigation}) {
       });
     }
   }, [profileDetails]);
-  handleUpdate = () => {
+  handleUpdate = async() => {
     let data = profile.address;
     let tempData = data?.description
       ? data.description.split(',')
       : data.split(',');
+    let res=await BusinessProfileValidation(data,profile)
     let temp = {
       street_name: tempData[0],
       area: tempData[1].trim(),
@@ -129,7 +132,9 @@ export default function BusinessProfile({navigation}) {
       facebook_link: profile?.facebook,
       point_of_contact_name: profile?.contactPersonName,
     };
+    if(res){
     businessUpdateService({body: temp, dispatch});
+    }
   };
   return (
     <ScreenWrapper>
@@ -142,7 +147,10 @@ export default function BusinessProfile({navigation}) {
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         showsVerticalScrollIndicator={false}
-        style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}>
+        style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}
+        contentContainerStyle={{flexGrow:1}}
+        keyboardShouldPersistTaps="handled"
+        >
         <Center>
           <Text
             style={[
@@ -156,7 +164,7 @@ export default function BusinessProfile({navigation}) {
           <Center>
             <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: theme}}>
-                Catering Name
+                {flow=='catering'?'Catering Name':'Tiffin Name'}
               </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
@@ -169,6 +177,7 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, cateringName: text});
                 }}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -186,6 +195,7 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, contactPersonName: text});
                 }}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -203,30 +213,30 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, workingDays: text});
                 }}
+                textColor={ts.secondarytext}
               />
             </View>
-            {
-              flow=='catering'&&
+            {flow == 'catering' && (
               <View style={[gs.mv10]}>
-              <Text style={{...styles.subtitke, color: theme}}>
-                Total No.of Staffs Approx
-              </Text>
-              <TextInput
-                style={{...styles.input, width: width - 80}}
-                placeholder="100"
-                outlineColor={ts.secondarytext}
-                activeOutlineColor={theme}
-                mode="outlined"
-                outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
-                value={profile?.staffs?.toString()}
-                onChangeText={text => {
-                  setProfile({...profile, staffs: text});
-                }}
-                keyboardType="numeric"
-              />
-            </View>
-            }
-     
+                <Text style={{...styles.subtitke, color: theme}}>
+                  Total No.of Staffs Approx
+                </Text>
+                <TextInput
+                  style={{...styles.input, width: width - 80}}
+                  placeholder="100"
+                  outlineColor={ts.secondarytext}
+                  activeOutlineColor={theme}
+                  mode="outlined"
+                  outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                  value={profile?.staffs?.toString()}
+                  onChangeText={text => {
+                    setProfile({...profile, staffs: text});
+                  }}
+                  keyboardType="numeric"
+                  textColor={ts.secondarytext}
+                />
+              </View>
+            )}
           </Center>
         </Card>
         {/* ======ADDRESS======= */}
@@ -245,40 +255,44 @@ export default function BusinessProfile({navigation}) {
             <Text style={{...styles.subtitke, color: theme}}>
               Enter Full Address
             </Text>
-            <GooglePlacesAutocomplete
-              textInputProps={{
-                placeholderTextColor: ts.secondarytext,
-                returnKeyType: 'search',
-              }}
-              GooglePlacesSearchQuery={{fields: 'geometry'}}
-              disableScroll={true}
-              ref={ref}
-              placeholder="Try A2B, Mg road, Bangalore, etc."
-              fetchDetails={true}
-              onPress={(data, details) => {
-                setProfile({
-                  ...profile,
-                  address: data,
-                  geometry: details?.geometry,
-                });
-              }}
-              query={{
-                key: GOOGLE_KEY,
-                language: 'en',
-                region: 'IN',
-              }}
-              styles={{
-                textInput: {
-                  ...styles.input,
-                  borderWidth: 1,
-                  borderColor: '#999',
-                  borderRadius: 8,
-                },
-              }}
-              // listEmptyComponent={
-              //   <Text style={styles.notfound}>Result Not found</Text>
-              // }
-            />
+         
+              <GooglePlacesAutocomplete
+                textInputProps={{
+                  placeholderTextColor: ts.secondarytext,
+                  returnKeyType: 'search',
+                }}
+                GooglePlacesSearchQuery={{fields: 'geometry'}}
+                disableScroll={true}
+                ref={ref}
+                placeholder="Try A2B, Mg road, Bangalore, etc."
+                fetchDetails={true}
+                onPress={(data, details) => {
+                  setProfile({
+                    ...profile,
+                    address: data,
+                    geometry: details?.geometry,
+                  });
+                }}
+                query={{
+                  key: GOOGLE_KEY,
+                  language: 'en',
+                  region: 'IN',
+                }}
+                styles={{
+                  textInput: {
+                    ...styles.input,
+                    borderWidth: 1,
+                    borderColor: '#999',
+                    borderRadius: 8,
+                  },
+                  description: {
+                    color: ts.primarytext,
+                  },
+                }}
+                // listEmptyComponent={
+                //   <Text style={styles.notfound}>Result Not found</Text>
+                // }
+              />
           </View>
         </Card>
         {/* =======ABOUT=========== */}
@@ -299,6 +313,7 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, about: text});
                 }}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -318,6 +333,7 @@ export default function BusinessProfile({navigation}) {
                 }}
                 keyboardType="numeric"
                 maxLength={4}
+                textColor={ts.secondarytext}
               />
             </View>
           </Center>
@@ -348,6 +364,7 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, bEmail: text});
                 }}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -364,6 +381,8 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, bPhone: text});
                 }}
+                textColor={ts.secondarytext}
+                maxLength={10}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -380,6 +399,8 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, landlineNumber: text});
                 }}
+                textColor={ts.secondarytext}
+                maxLength={12}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -396,6 +417,8 @@ export default function BusinessProfile({navigation}) {
                 onChangeText={text => {
                   setProfile({...profile, whatsappNumber: text});
                 }}
+                textColor={ts.secondarytext}
+                maxLength={10}
               />
             </View>
           </Center>
@@ -422,6 +445,7 @@ export default function BusinessProfile({navigation}) {
                 activeOutlineColor={theme}
                 mode="outlined"
                 outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -434,6 +458,7 @@ export default function BusinessProfile({navigation}) {
                 activeOutlineColor={theme}
                 mode="outlined"
                 outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -446,6 +471,7 @@ export default function BusinessProfile({navigation}) {
                 activeOutlineColor={theme}
                 mode="outlined"
                 outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                textColor={ts.secondarytext}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -458,6 +484,7 @@ export default function BusinessProfile({navigation}) {
                 activeOutlineColor={theme}
                 mode="outlined"
                 outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                textColor={ts.secondarytext}
               />
             </View>
           </Center>

@@ -3,6 +3,7 @@ import axios from 'axios';
 import {endpoints} from '../../endpoints';
 import {showMessage} from 'react-native-flash-message';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
+import { Text } from 'react-native';
 
 // ===========GET PACKAGE===========//
 export const getPackageService = async () => {
@@ -59,7 +60,7 @@ export const packageUpdateService = async ({body, dispatch}) => {
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',
-        description: error.response.data.message,
+        description: error?.response?.data?.data_validation_errors?.length>0? error.response.data?.data_validation_errors.map((e,i)=><Text>{e.msg}</Text>):error.response.data.message,
         type: 'danger',
       });
       return error.response.data;

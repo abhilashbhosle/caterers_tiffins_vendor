@@ -74,6 +74,7 @@ export default function HelpDesk({navigation}) {
             outlineStyle={[gs.br12]}
             value={help.issue}
             onChangeText={text => setHelp({...help, issue: text})}
+            textColor={ts.secondarytext}
           />
           <TextInput
             placeholder="Comments"
@@ -95,6 +96,7 @@ export default function HelpDesk({navigation}) {
             outlineStyle={[gs.br12]}
             value={help.comments}
             onChangeText={text => setHelp({...help, comments: text})}
+            textColor={ts.secondarytext}
           />
         </View>
         <Center style={[gs.mb20,gs.pb20]}>

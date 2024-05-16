@@ -64,7 +64,8 @@ export default function Inquiries({navigation}) {
       setInquiries([...inquiries, ...inquiry.data]);
       setRefreshing(false);
       setShowSkell(false);
-    } else {
+    } 
+    if(inquiry?.data?.length==0) {
       setShowSkell(false);
       setRefreshing(false);
     }
@@ -78,19 +79,19 @@ export default function Inquiries({navigation}) {
   };
   // =======LIST FOOTER COMPONENT=========//
   const renderFooter = () => {
-    return (
-      inquiry?.loading && (
-        <Center>
-          {' '}
-          <LottieView
-            source={require('../../../assets/Loader/lottie1.json')}
-            autoPlay
-            loop
-            style={{height: 30, width: 60, bottom: 10}}
-          />
-        </Center>
-      )
-    );
+    // return (
+    //   inquiry?.loading && !refreshing && page>1 &&(
+    //     <Center>
+    //       {' '}
+    //       <LottieView
+    //         source={require('../../../assets/Loader/lottie1.json')}
+    //         autoPlay
+    //         loop
+    //         style={{height: 30, width: 60, bottom: 10}}
+    //       />
+    //     </Center>
+    //   )
+    // );
   };
   // =======HANDLE REFRESH=========//
   handleRefresh = () => {

@@ -6,9 +6,9 @@ import {
   StatusBar,
   useWindowDimensions,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import {Flex} from 'native-base';
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -18,11 +18,20 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import AntIcons from 'react-native-vector-icons/AntDesign';
 import * as Animatable from 'react-native-animatable';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFlow } from '../../../redux/slicers/CommomSlicer';
 
 export default function Dashboard({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
+  const dispatch=useDispatch()
+  useEffect(()=>{
+    (async () => {
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+    })();
+  },[])
   return (
     <>
       <ScreenWrapper>

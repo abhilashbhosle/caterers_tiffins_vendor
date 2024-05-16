@@ -26,7 +26,11 @@ import EntypoIcons from 'react-native-vector-icons/Entypo';
 import ThemeSepBtn from '../../../components/ThemeSepBtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
-import {getVendorDetails, getVendorPassword, resetPasswordService} from '../../services/AuthServices';
+import {
+  getVendorDetails,
+  getVendorPassword,
+  resetPasswordService,
+} from '../../services/AuthServices';
 import {
   deleteAadharBackService,
   deleteAadharService,
@@ -42,6 +46,8 @@ import {
   imgUploadBack,
   panUpload,
 } from '../../controllers/SettingsController';
+import {showMessage} from 'react-native-flash-message';
+import {color} from 'native-base/lib/typescript/theme/styled-system';
 
 export default function Settings({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -54,8 +60,9 @@ export default function Settings({navigation}) {
   const [aadharBack, setAadharBack] = useState(null);
   const [pan, setPan] = useState(null);
   const [fs, setFs] = useState(null);
-  const [eye,setEye]=useState(false)
+  const [eye, setEye] = useState(false);
   const [gst, setGst] = useState(null);
+  const [originalPass, setOriginalPass] = useState(null);
   const localAadhar = useSelector(state => state.settings.img);
   const aadharDetails = useSelector(state => state.settings.aadharRes);
   const localAadharBack = useSelector(state => state.settings.imgBack);
@@ -64,9 +71,26 @@ export default function Settings({navigation}) {
   const panDetails = useSelector(state => state.settings.panRes);
   const localFs = useSelector(state => state.settings.fsImg);
   const fsDetails = useSelector(state => state.settings.fsRes);
-  const handlePasswordReset=()=>{
-    resetPasswordService({password,dispatch})
-  }
+
+  const [show, setShow] = useState({
+    aadharEnable: false,
+    panEnable: false,
+    gstinEnable: false,
+    fssaiEnable: false,
+  });
+
+  const handlePasswordReset = () => {
+    if (originalPass !== password) {
+      resetPasswordService({password, dispatch, setPassword, setOriginalPass});
+    } else {
+      showMessage({
+        message: 'Request Cancelled!',
+        description:
+          'New password must be different from the current password .',
+        type: 'warning',
+      });
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -78,9 +102,10 @@ export default function Settings({navigation}) {
       //   phone: detail?.data?.data?.phone_number,
       //   dispatch,
       // });
-      let pass=await getVendorPassword()
-      if(pass?.length>0){
-      setPassword(pass)
+      let pass = await getVendorPassword();
+      if (pass?.length > 0) {
+        setPassword(pass);
+        setOriginalPass(pass);
       }
       let inf = await getSettings({dispatch, loading: true});
       setAadhar(inf?.data?.data['vendor-enca']);
@@ -92,7 +117,7 @@ export default function Settings({navigation}) {
     })();
   }, []);
   useEffect(() => {
-    if (aadharDetails || panDetails || fsDetails||aadharBackDetails) {
+    if (aadharDetails || panDetails || fsDetails || aadharBackDetails) {
       (async () => {
         let inf = await getSettings({dispatch, loading: false});
         setInfo(inf?.data?.data);
@@ -105,7 +130,7 @@ export default function Settings({navigation}) {
         }, 1000);
       })();
     }
-  }, [aadharDetails, panDetails, fsDetails,aadharBackDetails]);
+  }, [aadharDetails, panDetails, fsDetails, aadharBackDetails]);
 
   // ======UPLOAD AADHAR=======//
   const handleAadharUpload = () => {
@@ -151,34 +176,34 @@ export default function Settings({navigation}) {
       setAadhar(data['vendor-enca']);
     }
   };
-    // =====DELETE AADHAR BACK======//
-    const handleAadharBackdel = async id => {
-      Alert.alert(
-        'Delete Aadhar',
-        'Are you sure, you want to delete Aadhar?',
-        [
-          {
-            text: 'Cancel',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          {
-            text: 'OK',
-            onPress: () => delAadharBack(id),
-          },
-        ],
-        {cancelable: false},
-      );
-    };
-    const delAadharBack = async id => {
-      let res = await deleteAadharBackService(id);
-      if (res?.data?.status == 'success') {
-        let data = {...info};
-        data['vendor-enca-back'] = [];
-        setInfo(data);
-        setAadharBack(data['vendor-enca-back']);
-      }
-    };
+  // =====DELETE AADHAR BACK======//
+  const handleAadharBackdel = async id => {
+    Alert.alert(
+      'Delete Aadhar',
+      'Are you sure, you want to delete Aadhar?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => delAadharBack(id),
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  const delAadharBack = async id => {
+    let res = await deleteAadharBackService(id);
+    if (res?.data?.status == 'success') {
+      let data = {...info};
+      data['vendor-enca-back'] = [];
+      setInfo(data);
+      setAadharBack(data['vendor-enca-back']);
+    }
+  };
   // ======UPLOAD PAN=======//
   const handlePanUpload = () => {
     dispatch(panUpload({selection: 'pan', type: 'insert'}));
@@ -312,8 +337,14 @@ export default function Settings({navigation}) {
           right={
             <TextInput.Icon
               icon={() => (
-                <TouchableOpacity onPress={()=>{setEye(!eye)}}>
-                <FeatherIcon name={!eye?"eye-off":"eye"} style={[gs.fs22, {color: theme}]} />
+                <TouchableOpacity
+                  onPress={() => {
+                    setEye(!eye);
+                  }}>
+                  <FeatherIcon
+                    name={!eye ? 'eye-off' : 'eye'}
+                    style={[gs.fs22, {color: theme}]}
+                  />
                 </TouchableOpacity>
               )}
             />
@@ -326,23 +357,43 @@ export default function Settings({navigation}) {
           value={password}
           onChangeText={text => setPassword(text)}
           maxLength={8}
+          textColor={ts.secondarytext}
         />
         <TouchableOpacity onPress={handlePasswordReset}>
-        <Text
-          style={[{...styles.heading, textAlign: 'center', color: ts.teritary}]}>
-          Reset Password
-        </Text>
+          <Text
+            style={[
+              {...styles.heading, textAlign: 'center', color: ts.teritary},
+            ]}>
+            Reset Password
+          </Text>
         </TouchableOpacity>
         <Divider style={[gs.mv20, {backgroundColor: theme}]} />
         <Text style={styles.heading}>Documents</Text>
-        <View style={[gs.mv10,{backgroundColor:'#fff'}]}>
+        <View style={[gs.mv10, {backgroundColor: '#fff'}]}>
           {/* =====AADHAR CARD====== */}
-          <List.AccordionGroup>
-            <List.Accordion
-              title="Aadhar Card"
-              id="1"
-              style={styles.labelcontainer}
-              titleStyle={styles.accordianTitle}>
+          <View style={styles.labelcontainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShow({
+                  aadharEnable: !show.aadharEnable,
+                  panEnable: false,
+                  gstinEnable: false,
+                  fssaiEnable: false,
+                });
+              }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text style={styles.accordianTitle}>Aadhar Card</Text>
+                <FeatherIcon
+                  name={show.aadharEnable?"chevron-up": "chevron-down"}
+                  style={[gs.fs20, {color: ts.secondarytext}]}
+                />
+              </Flex>
+            </TouchableOpacity>
+            {show.aadharEnable && (
               <View style={styles.accordianitem}>
                 <Text style={[styles.heading, gs.mb15]}>Upload Aadhar</Text>
                 <Text style={[styles.heading, gs.mb15]}>Front</Text>
@@ -453,7 +504,9 @@ export default function Settings({navigation}) {
                             style={[{...styles.iconContainer}]}
                             activeOpacity={0.7}
                             onPress={() => {
-                              handleAadharBackEdit(info['vendor-enca-back'][0].id);
+                              handleAadharBackEdit(
+                                info['vendor-enca-back'][0].id,
+                              );
                             }}>
                             <MaterialIcons
                               name="edit"
@@ -464,7 +517,9 @@ export default function Settings({navigation}) {
                             style={[{...styles.iconContainer}, gs.ml10]}
                             activeOpacity={0.7}
                             onPress={() => {
-                              handleAadharBackdel(info['vendor-enca-back'][0].id);
+                              handleAadharBackdel(
+                                info['vendor-enca-back'][0].id,
+                              );
                             }}>
                             <MaterialIcons
                               name="delete"
@@ -500,13 +555,32 @@ export default function Settings({navigation}) {
                   )}
                 </Center>
               </View>
-            </List.Accordion>
-            {/* =====PAN CARD====== */}
-            <List.Accordion
-              title="PAN Card"
-              id="2"
-              style={styles.labelcontainer}
-              titleStyle={styles.accordianTitle}>
+            )}
+          </View>
+          {/* =====PAN CARD====== */}
+          <View style={styles.labelcontainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShow({
+                  aadharEnable: false,
+                  panEnable: !show.panEnable,
+                  gstinEnable: false,
+                  fssaiEnable: false,
+                });
+              }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text style={styles.accordianTitle}>PAN Card</Text>
+                <FeatherIcon
+                  name={show.panEnable?"chevron-up":"chevron-down"}
+                  style={[gs.fs20, {color: ts.secondarytext}]}
+                />
+              </Flex>
+            </TouchableOpacity>
+            {show.panEnable && (
               <View style={styles.accordianitem}>
                 {!localPan?.path && !pan && (
                   <Text style={[styles.heading, gs.mb15]}>Upload PAN Card</Text>
@@ -588,13 +662,34 @@ export default function Settings({navigation}) {
                   )}
                 </Center>
               </View>
-            </List.Accordion>
-            {/* =====GSTIN Number====== */}
-            <List.Accordion
-              title="GSTIN Number"
-              id="3"
-              style={styles.labelcontainer}
-              titleStyle={styles.accordianTitle}>
+            )}
+          </View>
+
+          {/* =====GSTIN Number====== */}
+
+          <View style={styles.labelcontainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShow({
+                  aadharEnable: false,
+                  panEnable: false,
+                  gstinEnable: !show.gstinEnable,
+                  fssaiEnable: false,
+                });
+              }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text style={styles.accordianTitle}>GSTIN Number</Text>
+                <FeatherIcon
+                  name={show.gstinEnable?"chevron-up":"chevron-down"}
+                  style={[gs.fs20, {color: ts.secondarytext}]}
+                />
+              </Flex>
+            </TouchableOpacity>
+            {show.gstinEnable && (
               <View style={styles.accordianitem}>
                 <Text style={[styles.heading, gs.mb5]}>
                   Enter your GSTIN number below
@@ -607,18 +702,38 @@ export default function Settings({navigation}) {
                   outlineStyle={[gs.br8]}
                   value={gst}
                   onChangeText={text => setGst(text)}
+                  textColor={ts.secondarytext}
                 />
                 <TouchableOpacity style={[gs.mv20]} onPress={submitGstin}>
                   <ThemeSepBtn themecolor={theme} btntxt="Submit" height={40} />
                 </TouchableOpacity>
               </View>
-            </List.Accordion>
-            {/* =====FSSAI LICENSE====== */}
-            <List.Accordion
-              title="FSSAI License"
-              id="4"
-              style={styles.labelcontainer}
-              titleStyle={styles.accordianTitle}>
+            )}
+          </View>
+          {/* =====FSSAI LICENSE====== */}
+          <View style={styles.labelcontainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShow({
+                  aadharEnable: false,
+                  panEnable: false,
+                  gstinEnable: false,
+                  fssaiEnable: !show.fssaiEnable,
+                });
+              }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text style={styles.accordianTitle}>FSSAI License</Text>
+                <FeatherIcon
+                  name={show.fssaiEnable?"chevron-up": "chevron-down"}
+                  style={[gs.fs20, {color: ts.secondarytext}]}
+                />
+              </Flex>
+            </TouchableOpacity>
+            {show.fssaiEnable && (
               <View style={styles.accordianitem}>
                 {!localPan?.path && !pan && (
                   <Text style={[styles.heading, gs.mb15]}>
@@ -702,8 +817,8 @@ export default function Settings({navigation}) {
                   )}
                 </Center>
               </View>
-            </List.Accordion>
-          </List.AccordionGroup>
+            )}
+          </View>
           <Divider style={[gs.mv20, {backgroundColor: theme}]} />
           <Text style={styles.heading}>Links</Text>
           {/* ====ABOUT US====== */}
@@ -795,13 +910,14 @@ const styles = ScaledSheet.create({
     fontSize: '14@ms',
   },
   labelcontainer: {
-    height: '60@ms',
+    // height: '60@ms',
     borderRadius: '10@ms',
     justifyContent: 'center',
     backgroundColor: '#f5f5f5',
     borderWidth: 0.5,
     borderColor: '#999',
     marginVertical: '5@ms',
+    padding: '15@ms',
   },
   accordianTitle: {
     fontFamily: ts.secondaryregular,
@@ -811,7 +927,7 @@ const styles = ScaledSheet.create({
   accordianitem: {
     padding: '10@ms',
     backgroundColor: '#f5f5f5',
-    marginTop: '-10@ms',
+    // marginTop: '-10@ms',
     borderBottomLeftRadius: '10@ms',
     borderBottomRightRadius: '10@ms',
     borderBottomColor: '#999',

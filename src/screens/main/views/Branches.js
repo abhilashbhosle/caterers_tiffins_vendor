@@ -160,7 +160,7 @@ export default function Branches({navigation}) {
         navigation={navigation}
         notifyIcon={false}
       />
-      <View style={[{flex: 1, backgroundColor: '#fff'}, gs.pt20]}>
+      <View style={[{flex: 1, backgroundColor: '#fff'}]}>
         <FlatList
           keyExtractor={(item, index) => String(index)}
           data={branches}
@@ -174,8 +174,10 @@ export default function Branches({navigation}) {
             );
           }}
         />
-        <TouchableOpacity
-          style={[gs.mb20, gs.ph20]}
+       
+      </View>
+      <TouchableOpacity
+          style={[gs.pb20, gs.ph20,{backgroundColor:'#fff'}]}
           onPress={() =>
             navigation.navigate('PageStack', {
               screen: 'AddBranch',
@@ -183,14 +185,13 @@ export default function Branches({navigation}) {
           }>
           <Addbtn btntxt="Add New Branch" />
         </TouchableOpacity>
-      </View>
     </ScreenWrapper>
   );
 }
 const styles = ScaledSheet.create({
   cardItem: {
     backgroundColor: '#fff',
-    marginBottom: '15@ms',
+    marginVertical: '8@ms',
     marginHorizontal: '10@ms',
   },
   toggleIcon: {

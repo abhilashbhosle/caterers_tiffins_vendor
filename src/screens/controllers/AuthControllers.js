@@ -185,7 +185,12 @@ export const getLocation = createAsyncThunk(
       });
       console.log("location",res)
       if(res){
-        getLocationService({latitude:res.latitude,longitude:res.longitude,dispatch,navigation})
+        getLocationService({
+          latitude:res.latitude,
+          longitude:res.longitude,
+          // latitude:13.1319,
+          // longitude:80.2644,
+          dispatch,navigation})
       }
       return res;
     } catch (error) {

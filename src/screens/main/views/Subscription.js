@@ -86,26 +86,26 @@ export default function Subscription({navigation}) {
             <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
               Benifits:
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Gets clean dashboard
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Track your incomes
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Gets clean order PDF
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Includes calender feature so you never missout any info reading
               dates
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Gets notify via email, SMS, app notification
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Phone/chat feature with customers
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
               - Data analysis/improvement recommendation
             </Text>
           </View>

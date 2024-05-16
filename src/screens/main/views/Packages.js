@@ -17,6 +17,8 @@ import {getPackage, packageUpdate} from '../../controllers/PackageController';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {packageUpdateService} from '../../services/PackageService';
 import TiffinPackages from './TiffinPackages';
+import {showMessage} from 'react-native-flash-message';
+import {PackageValidations} from '../../../components/Validations';
 
 export default function Packages({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -76,25 +78,28 @@ export default function Packages({navigation}) {
     );
     setPacks({...packs, serviceTypes: updatedFoodTypes});
   };
-  const handleUpdate = () => {
-    const serviceTypes = packs.serviceTypes.map((e, i) => {
-      return {id: Number(e.id), selected: Number(e.selected)};
-    });
-    const servingTypes = packs.servingTypes.map((e, i) => {
-      return {id: Number(e.id), selected: Number(e.selected)};
-    });
-    const foodTypes = packs.foodTypes.map((e, i) => {
-      return {id: Number(e.id), selected: Number(e.selected)};
-    });
-    const body = {
-      foodTypes: JSON.stringify(foodTypes),
-      servingTypes: JSON.stringify(servingTypes),
-      serviceTypes: JSON.stringify(serviceTypes),
-      maximumCapacity: values.maxPlatesCap,
-      minimumCapacity: values.miniPlatesCap,
-      startPrice: values.minPrice,
-    };
-    packageUpdateService({body, dispatch});
+  const handleUpdate = async () => {
+    let res = await PackageValidations(values);
+    if (res) {
+      const serviceTypes = packs.serviceTypes.map((e, i) => {
+        return {id: Number(e.id), selected: Number(e.selected)};
+      });
+      const servingTypes = packs.servingTypes.map((e, i) => {
+        return {id: Number(e.id), selected: Number(e.selected)};
+      });
+      const foodTypes = packs.foodTypes.map((e, i) => {
+        return {id: Number(e.id), selected: Number(e.selected)};
+      });
+      const body = {
+        foodTypes: JSON.stringify(foodTypes),
+        servingTypes: JSON.stringify(servingTypes),
+        serviceTypes: JSON.stringify(serviceTypes),
+        maximumCapacity: values.maxPlatesCap,
+        minimumCapacity: values.miniPlatesCap,
+        startPrice: values.minPrice,
+      };
+      packageUpdateService({body, dispatch});
+    }
   };
   return (
     <ScreenWrapper>
@@ -154,8 +159,12 @@ export default function Packages({navigation}) {
                                 {
                                   ...styles.toggleicon,
                                   color:
-                                    e.selected == '1'
-                                      ? theme
+                                    e.selected == '1' &&
+                                    e.food_type_name == 'Veg'
+                                      ? ts.accent3
+                                      : e.selected == '1' &&
+                                        e.food_type_name == 'Non Veg'
+                                      ? ts.accent4
                                       : ts.secondarytext,
                                 },
                               ]}
@@ -238,6 +247,7 @@ export default function Packages({navigation}) {
                     }}
                     mode="outlined"
                     keyboardType="numeric"
+                    textColor={ts.secondarytext}
                   />
                 </View>
                 <View
@@ -257,6 +267,7 @@ export default function Packages({navigation}) {
                       setValues({...values, maxPlatesCap: text});
                     }}
                     keyboardType="numeric"
+                    textColor={ts.secondarytext}
                   />
                 </View>
               </Center>
@@ -279,7 +290,11 @@ export default function Packages({navigation}) {
                     <Text
                       style={[
                         gs.fs14,
-                        {color: theme, fontFamily: ts.secondaryregular,width:'30%'},
+                        {
+                          color: theme,
+                          fontFamily: ts.secondaryregular,
+                          width: '30%',
+                        },
                       ]}>
                       {packs?.serviceTypes[0]?.service_type_name}
                     </Text>
@@ -312,7 +327,11 @@ export default function Packages({navigation}) {
                     <Text
                       style={[
                         gs.fs14,
-                        {color: theme, fontFamily: ts.secondaryregular,width:'30%'},
+                        {
+                          color: theme,
+                          fontFamily: ts.secondaryregular,
+                          width: '30%',
+                        },
                       ]}>
                       {packs?.serviceTypes[1]?.service_type_name}
                     </Text>
@@ -345,7 +364,11 @@ export default function Packages({navigation}) {
                     <Text
                       style={[
                         gs.fs14,
-                        {color: theme, fontFamily: ts.secondaryregular,width:'30%'},
+                        {
+                          color: theme,
+                          fontFamily: ts.secondaryregular,
+                          width: '30%',
+                        },
                       ]}>
                       {packs?.serviceTypes[2]?.service_type_name}
                     </Text>
@@ -383,20 +406,6 @@ export default function Packages({navigation}) {
               ]}>
               <Center>
                 <Text style={styles.title}>Enter Starting price / plate</Text>
-                {/* <View
-                  style={[
-                    {justifyContent: 'center', alignItems: 'center'},
-                    gs.mt10,
-                  ]}>
-                  <Text style={styles.subtitke}>Minimum Capacity</Text>
-                  <TextInput
-                    style={{...styles.input, width: width - 80}}
-                    placeholder="Eg: 250"
-                    outlineColor={ts.secondarytext}
-                    activeOutlineColor={theme}
-                    mode="outlined"
-                  />
-                </View> */}
                 <View
                   style={[
                     {justifyContent: 'center', alignItems: 'center'},
@@ -416,6 +425,7 @@ export default function Packages({navigation}) {
                       setValues({...values, minPrice: text});
                     }}
                     keyboardType="numeric"
+                    textColor={ts.secondarytext}
                   />
                 </View>
               </Center>
@@ -452,7 +462,6 @@ const styles = ScaledSheet.create({
     color: ts.secondarytext,
   },
   input: {
-    color: ts.secondarytext,
     fontSize: '12@ms',
     fontFamily: ts.secondaryregular,
     height: '40@ms',

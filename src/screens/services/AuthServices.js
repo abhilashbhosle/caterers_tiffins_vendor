@@ -285,7 +285,7 @@ export const profileUpdateService = async ({
     return res;
   } catch (error) {
     if (error.response && error.response.data) {
-      console.log(error.response.data)
+      console.log(error.response.data);
       showMessage({
         message: 'Request Failed!',
         description: error.response.data.message,
@@ -358,20 +358,42 @@ export const getLocationService = async ({
     let res = await axios.get(
       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_KEY}`,
     );
-    let data = res.data.results[0].formatted_address.split(',');
+
+    let addressComponents = res.data.results[0].address_components;
+
+    function getAddressComponent(components, typeName) {
+      for (const component of components) {
+        if (component.types.includes(typeName)) {
+          return component.long_name;
+        }
+      }
+      return null;
+    }
+
+    // Extracting specific components
+    const area = getAddressComponent(addressComponents, 'sublocality_level_1');
+    const state = getAddressComponent(
+      addressComponents,
+      'administrative_area_level_1',
+    );
+    const city = getAddressComponent(addressComponents, 'locality');
+    const country = getAddressComponent(addressComponents, 'country');
+    const pincode = getAddressComponent(addressComponents, 'postal_code');
+
     let temp = {
-      street_name: data[0],
-      area: data[0],
-      pincode: data[data.length - 2].trim().split(' ')[1],
+      street_name: area,
+      area: area,
+      pincode: pincode,
       latitude: latitude,
       longitude: longitude,
       address: res.data.results[0].formatted_address,
-      city: data[data.length - 3].trim(),
-      state: data[data.length - 2].trim().split(' ')[0],
-      country: data[data.length - 1].trim(),
+      city: city,
+      state: state,
+      country: country,
       formatted_address: res.data.results[0].formatted_address,
       place_id: res.data.results[0].place_id,
     };
+    // console.log('temp', temp);
     await updateLocationService({temp, navigation});
     dispatch(setLocation(res.data.results[0]));
   } catch (error) {
@@ -407,7 +429,9 @@ export const updateLocationService = async ({temp, navigation}) => {
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',
-        description: error.response.data?.data_validation_errors.map((e,i)=><Text>{e.msg}</Text>),
+        description: error.response.data?.data_validation_errors.map((e, i) => (
+          <Text>{e.msg}</Text>
+        )),
         type: 'danger',
       });
       console.log('inside error in manual location', error.response.data);
@@ -479,7 +503,12 @@ export const getVendorPassword = async () => {
 };
 
 // =======RESET PASSWORD SERVICE========//
-export const resetPasswordService = async ({password, dispatch}) => {
+export const resetPasswordService = async ({
+  password,
+  dispatch,
+  setPassword,
+  setOriginalPass,
+}) => {
   let body = {
     new_password: password,
   };
@@ -496,7 +525,10 @@ export const resetPasswordService = async ({password, dispatch}) => {
         },
       },
     );
+
     if (res.data.status == 'success') {
+      setPassword(body.new_password);
+      setOriginalPass(body.new_password);
       showMessage({
         message: 'Success!',
         description: `Password changed to ${password}`,
@@ -505,18 +537,18 @@ export const resetPasswordService = async ({password, dispatch}) => {
     }
     return res;
   } catch (error) {
-    console.log(error.response.data)
+    console.log(error.response.data);
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',
-        description: error.response.data.data_validation_errors.map((e)=>e.msg),
+        description: error.response.data.data_validation_errors.map(e => e.msg),
         type: 'danger',
       });
       return error.response.data;
     } else {
       return error.message;
     }
-  }finally{
-    dispatch(startLoader(false))
+  } finally {
+    dispatch(startLoader(false));
   }
 };

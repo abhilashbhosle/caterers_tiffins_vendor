@@ -67,9 +67,10 @@ export default function Reviews({navigation}) {
       setReviews([...reviews, ...review.data]);
       setRefreshing(false);
       setShowSkell(false);
-    } else {
-      setShowSkell(false);
-      setRefreshing(false);
+    } 
+    if(review?.data?.length==0){
+        setShowSkell(false);
+        setRefreshing(false);
     }
   }, [review]);
   // =========FETCH MORE DATA=========//
@@ -80,19 +81,19 @@ export default function Reviews({navigation}) {
   };
   // =======LIST FOOTER COMPONENT=========//
   const renderFooter = () => {
-    return (
-      review?.loading && (
-        <Center>
-          {' '}
-          <LottieView
-            source={require('../../../assets/Loader/lottie1.json')}
-            autoPlay
-            loop
-            style={{height: 30, width: 60, bottom: 10}}
-          />
-        </Center>
-      )
-    );
+    // return (
+    //   review?.loading && !refreshing && page>1 && !showSkell &&(
+    //     <Center>
+    //       {' '}
+    //       <LottieView
+    //         source={require('../../../assets/Loader/lottie1.json')}
+    //         autoPlay
+    //         loop
+    //         style={{height: 30, width: 60, bottom: 10}}
+    //       />
+    //     </Center>
+    //   )
+    // );
   };
   // =======HANDLE REFRESH=========//
   handleRefresh = () => {
@@ -199,6 +200,8 @@ export default function Reviews({navigation}) {
                 // setValue(item.value);
                 // setIsFocus(false);
               }}
+              itemTextStyle={{color:ts.primarytext}}
+            
             />
           </Flex>
         </View>
@@ -255,6 +258,7 @@ const styles = ScaledSheet.create({
     paddingHorizontal: '8@ms',
     width: '180@ms',
     marginHorizontal: '15@ms',
+    color:ts.primarytext
   },
   icon: {
     marginRight: 5,
@@ -267,9 +271,11 @@ const styles = ScaledSheet.create({
     zIndex: '999@ms',
     paddingHorizontal: '8@ms',
     fontSize: '14@ms',
+    color:ts.primarytext
   },
   placeholderStyle: {
     fontSize: '16@ms',
+    color:ts.secondarytext
   },
   selectedTextStyle: {
     fontSize: '14@ms',
@@ -283,6 +289,7 @@ const styles = ScaledSheet.create({
   inputSearchStyle: {
     height: '40@ms',
     fontSize: '16@ms',
+    color:ts.primarytext
   },
   profileimg: {
     height: '30@ms',
