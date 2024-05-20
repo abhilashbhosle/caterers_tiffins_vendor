@@ -221,6 +221,8 @@ export default function AddCuisine({navigation}) {
               icon={() => <EvilIcons name="search" style={styles.icon} />}
             />
           }
+          textColor={ts.secondarytext}
+
         />
 
         <FlatList
@@ -243,6 +245,7 @@ const styles = ScaledSheet.create({
   input: {
     color: ts.secondarytext,
     fontSize: '14@ms',
+    backgroundColor:'#fff'
   },
   icon: {
     fontSize: '24@ms',

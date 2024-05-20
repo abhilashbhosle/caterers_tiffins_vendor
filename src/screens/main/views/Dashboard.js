@@ -5,6 +5,9 @@ import {
   Platform,
   StatusBar,
   useWindowDimensions,
+  ToastAndroid,
+  BackHandler,
+  Alert
 } from 'react-native';
 import React, { useEffect } from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -20,12 +23,50 @@ import AntIcons from 'react-native-vector-icons/AntDesign';
 import * as Animatable from 'react-native-animatable';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFlow } from '../../../redux/slicers/CommomSlicer';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Dashboard({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
   const dispatch=useDispatch()
+
+  const handleBack=()=>{
+    Alert.alert(
+      'Exit App',
+      'Are you sure you want to exit this App?',
+      [
+        {
+          text:'Cancel',
+          onPress:()=>{
+              console.log('Cancel Pressed')
+          }
+        },
+        {
+          text:'Ok',
+          onPress:()=>{
+            BackHandler.exitApp()
+          }
+        }
+      ]
+    )
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+      handleBack()
+        return true; // Returning true means the event is handled and should not propagate further
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
+
   useEffect(()=>{
     (async () => {
       let flow = await AsyncStorage.getItem('flow');

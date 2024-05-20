@@ -1,5 +1,5 @@
 import {View, Text, Image, SafeAreaView} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -16,8 +16,8 @@ import F6Icons from 'react-native-vector-icons/FontAwesome6';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {logout, startLoader} from '../redux/slicers/CommomSlicer';
-import { getVendorDetails } from '../screens/services/AuthServices';
+import {getFlow, logout, startLoader} from '../redux/slicers/CommomSlicer';
+import {getVendorDetails} from '../screens/services/AuthServices';
 
 export default function CustomDrawer(props) {
   const flow = useSelector(state => state.common.flow);
@@ -25,21 +25,24 @@ export default function CustomDrawer(props) {
   const {routeNames, index} = props.state;
   const focused = routeNames[index];
   const dispatch = useDispatch();
-  const [details,setDetails]=useState({})
+  const [details, setDetails] = useState({});
 
-  useEffect(()=>{
-    (async()=>{
-      let detail=await getVendorDetails(dispatch)
-      setDetails(detail.data.data)
-    })()
-  },[])
-  const handleLogout =async () => {
+  useEffect(() => {
+    (async () => {
+      let detail = await getVendorDetails(dispatch);
+      setDetails(detail.data.data);
+      let flow = await AsyncStorage.getItem('flow');
+      dispatch(getFlow(flow));
+    })();
+  }, []);
+
+  const handleLogout = async () => {
     await AsyncStorage.clear();
     dispatch(startLoader(true));
-    props.navigation.toggleDrawer()
-    setTimeout(()=>{
-    dispatch(logout(true));
-    },1000)
+    props.navigation.toggleDrawer();
+    setTimeout(() => {
+      dispatch(logout(true));
+    }, 1000);
     setTimeout(() => {
       props.navigation.reset({
         index: 0,
@@ -54,15 +57,21 @@ export default function CustomDrawer(props) {
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props} showsVerticalScrollIndicator={false}>
         <Flex direction="row" justifyContent="space-between" style={[gs.ph15]}>
-          <Flex direction="row" alignItems='center'>
+          <Flex direction="row" alignItems="center">
             {/* <Image
               resizeMode="cover"
               source={require('../assets/drawer/profile.jpg')}
               alt="profile"
               style={styles.profileimg}
             /> */}
-            <View style={{...styles.profileimg,backgroundColor:theme}}>
-              <Text style={[gs.fs22,{color:'#fff',fontFamily:ts.secondarysemibold}]}>{details?.point_of_contact_name?.slice(0,1)}</Text>
+            <View style={{...styles.profileimg, backgroundColor: theme}}>
+              <Text
+                style={[
+                  gs.fs22,
+                  {color: '#fff', fontFamily: ts.secondarysemibold},
+                ]}>
+                {details?.point_of_contact_name?.slice(0, 1)}
+              </Text>
             </View>
             <View style={[gs.ph10, {width: '65%'}]}>
               <Text
@@ -290,58 +299,63 @@ export default function CustomDrawer(props) {
             />
           )}
         />
-        <DrawerItem
-          label={() => (
-            <Flex
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center">
-              <Text
-                style={{
-                  ...styles.label,
-                  color:
-                    focused === 'Manage Occassions' ? '#fff' : ts.primarytext,
-                }}>
-                Manage Occassions
-              </Text>
-              <EntypoIcons
-                name="chevron-small-right"
-                style={{
-                  ...styles.righticon,
-                  color:
-                    focused === 'Manage Occassions' ? '#fff' : ts.primarytext,
-                }}
+        {flow == 'catering' && (
+          <DrawerItem
+            label={() => (
+              <Flex
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center">
+                <Text
+                  style={{
+                    ...styles.label,
+                    color:
+                      focused === 'Manage Occassions' ? '#fff' : ts.primarytext,
+                  }}>
+                  Manage Occassions
+                </Text>
+                <EntypoIcons
+                  name="chevron-small-right"
+                  style={{
+                    ...styles.righticon,
+                    color:
+                      focused === 'Manage Occassions' ? '#fff' : ts.primarytext,
+                  }}
+                />
+              </Flex>
+            )}
+            focused={focused === 'Manage Occassions'}
+            activeTintColor="#fff"
+            activeBackgroundColor={theme}
+            onPress={() => {
+              props.navigation.navigate('Manage Occassions');
+            }}
+            labelStyle={styles.label}
+            inactiveTintColor={ts.primarytext}
+            style={{
+              ...styles.labelcontainer,
+              backgroundColor:
+                focused !== 'Manage Occassions' ? '#f5f5f5' : theme,
+              borderWidth: focused !== 'Manage Occassions' ? 0.5 : 0,
+              borderColor: focused !== 'Manage Occassions' ? '#999' : '#fff',
+            }}
+            icon={() => (
+              <MaterialIcons
+                name="celebration"
+                style={[
+                  gs.fs22,
+                  {
+                    color:
+                      focused === 'Manage Occassions'
+                        ? '#fff'
+                        : ts.secondarytext,
+                  },
+                ]}
               />
-            </Flex>
-          )}
-          focused={focused === 'Manage Occassions'}
-          activeTintColor="#fff"
-          activeBackgroundColor={theme}
-          onPress={() => {
-            props.navigation.navigate('Manage Occassions');
-          }}
-          labelStyle={styles.label}
-          inactiveTintColor={ts.primarytext}
-          style={{
-            ...styles.labelcontainer,
-            backgroundColor:
-              focused !== 'Manage Occassions' ? '#f5f5f5' : theme,
-            borderWidth: focused !== 'Manage Occassions' ? 0.5 : 0,
-            borderColor: focused !== 'Manage Occassions' ? '#999' : '#fff',
-          }}
-          icon={() => (
-            <MaterialIcons
-              name="celebration"
-              style={[
-                gs.fs22,
-                {
-                  color:
-                    focused === 'Manage Occassions' ? '#fff' : ts.secondarytext,
-                },
-              ]}
-            />
-          )}
-        />
+            )}
+          />
+        )}
+
         <DrawerItem
           label={() => (
             <Flex
@@ -679,7 +693,7 @@ const styles = ScaledSheet.create({
     height: '45@ms',
     width: '45@ms',
     borderRadius: '50@ms',
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

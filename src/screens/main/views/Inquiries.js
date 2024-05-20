@@ -223,6 +223,7 @@ export default function Inquiries({navigation}) {
               onChangeText={text => {
                 setSearch(text);
               }}
+              textColor={ts.secondarytext}
             />
             <TouchableOpacity
               style={[

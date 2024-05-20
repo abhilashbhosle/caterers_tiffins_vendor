@@ -86,7 +86,16 @@ export const PackageValidations =async values => {
       type: 'danger',
     });
     return false;
-  } else if (!values.minPrice) {
+  } 
+  if(values?.miniPlatesCap>values?.maxPlatesCap){
+    showMessage({
+      message: 'Request Failed!',
+      description: 'Maximum Capacity should always greater then Minimum Capacity.',
+      type: 'danger',
+    });
+    return false;
+  }
+  else if (!values.minPrice) {
     showMessage({
       message: 'Request Failed!',
       description: 'Starting Price is required.',
@@ -116,45 +125,46 @@ export const BusinessProfileValidation=async(data,profile)=>{
     });
     return false;
   }
-  else if(!profile?.workingDays){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'Working days/hours is required.',
-      type: 'danger',
-    });
-    return false;
-  }
-  else if(!profile?.staffs){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'Total Staffs is required.',
-      type: 'danger',
-    });
-    return false;
-  }
-  else if(!profile?.about){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'About is required.',
-      type: 'danger',
-    });
-    return false;
-  }
-  else if(!profile?.since){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'Working Since is required.',
-      type: 'danger',
-    });
-    return false;
-  }else if(!profile?.bEmail){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'Business Email Id is required.',
-      type: 'danger',
-    });
-    return false;
-  }
+  // else if(!profile?.workingDays){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'Working days/hours is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
+  // else if(!profile?.staffs){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'Total Staffs is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
+  // else if(!profile?.about){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'About is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
+  // else if(!profile?.since){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'Working Since is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
+  // else if(!profile?.bEmail){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'Business Email Id is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
   else if(!profile?.bPhone){
     showMessage({
       message: 'Request Failed!',
@@ -163,22 +173,23 @@ export const BusinessProfileValidation=async(data,profile)=>{
     });
     return false;
   }
-  else if(!profile?.landlineNumber){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'Alternative Phone Number is required.',
-      type: 'danger',
-    });
-    return false;
-  }
-  else if(!profile?.whatsappNumber){
-    showMessage({
-      message: 'Request Failed!',
-      description: 'Whatsapp Number is required.',
-      type: 'danger',
-    });
-    return false;
-  }else{
+  // else if(!profile?.landlineNumber){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'Alternative Phone Number is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
+  // else if(!profile?.whatsappNumber){
+  //   showMessage({
+  //     message: 'Request Failed!',
+  //     description: 'Whatsapp Number is required.',
+  //     type: 'danger',
+  //   });
+  //   return false;
+  // }
+  else{
     return true
   }
 

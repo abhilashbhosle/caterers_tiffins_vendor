@@ -11,7 +11,11 @@ import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import {getPackage} from '../../controllers/PackageController';
 import {Center, Flex} from 'native-base';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import {getMealService, packageTiffinUpdateService, packageUpdateService} from '../../services/PackageService';
+import {
+  getMealService,
+  packageTiffinUpdateService,
+  packageUpdateService,
+} from '../../services/PackageService';
 import Updatebtn from '../../../components/Updatebtn';
 
 function TiffinPackages() {
@@ -45,15 +49,15 @@ function TiffinPackages() {
       });
     }
   }, [packageDetails]);
-    // =======FOODTYPES TOGGLE======//
-    const handleFoodType = index => {
-      const updatedFoodTypes = packs?.foodTypes.map((food, i) =>
-        i === index
-          ? {...food, selected: food.selected === '1' ? '0' : '1'}
-          : food,
-      );
-      setPacks({...packs, foodTypes: updatedFoodTypes});
-    };
+  // =======FOODTYPES TOGGLE======//
+  const handleFoodType = index => {
+    const updatedFoodTypes = packs?.foodTypes.map((food, i) =>
+      i === index
+        ? {...food, selected: food.selected === '1' ? '0' : '1'}
+        : food,
+    );
+    setPacks({...packs, foodTypes: updatedFoodTypes});
+  };
   // ======SERVICE TYPES=======//
   const handleServiceType = index => {
     const updatedFoodTypes = packs?.serviceTypes.map((food, i) =>
@@ -72,36 +76,36 @@ function TiffinPackages() {
     );
     setPacks({...packs, mealTimes: updatedFoodTypes});
   };
-    // =======KITCHEN TYPES TOGGLE======//
-    const handleKitchenTypes = index => {
-      const updatedFoodTypes = packs?.kitchenTypes.map((food, i) =>
-        i === index
-          ? {...food, selected: food.selected === '1' ? '0' : '1'}
-          : food,
-      );
-      setPacks({...packs, kitchenTypes: updatedFoodTypes});
+  // =======KITCHEN TYPES TOGGLE======//
+  const handleKitchenTypes = index => {
+    const updatedFoodTypes = packs?.kitchenTypes.map((food, i) =>
+      i === index
+        ? {...food, selected: food.selected === '1' ? '0' : '1'}
+        : food,
+    );
+    setPacks({...packs, kitchenTypes: updatedFoodTypes});
+  };
+  const handleUpdate = () => {
+    const serviceTypes = packs.serviceTypes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const MealTypes = packs.mealTimes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const foodTypes = packs.foodTypes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const kitchenTypes = packs.kitchenTypes.map((e, i) => {
+      return {id: Number(e.id), selected: Number(e.selected)};
+    });
+    const body = {
+      foodTypes: JSON.stringify(foodTypes),
+      serviceTypes: JSON.stringify(serviceTypes),
+      mealTimes: JSON.stringify(MealTypes),
+      kitchenTypes: JSON.stringify(kitchenTypes),
     };
-    const handleUpdate = () => {
-      const serviceTypes = packs.serviceTypes.map((e, i) => {
-        return {id: Number(e.id), selected: Number(e.selected)};
-      });
-      const MealTypes = packs.mealTimes.map((e, i) => {
-        return {id: Number(e.id), selected: Number(e.selected)};
-      });
-      const foodTypes = packs.foodTypes.map((e, i) => {
-        return {id: Number(e.id), selected: Number(e.selected)};
-      });
-      const kitchenTypes = packs.kitchenTypes.map((e, i) => {
-        return {id: Number(e.id), selected: Number(e.selected)};
-      });
-      const body = {
-        foodTypes: JSON.stringify(foodTypes),
-        serviceTypes: JSON.stringify(serviceTypes),
-        mealTimes:JSON.stringify(MealTypes),
-        kitchenTypes:JSON.stringify(kitchenTypes)
-      };
-      packageTiffinUpdateService({body, dispatch});
-    };
+    packageTiffinUpdateService({body, dispatch});
+  };
   return (
     packs?.foodTypes && (
       <KeyboardAwareScrollView
@@ -150,7 +154,12 @@ function TiffinPackages() {
                             {
                               ...styles.toggleicon,
                               color:
-                                e.selected == '1' ? theme : ts.secondarytext,
+                                e.selected == '1' && e.food_type_name == 'Veg'
+                                  ? ts.accent3
+                                  : e.selected == '1' &&
+                                    e.food_type_name == 'Non Veg'
+                                  ? ts.accent4
+                                  : ts.secondarytext,
                             },
                           ]}
                         />
@@ -386,8 +395,7 @@ function TiffinPackages() {
         </Card>
         <TouchableOpacity
           style={[styles.updatebtncontainer, gs.mh10]}
-          onPress={handleUpdate}
-        >
+          onPress={handleUpdate}>
           <Updatebtn btntxt="Update" />
         </TouchableOpacity>
       </KeyboardAwareScrollView>

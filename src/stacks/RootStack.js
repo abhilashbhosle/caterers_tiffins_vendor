@@ -10,7 +10,9 @@ import FlashMessage from 'react-native-flash-message';
 import {gs} from '../../GlobalStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow, startLoader} from '../redux/slicers/CommomSlicer';
-import { addEventListener } from "@react-native-community/netinfo";
+import {addEventListener} from '@react-native-community/netinfo';
+import { ScaledSheet } from 'react-native-size-matters';
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 export default function RootStack() {
@@ -21,41 +23,44 @@ export default function RootStack() {
   const [profileUpdate, setProfleUpdate] = useState(null);
   const dispatch = useDispatch();
   let logout = useSelector(state => state.common.logout);
-  const [checkConnection,setCheckConnection]=useState(true)
+  const [checkConnection, setCheckConnection] = useState(true);
+  const navigation=useNavigation()
+  
 
   useEffect(() => {
     const unsubscribe = addEventListener(state => {
-      console.log("Connection type", state.type);
-      console.log("Is connected?", state.isConnected);
-      setCheckConnection(state.isConnected)
+      console.log('Connection type', state.type);
+      console.log('Is connected?', state.isConnected);
+      setCheckConnection(state.isConnected);
     });
     (async () => {
       let token = await AsyncStorage.getItem('token');
       let profile = await AsyncStorage.getItem('profileUpdated');
       let refreshToken = await AsyncStorage.getItem('refreshToken');
       let flow = await AsyncStorage.getItem('flow');
-      console.log("flow",flow)
+      console.log('flow', flow);
       dispatch(getFlow(flow));
       setTk(token);
       setProfleUpdate(profile);
       setNavDetails(true);
     })();
-    return unsubscribe()
+    return unsubscribe();
   }, []);
   useEffect(() => {
     if (logout) {
-      console.log('entered into logout')
+      console.log('entered into logout');
       setTk(null);
-      dispatch(startLoader(false));
+      setTimeout(()=>{
+        dispatch(startLoader(false));
+      },3000)
     }
   }, [logout]);
 
   if (!navdetails) {
     return;
   }
-  
-  return (
-    checkConnection?
+
+  return checkConnection ? (
     <>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {!tk && <Stack.Screen name="OnboardStack" component={OnboardStack} />}
@@ -64,19 +69,12 @@ export default function RootStack() {
       </Stack.Navigator>
       {loading && (
         <View
-          style={{
-            width,
-            height,
-            position: 'absolute',
-            backgroundColor: '#fffe',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          style={{...styles.lottifieContainer,width,height}}>
           <LottieView
             source={require('../assets/Loader/spinner.json')}
             autoPlay
             loop
-            style={{height: 210, width: 150, bottom: 10}}
+            style={styles.lottiIcon}
           />
         </View>
       )}
@@ -89,22 +87,24 @@ export default function RootStack() {
         }}
       />
     </>
-    :
+  ) : (
     <View
-    style={{
-      width,
-      height,
-      position: 'absolute',
-      backgroundColor: '#fffe',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-    <LottieView
-      source={require('../assets/Loader/nonetwork.json')}
-      autoPlay
-      loop
-      style={{height: 210, width: 150, bottom: 10}}
-    />
-  </View>
+      style={{...styles.lottifieContainer,width,height}}>
+      <LottieView
+        source={require('../assets/Loader/nonetwork.json')}
+        autoPlay
+        loop
+        style={styles.lottiIcon}
+      />
+    </View>
   );
 }
+const styles=ScaledSheet.create({
+  lottifieContainer:{
+    position: 'absolute',
+    backgroundColor: '#fffe',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lottiIcon:{height: 210, width: 150, bottom: 10}
+})

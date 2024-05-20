@@ -16,8 +16,8 @@ import {getProfile} from '../../controllers/ProfileController';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import {GOOGLE_KEY} from '@env';
 import {businessUpdateService} from '../../services/BusinessService';
-import { ScrollView } from 'react-native-gesture-handler';
-import { BusinessProfileValidation } from '../../../components/Validations';
+import {ScrollView} from 'react-native-gesture-handler';
+import {BusinessProfileValidation} from '../../../components/Validations';
 
 export default function BusinessProfile({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -93,12 +93,12 @@ export default function BusinessProfile({navigation}) {
       });
     }
   }, [profileDetails]);
-  handleUpdate = async() => {
+  handleUpdate = async () => {
     let data = profile.address;
     let tempData = data?.description
       ? data.description.split(',')
       : data.split(',');
-    let res=await BusinessProfileValidation(data,profile)
+    let res = await BusinessProfileValidation(data, profile);
     let temp = {
       street_name: tempData[0],
       area: tempData[1].trim(),
@@ -123,17 +123,20 @@ export default function BusinessProfile({navigation}) {
       working_since: profile?.since,
       business_email: profile?.bEmail,
       // business_phone_number: profile?.bEmail,
-      business_phone_number: `+91-${profile?.bPhone}`,
+      business_phone_number: profile?.bPhone ? `+91-${profile?.bPhone}` : '',
       landline_number: profile?.landlineNumber,
-      whatsapp_business_phone_number: `+91-${profile?.whatsappNumber}`,
+      whatsapp_business_phone_number: profile?.whatsappNumber
+        ? `+91-${profile?.whatsappNumber}`
+        : '',
       website_link: profile?.website,
       twitter_id: profile?.twitter,
       instagram_link: profile?.instagram,
       facebook_link: profile?.facebook,
       point_of_contact_name: profile?.contactPersonName,
     };
-    if(res){
-    businessUpdateService({body: temp, dispatch});
+    if (res) {
+      console.log(temp);
+      businessUpdateService({body: temp, dispatch});
     }
   };
   return (
@@ -148,9 +151,8 @@ export default function BusinessProfile({navigation}) {
         enableOnAndroid={true}
         showsVerticalScrollIndicator={false}
         style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}
-        contentContainerStyle={{flexGrow:1}}
-        keyboardShouldPersistTaps="handled"
-        >
+        contentContainerStyle={{flexGrow: 1}}
+        keyboardShouldPersistTaps="handled">
         <Center>
           <Text
             style={[
@@ -164,7 +166,7 @@ export default function BusinessProfile({navigation}) {
           <Center>
             <View style={[gs.mv10]}>
               <Text style={{...styles.subtitke, color: theme}}>
-                {flow=='catering'?'Catering Name':'Tiffin Name'}
+                {flow == 'catering' ? 'Catering Name' : 'Tiffin Name'}
               </Text>
               <TextInput
                 style={{...styles.input, width: width - 80}}
@@ -255,44 +257,44 @@ export default function BusinessProfile({navigation}) {
             <Text style={{...styles.subtitke, color: theme}}>
               Enter Full Address
             </Text>
-         
-              <GooglePlacesAutocomplete
-                textInputProps={{
-                  placeholderTextColor: ts.secondarytext,
-                  returnKeyType: 'search',
-                }}
-                GooglePlacesSearchQuery={{fields: 'geometry'}}
-                disableScroll={true}
-                ref={ref}
-                placeholder="Try A2B, Mg road, Bangalore, etc."
-                fetchDetails={true}
-                onPress={(data, details) => {
-                  setProfile({
-                    ...profile,
-                    address: data,
-                    geometry: details?.geometry,
-                  });
-                }}
-                query={{
-                  key: GOOGLE_KEY,
-                  language: 'en',
-                  region: 'IN',
-                }}
-                styles={{
-                  textInput: {
-                    ...styles.input,
-                    borderWidth: 1,
-                    borderColor: '#999',
-                    borderRadius: 8,
-                  },
-                  description: {
-                    color: ts.primarytext,
-                  },
-                }}
-                // listEmptyComponent={
-                //   <Text style={styles.notfound}>Result Not found</Text>
-                // }
-              />
+
+            <GooglePlacesAutocomplete
+              textInputProps={{
+                placeholderTextColor: ts.secondarytext,
+                returnKeyType: 'search',
+              }}
+              GooglePlacesSearchQuery={{fields: 'geometry'}}
+              disableScroll={true}
+              ref={ref}
+              placeholder="Try A2B, Mg road, Bangalore, etc."
+              fetchDetails={true}
+              onPress={(data, details) => {
+                setProfile({
+                  ...profile,
+                  address: data,
+                  geometry: details?.geometry,
+                });
+              }}
+              query={{
+                key: GOOGLE_KEY,
+                language: 'en',
+                region: 'IN',
+              }}
+              styles={{
+                textInput: {
+                  ...styles.input,
+                  borderWidth: 1,
+                  borderColor: '#999',
+                  borderRadius: 8,
+                },
+                description: {
+                  color: ts.primarytext,
+                },
+              }}
+              // listEmptyComponent={
+              //   <Text style={styles.notfound}>Result Not found</Text>
+              // }
+            />
           </View>
         </Card>
         {/* =======ABOUT=========== */}

@@ -57,7 +57,7 @@ export default function Profile({navigation}) {
                   name: values.name,
                   companyPhone: `+91-${values.companyPhone}`,
                   landline1: `${values.landline1}`,
-                  landline2: values?.landline2?`+91-${values.landline2}`:'',
+                  landline2: values?.landline2 ? `+91-${values.landline2}` : '',
                   navigation,
                 }),
               );
@@ -85,7 +85,7 @@ export default function Profile({navigation}) {
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
                   textColor={ts.secondarytext}
-
+                  autoComplete="off"
                 />
                 {errors.name && touched.name && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -104,7 +104,7 @@ export default function Profile({navigation}) {
                   onChangeText={handleChange('serviceName')}
                   onBlur={handleBlur('serviceName')}
                   textColor={ts.secondarytext}
-
+                  autoComplete="off"
                 />
                 {errors.serviceName && touched.serviceName && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -125,6 +125,7 @@ export default function Profile({navigation}) {
                   onChangeText={handleChange('companyPhone')}
                   onBlur={handleBlur('companyPhone')}
                   textColor={ts.secondarytext}
+                  autoComplete="off"
                 />
                 {errors.companyPhone && touched.companyPhone && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
@@ -145,7 +146,7 @@ export default function Profile({navigation}) {
                   onBlur={handleBlur('landline1')}
                   textColor={ts.secondarytext}
                   maxLength={12}
-
+                  autoComplete="off"
                 />
                 <TextInput
                   label="Add Whatsapp Business No. (Optional)"
@@ -161,7 +162,7 @@ export default function Profile({navigation}) {
                   onChangeText={handleChange('landline2')}
                   onBlur={handleBlur('landline2')}
                   textColor={ts.secondarytext}
-
+                  autoComplete="off"
                 />
                 <Center>
                   <TouchableOpacity
@@ -207,7 +208,7 @@ const styles = ScaledSheet.create({
   input: {
     height: '40@ms',
     backgroundColor: '#fff',
-    fontSize: '13@ms', 
+    fontSize: '13@ms',
     fontFamily: ts.secondaryregular,
     color: ts.primarytext,
     borderRadius: '12@ms',
