@@ -16,7 +16,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {cuisine_data} from '../../../constants/Constant';
-import {Flex} from 'native-base';
+import {Center, Flex} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Addbtn from '../../../components/Addbtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -32,6 +32,7 @@ export default function AddCuisine({navigation}) {
   const [expanded, setExpanded] = useState(-1);
   const [cuisineData, setCuisineData] = useState([]);
   const dispatch = useDispatch();
+  const [search, setSearch] = useState('');
   useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
@@ -44,6 +45,28 @@ export default function AddCuisine({navigation}) {
       setCuisineData(cuisine);
     }
   }, [cuisine]);
+
+  // =======SEARCH CUISINE========//
+  const handleSearch = text => {
+    setSearch(text);
+  };
+  useEffect(()=>{
+    let data = [...cuisine];
+    if (search?.length > 0) {
+      console.log('entered inside with',search)
+      let finalData = data.filter((e, i) => {
+        let c1 = e.name.startsWith(search);
+        let c2 = e.children.filter(item => item.name.startsWith(search));
+        if (c1 || c2.length > 0) {
+          return e;
+        }
+      });
+      setCuisineData(finalData);
+    } else {
+      setCuisineData(cuisine);
+    }
+    
+  },[search])
 
   // =====SETTING PARENT CUISINES=======//
   const handleParentCuisines = index => {
@@ -65,22 +88,26 @@ export default function AddCuisine({navigation}) {
   };
   // =====SETTING CHILDREN CUISINES=======//
   const handleChildrenCuisines = (pi, i) => {
-    let data=[...cuisineData]
-    let da=data[pi].children.map((e,ind)=>{
-      return{
+    let data = [...cuisineData];
+    let da = data[pi].children.map((e, ind) => {
+      return {
         ...e,
-        selected:i==ind? data[pi].children[i].selected=='0'?'1':'0':data[pi].children[ind].selected
-      }
-    })
-    let updated_data=data.map((e,ind)=>{
-      console.log(ind,i)
-      return{
+        selected:
+          i == ind
+            ? data[pi].children[i].selected == '0'
+              ? '1'
+              : '0'
+            : data[pi].children[ind].selected,
+      };
+    });
+    let updated_data = data.map((e, ind) => {
+      return {
         ...e,
-        children:ind==pi?da:data[ind].children
-      }
-    })
+        children: ind == pi ? da : data[ind].children,
+      };
+    });
 
-    setCuisineData(updated_data)
+    setCuisineData(updated_data);
     // setCuisineData(data)
     // ===IF SINGLE CHECKBOX IS CHECKED MARKING PARENT AS CHECKED IF SINGLE CHILD IS UNCHECKED MAKING PARENT AS UNCHECKED=======//
     let check = updated_data[pi].children.filter((e, i) => {
@@ -112,20 +139,20 @@ export default function AddCuisine({navigation}) {
           alignItems="center"
           justifyContent="space-between">
           <Flex direction="row" align="center">
-            <TouchableOpacity onPress={()=>handleParentCuisines(index)}>
-            <MaterialIcons
-              name={
-                item.selected == 0 ? 'check-box-outline-blank' : 'check-box'
-              }
-              style={[
-                gs.fs22,
-                {
-                  ...styles.checkicon,
-                  color: item.selected == 0 ? ts.primarytext : theme,
-                },
-                gs.mr10,
-              ]}
-            />
+            <TouchableOpacity onPress={() => handleParentCuisines(index)}>
+              <MaterialIcons
+                name={
+                  item.selected == 0 ? 'check-box-outline-blank' : 'check-box'
+                }
+                style={[
+                  gs.fs22,
+                  {
+                    ...styles.checkicon,
+                    color: item.selected == 0 ? ts.primarytext : theme,
+                  },
+                  gs.mr10,
+                ]}
+              />
             </TouchableOpacity>
             <Text style={styles.accordianTitle}>{item.name}</Text>
           </Flex>
@@ -153,8 +180,7 @@ export default function AddCuisine({navigation}) {
                     <Flex
                       direction="row"
                       alignItems="center"
-                      style={[gs.ml20, gs.mt5]
-                      }>
+                      style={[gs.ml20, gs.mt5]}>
                       <MaterialIcons
                         name={
                           e.selected == 0
@@ -176,7 +202,7 @@ export default function AddCuisine({navigation}) {
                             color: ts.primarytext,
                             fontFamily: ts.secondaryregular,
                           },
-                          gs.mt4
+                          gs.mt4,
                         ]}>
                         {e.name}
                       </Text>
@@ -214,17 +240,28 @@ export default function AddCuisine({navigation}) {
           placeholder="Search your cuisine..."
           style={styles.input}
           outlineColor="#999"
+          value={search}
           activeOutlineColor={theme}
           outlineStyle={[gs.br12, styles.searchoutline]}
           left={
             <TextInput.Icon
-              icon={() => <EvilIcons name="search" style={styles.icon} />}
+              icon={() => (
+                <View
+                  style={[
+                    {alignItems: 'center', justifyContent: 'center'},
+                    gs.h25,
+                  ]}>
+                  <EvilIcons name="search" style={styles.icon} />
+                </View>
+              )}
             />
           }
-          textColor={ts.secondarytext}
-
+          textColor={ts.primarytext}
+          onChangeText={text => {
+            handleSearch(text);
+          }}
         />
-
+      
         <FlatList
           keyExtractor={(item, index) => {
             String(index);
@@ -234,6 +271,7 @@ export default function AddCuisine({navigation}) {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.contentContainerStyle}
         />
+
         <TouchableOpacity style={[gs.mb10]} onPress={handleAddCuisine}>
           <Addbtn btntxt="Add Cuisines" />
         </TouchableOpacity>
@@ -244,13 +282,13 @@ export default function AddCuisine({navigation}) {
 const styles = ScaledSheet.create({
   input: {
     color: ts.secondarytext,
-    fontSize: '14@ms',
-    backgroundColor:'#fff'
+    // fontSize: '14@ms',
+    backgroundColor: '#fff',
   },
   icon: {
     fontSize: '24@ms',
     color: ts.secondarytext,
-    // top: '3@ms',
+    bottom: '2@ms',
   },
   labelcontainer: {
     // height: '60@ms',

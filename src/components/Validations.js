@@ -107,7 +107,8 @@ export const PackageValidations =async values => {
   }
 };
 
-export const BusinessProfileValidation=async(data,profile)=>{
+export const BusinessProfileValidation=async(data,profile,ref)=>{
+  
  
   if(!profile?.cateringName){
     showMessage({
@@ -125,6 +126,7 @@ export const BusinessProfileValidation=async(data,profile)=>{
     });
     return false;
   }
+  
   // else if(!profile?.workingDays){
   //   showMessage({
   //     message: 'Request Failed!',

@@ -359,42 +359,43 @@ export const getLocationService = async ({
       `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_KEY}`,
     );
 
-    let addressComponents = res.data.results[0].address_components;
+    const results = res.data.results;
+    let maxAddressComponentsLength = -1;
+    let selectedAddress = null;
 
-    function getAddressComponent(components, typeName) {
-      for (const component of components) {
-        if (component.types.includes(typeName)) {
-          return component.long_name;
-        }
+    results.forEach(result => {
+      const addressComponentsLength = result.address_components.length;
+      if (addressComponentsLength > maxAddressComponentsLength) {
+        maxAddressComponentsLength = addressComponentsLength;
+        selectedAddress = result;
       }
-      return null;
-    }
+    });
 
     // Extracting specific components
-    const area = getAddressComponent(addressComponents, 'sublocality_level_1');
-    const state = getAddressComponent(
-      addressComponents,
-      'administrative_area_level_1',
-    );
-    const city = getAddressComponent(addressComponents, 'locality');
-    const country = getAddressComponent(addressComponents, 'country');
-    const pincode = getAddressComponent(addressComponents, 'postal_code');
-
-    let temp = {
-      street_name: area,
-      area: area,
-      pincode: pincode,
-      latitude: latitude,
-      longitude: longitude,
-      address: res.data.results[0].formatted_address,
-      city: city,
-      state: state,
-      country: country,
-      formatted_address: res.data.results[0].formatted_address,
-      place_id: res.data.results[0].place_id,
-    };
-    // console.log('temp', temp);
-    await updateLocationService({temp, navigation});
+    if (selectedAddress) {
+      const addressComponents = selectedAddress.address_components;
+      const addressData = {
+        street_name: getAddressComponent(addressComponents, 'route'),
+        area: getAddressComponent(addressComponents, 'sublocality_level_1'),
+        pincode: getAddressComponent(addressComponents, 'postal_code'),
+        latitude: latitude,
+        longitude: longitude,
+        address: getAddressComponent(
+          addressComponents,
+          'administrative_area_level_3',
+        ),
+        city: getAddressComponent(addressComponents, 'locality'),
+        state: getAddressComponent(
+          addressComponents,
+          'administrative_area_level_1',
+        ),
+        country: getAddressComponent(addressComponents, 'country'),
+        formatted_address: res.data.results[0].formatted_address,
+        place_id: res.data.results[0].place_id,
+      };
+      console.log("addressdata",addressData)
+      await updateLocationService({temp:addressData, navigation,dispatch});
+    }
     dispatch(setLocation(res.data.results[0]));
   } catch (error) {
     console.log('error in location', error);
@@ -402,9 +403,16 @@ export const getLocationService = async ({
     dispatch(startLoader(false));
   }
 };
+const getAddressComponent = (addressComponents, type) => {
+  const component = addressComponents.find(component =>
+    component.types.includes(type),
+  );
+  return component ? component.long_name : '';
+};
 // ======UPDATE LOCATION=========//
-export const updateLocationService = async ({temp, navigation}) => {
+export const updateLocationService = async ({temp, navigation,dispatch}) => {
   try {
+    dispatch(startLoader(true));
     let token = await AsyncStorage.getItem('token');
     let res = await axios.post(
       `${endpoints.baseUrl}update-vendor-location`,
@@ -426,12 +434,11 @@ export const updateLocationService = async ({temp, navigation}) => {
     }
     return res;
   } catch (error) {
+    dispatch(startLoader(false));
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',
-        description: error.response.data?.data_validation_errors.map((e, i) => (
-          <Text>{e.msg}</Text>
-        )),
+        description: error.response.data.message,
         type: 'danger',
       });
       console.log('inside error in manual location', error.response.data);

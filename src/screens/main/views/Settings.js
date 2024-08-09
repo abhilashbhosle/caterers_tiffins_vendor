@@ -884,6 +884,7 @@ export default function Settings({navigation}) {
               height={40}
             />
           </TouchableOpacity>
+          <View style={gs.h20}></View>
         </View>
       </KeyboardAwareScrollView>
     </ScreenWrapper>

@@ -145,6 +145,7 @@ export default function CustomDrawer(props) {
               name="stacked-bar-chart"
               style={[
                 gs.fs24,
+                styles.iconcontainer,
                 {color: focused === 'Dashboard' ? '#fff' : ts.primarytext},
               ]}
             />
@@ -190,6 +191,7 @@ export default function CustomDrawer(props) {
               name="edit-note"
               style={[
                 gs.fs24,
+                styles.iconcontainer,
                 {color: focused === 'Inquiries' ? '#fff' : ts.primarytext},
               ]}
             />
@@ -236,6 +238,7 @@ export default function CustomDrawer(props) {
               name="feedback"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {color: focused === 'Reviews' ? '#fff' : ts.secondarytext},
               ]}
             />
@@ -291,6 +294,7 @@ export default function CustomDrawer(props) {
               name="utensils"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color:
                     focused === 'Manage Cuisine' ? '#fff' : ts.secondarytext,
@@ -344,6 +348,7 @@ export default function CustomDrawer(props) {
                 name="celebration"
                 style={[
                   gs.fs22,
+                  styles.iconcontainer,
                   {
                     color:
                       focused === 'Manage Occassions'
@@ -397,6 +402,7 @@ export default function CustomDrawer(props) {
               name="pager"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color: focused === 'Packages' ? '#fff' : ts.secondarytext,
                 },
@@ -456,6 +462,7 @@ export default function CustomDrawer(props) {
               name="person"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color:
                     focused === 'Business Profile' ? '#fff' : ts.secondarytext,
@@ -505,6 +512,7 @@ export default function CustomDrawer(props) {
               name="photo-library"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color:
                     focused === 'Photo Gallery' ? '#fff' : ts.secondarytext,
@@ -554,6 +562,7 @@ export default function CustomDrawer(props) {
               name="business"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color: focused === 'Branches' ? '#fff' : ts.secondarytext,
                 },
@@ -611,6 +620,7 @@ export default function CustomDrawer(props) {
               name="currency-rupee"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color: focused === 'Subscription' ? '#fff' : ts.secondarytext,
                 },
@@ -662,6 +672,7 @@ export default function CustomDrawer(props) {
               name="settings"
               style={[
                 gs.fs20,
+                styles.iconcontainer,
                 {
                   color: focused === 'Settings' ? '#fff' : ts.secondarytext,
                 },
@@ -677,7 +688,7 @@ const styles = ScaledSheet.create({
   label: {
     fontSize: '15@ms',
     fontFamily: ts.secondaryregular,
-    marginLeft: '-20@ms',
+    marginLeft: '-25@ms',
   },
   labelcontainer: {
     height: '50@ms',
@@ -696,4 +707,8 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  iconcontainer:{
+    // backgroundColor:'#000',
+    width:'30@ms'
+  }
 });

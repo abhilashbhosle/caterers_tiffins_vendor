@@ -36,7 +36,7 @@ export const businessUpdateService = async ({body, dispatch}) => {
       console.log(error.response.data)
       showMessage({
         message: 'Request Failed!',
-        description:error.response.data?.data_validation_errors.map((e,i)=><Text>{e.msg}</Text>),
+        description:error.response.data?.data_validation_errors.map((e,i)=><Text key={i}>{e.msg}</Text>),
         type: 'danger',
       });
       return error.response.data;

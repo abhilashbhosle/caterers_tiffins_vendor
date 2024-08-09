@@ -61,7 +61,7 @@ export default function ManualLocation({navigation}) {
       place_id:selectedData.place_id
       }
 
-      await updateLocationService({temp,navigation})
+      await updateLocationService({temp,navigation,dispatch})
     }catch(error){
       showMessage({
         message: 'Request Failed!',

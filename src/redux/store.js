@@ -10,6 +10,7 @@ import PhotoController from '../screens/controllers/PhotoController'
 import ReviewController from '../screens/controllers/ReviewController'
 import InquiryController from '../screens/controllers/InquiryController'
 import SettingsController from '../screens/controllers/SettingsController'
+import SubscriptionController from '../screens/controllers/SubscriptionController'
 export const store = configureStore({
   reducer: {
 	common:commonreducer,
@@ -22,6 +23,7 @@ export const store = configureStore({
   photo:PhotoController,
   review:ReviewController,
   inquiry:InquiryController,
-  settings:SettingsController
+  settings:SettingsController,
+  subscription:SubscriptionController
   },
 })

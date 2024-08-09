@@ -91,7 +91,7 @@ export default function RootStack() {
     <View
       style={{...styles.lottifieContainer,width,height}}>
       <LottieView
-        source={require('../assets/Loader/nonetwork.json')}
+        source={require('../assets/Loader/no-network.json')}
         autoPlay
         loop
         style={styles.lottiIcon}

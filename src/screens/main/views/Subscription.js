@@ -5,11 +5,11 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {gs} from '../../../../GlobalStyles';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import {Center, Flex} from 'native-base';
 import {ScaledSheet} from 'react-native-size-matters';
@@ -18,13 +18,32 @@ import {plan_data} from '../../../constants/Constant';
 import Carousel from 'react-native-reanimated-carousel';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import {getSubscriptionList} from '../../controllers/SubscriptionController';
+import CouponSheet from './CouponSheet';
 
 export default function Subscription({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
   const [activeIndex, setActiveindex] = useState(0);
-  const [monthly,setMonthly]=useState(false)
+  const [monthly, setMonthly] = useState(false);
+  const dispatch = useDispatch();
+  let {subListData, subListError, subListLoading} = useSelector(
+    state => state.subscription,
+  );
+  const [openCouponSheet, setOpenCouponSheet] = useState('');
+
+  console.log(monthly);
+
+  useEffect(() => {
+    dispatch(getFlow(flow));
+    let params = {
+      vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
+    };
+    dispatch(getSubscriptionList({params}));
+  }, [flow]);
+
   //========REFS========//
   const topRef = useRef(null);
   const bottomRef = useRef(null);
@@ -43,7 +62,8 @@ export default function Subscription({navigation}) {
               color: activeIndex === index ? ts.primarytext : '#999',
             },
           ]}>
-          {item.name}
+          {item?.subscriptionType?.slice(0, 1)?.toUpperCase()}
+          {item?.subscriptionType?.slice(1)}
         </Text>
       </TouchableOpacity>
     );
@@ -65,8 +85,22 @@ export default function Subscription({navigation}) {
             {width: width - 100, height: height / 1.5, backgroundColor: '#fff'},
             gs.br20,
           ]}>
-          <View style={[styles.header, {backgroundColor: item.color}]}>
-            <Text style={[styles.headtxt]}>{item.name}</Text>
+          <View
+            style={[
+              styles.header,
+              {
+                backgroundColor:
+                  item?.subscriptionType == 'popular'
+                    ? '#459412'
+                    : item?.subscriptionType == 'branded'
+                    ? '#8e11a5'
+                    : theme,
+              },
+            ]}>
+            <Text style={[styles.headtxt]}>
+              {item?.subscriptionType?.slice(0, 1)?.toUpperCase()}
+              {item?.subscriptionType?.slice(1)}
+            </Text>
           </View>
           <Center>
             <Flex direction="row" alignItems="center" style={[gs.mv20]}>
@@ -76,43 +110,62 @@ export default function Subscription({navigation}) {
                   {color: ts.primarytext, fontFamily: ts.secondarymedium},
                   gs.fs22,
                 ]}>
-                {item.price}
+                {monthly ? item.monthlyCharges : item?.yearlyCharges}/
               </Text>
-              <Text style={{...styles.heading, top: 5}}> month</Text>
+              <Text style={{...styles.heading, top: 5}}>
+                {monthly ? 'month' : 'year'}
+              </Text>
             </Flex>
-            <Text style={styles.heading}>{item.listing}</Text>
+            {/* <Text style={styles.heading}>{item.listing}</Text> */}
           </Center>
-          <View style={[gs.mh20, gs.mt15]}>
+          <View style={[gs.mh20, gs.mt10]}>
             <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
               Benifits:
             </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Gets clean dashboard
-            </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Track your incomes
-            </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Gets clean order PDF
-            </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Includes calender feature so you never missout any info reading
-              dates
-            </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Gets notify via email, SMS, app notification
-            </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Phone/chat feature with customers
-            </Text>
-            <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]} numberOfLines={1}>
-              - Data analysis/improvement recommendation
-            </Text>
+            {item?.benefits?.slice(0, 6)?.map((e, i) => (
+              <Text
+                style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}
+                numberOfLines={1}
+                key={i}>
+                - {e}
+              </Text>
+            ))}
           </View>
+          {item?.benefits?.length > 6 ? (
+            <Center>
+              <TouchableOpacity activeOpacity={0.7}>
+                <Text
+                  style={[
+                    {
+                      ...styles.heading,
+                      color:
+                        item?.subscriptionType == 'popular'
+                          ? '#459412'
+                          : item?.subscriptionType == 'branded'
+                          ? '#8e11a5'
+                          : theme,
+                    },
+                    gs.mv3,
+                  ]}>
+                  View more
+                </Text>
+              </TouchableOpacity>
+            </Center>
+          ) : null}
+
           <Center>
             <TouchableOpacity
-              style={{...styles.subscribebtn, backgroundColor: item.color}}
-              activeOpacity={0.7}>
+              style={{
+                ...styles.subscribebtn,
+                backgroundColor:
+                  item?.subscriptionType == 'popular'
+                    ? '#459412'
+                    : item?.subscriptionType == 'branded'
+                    ? '#8e11a5'
+                    : theme,
+              }}
+              activeOpacity={0.7}
+              onPress={() => setOpenCouponSheet(true)}>
               <Text
                 style={[
                   gs.fs15,
@@ -151,15 +204,14 @@ export default function Subscription({navigation}) {
       />
       <View style={{backgroundColor: '#fff', flex: 1}}>
         <View style={[gs.m15]}>
-          <Flex direction="row" justify="space-between" align='center'>
+          <Flex direction="row" justify="space-between" align="center">
             <Text style={styles.heading}>Choose your subscription types</Text>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
-                setMonthly(!monthly)
+                setMonthly(!monthly);
               }}
-              style={{justifyContent:'center',alignItems:'center'}}
-              >
+              style={{justifyContent: 'center', alignItems: 'center'}}>
               <FontAwesomeIcon
                 name={!monthly ? 'toggle-on' : 'toggle-off'}
                 style={[
@@ -170,31 +222,38 @@ export default function Subscription({navigation}) {
                   },
                 ]}
               />
-              <Text style={styles.heading}>{!monthly?'Monthly':'Yearly'}</Text>
+              <Text style={styles.heading}>
+                {!monthly ? 'Monthly' : 'Yearly'}
+              </Text>
             </TouchableOpacity>
           </Flex>
         </View>
-        <View>
+        <Center>
           <FlatList
             ref={topRef}
             keyExtractor={(item, index) => String(index)}
-            data={plan_data}
+            data={subListData}
             renderItem={renderItem}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
           />
-        </View>
+        </Center>
         <Carousel
           loop={false}
           ref={bottomRef}
           width={width}
           height={height}
-          data={plan_data}
+          data={subListData}
           onSnapToItem={index => scrollToIndex(index)}
           renderItem={renderPlans}
           style={[gs.mt10]}
         />
       </View>
+      <CouponSheet
+        openCouponSheet={openCouponSheet}
+        setOpenCouponSheet={setOpenCouponSheet}
+        flow={flow}
+      />
     </ScreenWrapper>
   );
 }
@@ -222,7 +281,7 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: '20@ms',
-    marginTop: '50@ms',
+    marginTop: '30@ms',
   },
   toggleicon: {
     fontSize: '35@ms',

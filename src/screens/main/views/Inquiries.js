@@ -16,6 +16,8 @@ import {getInquiry} from '../../controllers/InquiryController';
 import LottieView from 'lottie-react-native';
 import moment from 'moment';
 import InquirySkel from '../../../components/InquirySkel';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
 export default function Inquiries({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
@@ -23,11 +25,12 @@ export default function Inquiries({navigation}) {
   const [page, setPage] = useState(1);
   const [inquiries, setInquiries] = useState([]);
   const [showSkell, setShowSkell] = useState(false);
-  const [date, setDate] = useState('2024-04-02');
+  const [date, setDate] = useState(new Date());
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(10);
   let {inquiry} = useSelector(state => state.inquiry);
   const [refreshing, setRefreshing] = useState(false);
+  const [showCal, setShowCal] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -42,18 +45,18 @@ export default function Inquiries({navigation}) {
             limit,
             page,
             sort: 'newest_first',
-            date,
+            date:moment(date).format("YYYY-MM-DD"),
             search,
           }),
         );
       }, 1000);
-    } else if(page) {
+    } else if (page) {
       dispatch(
         getInquiry({
           limit,
           page,
           sort: 'newest_first',
-          date,
+          date:moment(date).format("YYYY-MM-DD"),
           search,
         }),
       );
@@ -64,8 +67,8 @@ export default function Inquiries({navigation}) {
       setInquiries([...inquiries, ...inquiry.data]);
       setRefreshing(false);
       setShowSkell(false);
-    } 
-    if(inquiry?.data?.length==0) {
+    }
+    if (inquiry?.data?.length == 0) {
       setShowSkell(false);
       setRefreshing(false);
     }
@@ -96,10 +99,10 @@ export default function Inquiries({navigation}) {
   // =======HANDLE REFRESH=========//
   handleRefresh = () => {
     setInquiries([]);
-    setPage(0)
-    setTimeout(()=>{
-      setPage(1)
-    },1000)
+    setPage(0);
+    setTimeout(() => {
+      setPage(1);
+    }, 1000);
   };
   // =======SROTING CHANGES=========//
   handleSortChange = item => {
@@ -110,12 +113,22 @@ export default function Inquiries({navigation}) {
   // =======PULL TO REFRESH========//
   const onRefresh = () => {
     setRefreshing(true);
-    setTimeout(()=>{
+    setTimeout(() => {
       handleRefresh();
-    },1000)
+    }, 1000);
   };
   const handleSearch = () => {
-      handleRefresh()
+    handleRefresh();
+  };
+
+  const hideDatePicker = () => {
+    setShowCal(false)
+  };
+  const handleConfirm = dt => {
+    setDate(dt)
+    handleRefresh()
+    hideDatePicker()
+    
   };
 
   const renderItem = ({item}) => {
@@ -196,10 +209,26 @@ export default function Inquiries({navigation}) {
                 All customers details listed below
               </Text>
             </View>
-            <MaterialIcons
-              name="calendar-month"
-              style={[gs.fs26, {color: theme}]}
-            />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShowCal(true);
+              }}
+              style={{justifyContent:'center',alignItems:'center'}}
+              >
+              <MaterialIcons
+                name="calendar-month"
+                style={[gs.fs26, {color: theme}]}
+              />
+              <Text
+                style={[
+                  gs.fs13,
+                  {fontFamily: ts.secondaryregular, color: theme},
+                  gs.mv7,
+                ]}>
+                  {moment(date).format("YYYY-MM-DD")}
+                </Text>
+            </TouchableOpacity>
           </Flex>
           <Flex
             direction="row"
@@ -264,7 +293,7 @@ export default function Inquiries({navigation}) {
           onRefresh={onRefresh}
           ListEmptyComponent={() => {
             return (
-              inquiries?.length==0 &&
+              inquiries?.length == 0 &&
               !showSkell && (
                 <Center>
                   <View style={[gs.mt10]}>
@@ -283,6 +312,14 @@ export default function Inquiries({navigation}) {
               )
             );
           }}
+        />
+        <DateTimePickerModal
+          isVisible={showCal}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+          display="spinner"
+          date={date}
         />
       </View>
     </ScreenWrapper>

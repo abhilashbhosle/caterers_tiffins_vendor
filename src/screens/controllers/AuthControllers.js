@@ -190,7 +190,8 @@ export const getLocation = createAsyncThunk(
           longitude:res.longitude,
           // latitude:13.1319,
           // longitude:80.2644,
-          dispatch,navigation}) 
+          dispatch,navigation
+        }) 
       }
       return res;
     } catch (error) {
