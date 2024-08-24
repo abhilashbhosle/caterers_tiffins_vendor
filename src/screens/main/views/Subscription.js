@@ -4,6 +4,7 @@ import {
   useWindowDimensions,
   FlatList,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -11,7 +12,7 @@ import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {gs} from '../../../../GlobalStyles';
 import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
-import {Center, Flex} from 'native-base';
+import {Center, Flex, Spinner} from 'native-base';
 import {ScaledSheet} from 'react-native-size-matters';
 import {Card} from 'react-native-paper';
 import {plan_data} from '../../../constants/Constant';
@@ -19,8 +20,17 @@ import Carousel from 'react-native-reanimated-carousel';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
-import {getSubscriptionList} from '../../controllers/SubscriptionController';
+import {
+  createOneTimeSub,
+  getSubscriptionList,
+} from '../../controllers/SubscriptionController';
 import CouponSheet from './CouponSheet';
+import {getVendorDetails} from '../../services/AuthServices';
+import SubDetails from './SubDetails';
+import {
+  calculatePayService,
+  createOneTimeSubService,
+} from '../../services/SubscriptionService';
 
 export default function Subscription({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -28,13 +38,27 @@ export default function Subscription({navigation}) {
   const {height, width} = useWindowDimensions();
   const [activeIndex, setActiveindex] = useState(0);
   const [monthly, setMonthly] = useState(false);
+  const [vendor, setVendor] = useState(null);
   const dispatch = useDispatch();
   let {subListData, subListError, subListLoading} = useSelector(
     state => state.subscription,
   );
-  const [openCouponSheet, setOpenCouponSheet] = useState('');
+  const [openCouponSheet, setOpenCouponSheet] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [viewDetails, setViewDetails] = useState(false);
+  const [details, setDetails] = useState(null);
 
-  console.log(monthly);
+  useEffect(() => {
+    (async () => {
+      try {
+        let vd = await getVendorDetails(dispatch);
+        setVendor(vd.data.data);
+      } catch (error) {
+        console.log('error', error);
+        throw error;
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     dispatch(getFlow(flow));
@@ -47,6 +71,22 @@ export default function Subscription({navigation}) {
   //========REFS========//
   const topRef = useRef(null);
   const bottomRef = useRef(null);
+  const handleCalculatePay = async item => {
+    let body = {
+      subscriptionTypeId: item?.subscriptionTypeId,
+      subscriptionDuration: monthly ? 'monthly' : 'yearly',
+    };
+    try {
+      let res = await calculatePayService({body,dispatch});
+      setDetails(res);
+      setOpenCouponSheet(true);
+      setSelectedPlan(item);
+      console.log('onetime serv res', res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
@@ -82,7 +122,7 @@ export default function Subscription({navigation}) {
         ]}>
         <Card
           style={[
-            {width: width - 100, height: height / 1.5, backgroundColor: '#fff'},
+            {width: width - 100, height: height / 1.7, backgroundColor: '#fff'},
             gs.br20,
           ]}>
           <View
@@ -122,7 +162,7 @@ export default function Subscription({navigation}) {
             <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
               Benifits:
             </Text>
-            {item?.benefits?.slice(0, 6)?.map((e, i) => (
+            {item?.benefits?.slice(0, 4)?.map((e, i) => (
               <Text
                 style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}
                 numberOfLines={1}
@@ -133,7 +173,12 @@ export default function Subscription({navigation}) {
           </View>
           {item?.benefits?.length > 6 ? (
             <Center>
-              <TouchableOpacity activeOpacity={0.7}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  setViewDetails(true);
+                  setSelectedPlan(item);
+                }}>
                 <Text
                   style={[
                     {
@@ -147,7 +192,7 @@ export default function Subscription({navigation}) {
                     },
                     gs.mv3,
                   ]}>
-                  View more
+                  View plan details..
                 </Text>
               </TouchableOpacity>
             </Center>
@@ -165,7 +210,9 @@ export default function Subscription({navigation}) {
                     : theme,
               }}
               activeOpacity={0.7}
-              onPress={() => setOpenCouponSheet(true)}>
+              onPress={() => {
+                handleCalculatePay(item);
+              }}>
               <Text
                 style={[
                   gs.fs15,
@@ -202,56 +249,74 @@ export default function Subscription({navigation}) {
         navigation={navigation}
         notifyIcon={false}
       />
-      <View style={{backgroundColor: '#fff', flex: 1}}>
-        <View style={[gs.m15]}>
-          <Flex direction="row" justify="space-between" align="center">
-            <Text style={styles.heading}>Choose your subscription types</Text>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => {
-                setMonthly(!monthly);
-              }}
-              style={{justifyContent: 'center', alignItems: 'center'}}>
-              <FontAwesomeIcon
-                name={!monthly ? 'toggle-on' : 'toggle-off'}
-                style={[
-                  // gs.ml10,
-                  {
-                    ...styles.toggleicon,
-                    color: !monthly ? theme : ts.secondarytext,
-                  },
-                ]}
-              />
-              <Text style={styles.heading}>
-                {!monthly ? 'Monthly' : 'Yearly'}
-              </Text>
-            </TouchableOpacity>
-          </Flex>
+      <ScrollView style={{backgroundColor: '#fff', flex: 1}}>
+        <View>
+          <View style={[gs.m15]}>
+            <Flex direction="row" justify="space-between" align="center">
+              <Text style={styles.heading}>Choose your subscription types</Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  setMonthly(!monthly);
+                }}
+                style={{justifyContent: 'center', alignItems: 'center'}}>
+                <FontAwesomeIcon
+                  name={!monthly ? 'toggle-on' : 'toggle-off'}
+                  style={[
+                    // gs.ml10,
+                    {
+                      ...styles.toggleicon,
+                      color: !monthly ? theme : ts.secondarytext,
+                    },
+                  ]}
+                />
+                <Text style={styles.heading}>
+                  {!monthly ? 'Monthly' : 'Yearly'}
+                </Text>
+              </TouchableOpacity>
+            </Flex>
+          </View>
+          <Center>
+            <FlatList
+              ref={topRef}
+              keyExtractor={(item, index) => String(index)}
+              data={subListData}
+              renderItem={renderItem}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            />
+          </Center>
+          {subListLoading ? (
+            <Spinner color={theme} />
+          ) : (
+            <Carousel
+              loop={false}
+              ref={bottomRef}
+              width={width}
+              height={height}
+              data={subListData}
+              onSnapToItem={index => scrollToIndex(index)}
+              renderItem={renderPlans}
+              style={[gs.mt10]}
+            />
+          )}
         </View>
-        <Center>
-          <FlatList
-            ref={topRef}
-            keyExtractor={(item, index) => String(index)}
-            data={subListData}
-            renderItem={renderItem}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-          />
-        </Center>
-        <Carousel
-          loop={false}
-          ref={bottomRef}
-          width={width}
-          height={height}
-          data={subListData}
-          onSnapToItem={index => scrollToIndex(index)}
-          renderItem={renderPlans}
-          style={[gs.mt10]}
-        />
-      </View>
+      </ScrollView>
+
       <CouponSheet
         openCouponSheet={openCouponSheet}
         setOpenCouponSheet={setOpenCouponSheet}
+        flow={flow}
+        vendor={vendor}
+        plan={selectedPlan}
+        planType={monthly ? 'Monthly' : 'Yearly'}
+        details={details}
+        setDetails={setDetails}
+      />
+      <SubDetails
+        viewDetails={viewDetails}
+        setViewDetails={setViewDetails}
+        plan={selectedPlan}
         flow={flow}
       />
     </ScreenWrapper>

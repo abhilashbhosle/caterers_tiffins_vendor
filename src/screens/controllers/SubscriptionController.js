@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
-import {getSubscriptionListService} from '../services/SubscriptionService';
+import {createOneTimeSubService, getSubscriptionListService} from '../services/SubscriptionService';
 
 // ======GET LIST OF SUBSCRIPTION=======//
 export const getSubscriptionList = createAsyncThunk(
@@ -9,6 +9,21 @@ export const getSubscriptionList = createAsyncThunk(
     try {
       dispatch(startLoader(true))
       const res = await getSubscriptionListService({params});
+      return res;
+    } catch (error) {
+      throw(error.message);
+    } finally {
+      dispatch(startLoader(false))
+    }
+  },
+);
+// ======CREATE ONE TIME SUBSCRIPTION=======//
+export const createOneTimeSub = createAsyncThunk(
+  'createOneTimeSub',
+  async ({body}, {dispatch}) => {
+    try {
+      dispatch(startLoader(true))
+      const res = await createOneTimeSubService({body});
       return res;
     } catch (error) {
       throw(error.message);
