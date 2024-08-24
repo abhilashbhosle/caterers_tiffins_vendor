@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
 
 export default function App() {
   useEffect(()=>{
-    if(Platform.OS=="android"){
+    if(Platform.OS!=="ios"){
       SplashScreen.hide();
     }
   },[])
