@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
-import {createOneTimeSubService, getSubscriptionListService} from '../services/SubscriptionService';
+import {createOneTimeSubService, getQueuedSubscriptionService, getSubscriptionListService} from '../services/SubscriptionService';
 
 // ======GET LIST OF SUBSCRIPTION=======//
 export const getSubscriptionList = createAsyncThunk(
@@ -32,6 +32,21 @@ export const createOneTimeSub = createAsyncThunk(
     }
   },
 );
+// ======GET QUEUED SUBSCRIPTION=======//
+export const getQueuedSubscription = createAsyncThunk(
+  'getQueuedSubscription',
+  async (_, {dispatch}) => {
+    try {
+      dispatch(startLoader(true))
+      const res = await getQueuedSubscriptionService();
+      return res.data;
+    } catch (error) {
+      throw(error.message);
+    } finally {
+      dispatch(startLoader(false))
+    }
+  },
+);
 
 const subSlice = createSlice({
   name: 'subSlice',
@@ -39,6 +54,7 @@ const subSlice = createSlice({
     subListData: [],
     subListError: null,
     subListLoading: false,
+    queuedData:[]
   },
   reducers: {},
   extraReducers: builder => {
@@ -54,7 +70,10 @@ const subSlice = createSlice({
       .addCase(getSubscriptionList.rejected, (state, action) => {
         state.subListError = action.error;
         state.subListLoading = false;
-      });
+      })
+      .addCase(getQueuedSubscription.fulfilled, (state, action) => {
+        state.queuedData = action.payload;
+      })
   },
 });
 export const {} = subSlice.actions;

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {gs} from '../../../../GlobalStyles';
@@ -22,6 +22,7 @@ import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import {
   createOneTimeSub,
+  getQueuedSubscription,
   getSubscriptionList,
 } from '../../controllers/SubscriptionController';
 import CouponSheet from './CouponSheet';
@@ -31,6 +32,7 @@ import {
   calculatePayService,
   createOneTimeSubService,
 } from '../../services/SubscriptionService';
+import SubscribedPlans from './SubscribedPlans';
 
 export default function Subscription({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -40,13 +42,14 @@ export default function Subscription({navigation}) {
   const [monthly, setMonthly] = useState(false);
   const [vendor, setVendor] = useState(null);
   const dispatch = useDispatch();
-  let {subListData, subListError, subListLoading} = useSelector(
+  let {subListData, subListError, subListLoading, queuedData} = useSelector(
     state => state.subscription,
   );
   const [openCouponSheet, setOpenCouponSheet] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [viewDetails, setViewDetails] = useState(false);
   const [details, setDetails] = useState(null);
+  const [showActiveSubs, setShowActivesubs] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -54,19 +57,28 @@ export default function Subscription({navigation}) {
         let vd = await getVendorDetails(dispatch);
         setVendor(vd.data.data);
       } catch (error) {
-        console.log('error', error);
         throw error;
       }
     })();
   }, []);
 
-  useEffect(() => {
+  useMemo(() => {
     dispatch(getFlow(flow));
     let params = {
       vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
     };
     dispatch(getSubscriptionList({params}));
+    dispatch(getQueuedSubscription());
   }, [flow]);
+
+  useMemo(() => {
+    if (
+      queuedData?.activeSubscription?.id ||
+      queuedData?.queuedSubscriptions?.length
+    ) {
+      setShowActivesubs(true);
+    }
+  }, [queuedData]);
 
   //========REFS========//
   const topRef = useRef(null);
@@ -77,13 +89,11 @@ export default function Subscription({navigation}) {
       subscriptionDuration: monthly ? 'monthly' : 'yearly',
     };
     try {
-      let res = await calculatePayService({body,dispatch});
+      let res = await calculatePayService({body, dispatch});
       setDetails(res);
       setOpenCouponSheet(true);
       setSelectedPlan(item);
-      console.log('onetime serv res', res);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -218,7 +228,14 @@ export default function Subscription({navigation}) {
                   gs.fs15,
                   {color: '#fff', fontFamily: ts.secondarymedium},
                 ]}>
-                Subscribe Now
+                  {
+                    queuedData?.activeSubscription?.id ||
+                    queuedData?.queuedSubscriptions?.length?
+                    "Upgrade Subscription"
+                    :
+                    "Subscribe Now"
+                  }
+                
               </Text>
             </TouchableOpacity>
           </Center>
@@ -241,6 +258,16 @@ export default function Subscription({navigation}) {
       });
     }
   };
+  if (showActiveSubs) {
+    return (
+      <SubscribedPlans
+        navigation={navigation}
+        flow={flow}
+        setShowActivesubs={setShowActivesubs}
+        theme={theme}
+      />
+    );
+  }
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -252,6 +279,32 @@ export default function Subscription({navigation}) {
       <ScrollView style={{backgroundColor: '#fff', flex: 1}}>
         <View>
           <View style={[gs.m15]}>
+            <View>
+              {queuedData?.activeSubscription?.id ||
+              queuedData?.queuedSubscriptions?.length ? (
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowActivesubs(true);
+                  }}
+                  activeOpacity={0.7}
+                  >
+                  <Flex direction="row" alignItems="center">
+                    <MaterialIcons
+                      name="arrow-back"
+                      style={[gs.fs20, {color: theme}]}
+                    />
+                    <Text
+                      style={[
+                        {color: theme, fontFamily: ts.secondarymedium},
+                        gs.fs12,
+                        gs.ml10,
+                      ]}>
+                      View Active / Queued Subscriptions
+                    </Text>
+                  </Flex>
+                </TouchableOpacity>
+              ) : null}
+            </View>
             <Flex direction="row" justify="space-between" align="center">
               <Text style={styles.heading}>Choose your subscription types</Text>
               <TouchableOpacity
@@ -342,7 +395,7 @@ const styles = ScaledSheet.create({
   },
   subscribebtn: {
     height: '40@ms',
-    width: '170@ms',
+    width: '190@ms',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: '20@ms',

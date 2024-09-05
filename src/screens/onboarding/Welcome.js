@@ -93,7 +93,7 @@ export default function Welcome({navigation}) {
                   </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback onPress={()=>{
                     setFlow('tiffin',dispatch,navigation)
-                    AsyncStorage.setItem('tiffin','catering')
+                    AsyncStorage.setItem('flow','tiffin')
                     }}>
                     <View style={[gs.mb20]}>
                       <ThemeSepBtn
