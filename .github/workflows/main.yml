@@ -41,7 +41,7 @@ jobs:
              ./gradlew bundleRelease
 
       - name: Upload APK and AAB
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: android-artifacts
           path: |
