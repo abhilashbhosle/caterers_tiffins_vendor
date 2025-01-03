@@ -93,8 +93,7 @@ export default function Subscription({navigation}) {
       setDetails(res);
       setOpenCouponSheet(true);
       setSelectedPlan(item);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const renderItem = ({item, index}) => {
@@ -172,14 +171,22 @@ export default function Subscription({navigation}) {
             <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
               Benifits:
             </Text>
-            {item?.benefits?.slice(0, 4)?.map((e, i) => (
+            {/* {item?.benefits?.slice(0, 4)?.map((e, i) => (
               <Text
                 style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}
                 numberOfLines={1}
                 key={i}>
                 - {e}
               </Text>
-            ))}
+            ))} */}
+            {item?.benefits &&
+              Object.entries(item.benefits).map(([key, benefit], index) => (
+                <Text
+                  key={key}
+                  style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+                  - {benefit}
+                </Text>
+              ))}
           </View>
           {item?.benefits?.length > 6 ? (
             <Center>
@@ -228,14 +235,10 @@ export default function Subscription({navigation}) {
                   gs.fs15,
                   {color: '#fff', fontFamily: ts.secondarymedium},
                 ]}>
-                  {
-                    queuedData?.activeSubscription?.id ||
-                    queuedData?.queuedSubscriptions?.length?
-                    "Upgrade Subscription"
-                    :
-                    "Subscribe Now"
-                  }
-                
+                {queuedData?.activeSubscription?.id ||
+                queuedData?.queuedSubscriptions?.length
+                  ? 'Upgrade Subscription'
+                  : 'Subscribe Now'}
               </Text>
             </TouchableOpacity>
           </Center>
@@ -286,8 +289,7 @@ export default function Subscription({navigation}) {
                   onPress={() => {
                     setShowActivesubs(true);
                   }}
-                  activeOpacity={0.7}
-                  >
+                  activeOpacity={0.7}>
                   <Flex direction="row" alignItems="center">
                     <MaterialIcons
                       name="arrow-back"

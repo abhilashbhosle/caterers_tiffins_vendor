@@ -326,7 +326,7 @@ export const kycUpdateService = async ({
     if (res.data.status == 'success') {
       showMessage({
         message: 'Success!',
-        description: 'KYC Details Updated Successfully.',
+        description: 'Lisence Details Updated Successfully.',
         type: 'success',
       });
       navigation.navigate('HomeStack');

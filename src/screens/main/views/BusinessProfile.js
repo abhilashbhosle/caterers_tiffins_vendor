@@ -351,7 +351,7 @@ export default function BusinessProfile({navigation}) {
                 <View>
                   <Dropdown
                     style={[
-                      {...styles.dropdown, width: (width - 80) / 2},
+                      {...styles.dropdown, width: (width - 90) / 2},
 
                       working.fromFocus && {borderColor: theme},
                     ]}
@@ -377,7 +377,7 @@ export default function BusinessProfile({navigation}) {
                 <TouchableOpacity
                   style={{
                     ...styles.dropdown,
-                    width: (width - 80) / 2,
+                    width: (width - 90) / 2,
                     justifyContent: 'center',
                   }}
                   onPress={() => {
@@ -413,7 +413,7 @@ export default function BusinessProfile({navigation}) {
                 <View>
                   <Dropdown
                     style={[
-                      {...styles.dropdown, width: (width - 80) / 2},
+                      {...styles.dropdown, width: (width - 90) / 2},
 
                       working.toFocus && {borderColor: theme},
                     ]}
@@ -439,7 +439,7 @@ export default function BusinessProfile({navigation}) {
                 <TouchableOpacity
                   style={{
                     ...styles.dropdown,
-                    width: (width - 80) / 2,
+                    width: (width - 90) / 2,
                     justifyContent: 'center',
                   }}
                   onPress={() => {
@@ -763,9 +763,9 @@ export default function BusinessProfile({navigation}) {
 const styles = ScaledSheet.create({
   input: {
     color: ts.secondarytext,
-    fontSize: '12@ms',
+    fontSize: '14@ms',
     fontFamily: ts.secondaryregular,
-    height: '40@ms',
+    // height: '40@ms',
     backgroundColor: '#fff',
   },
   subtitke: {
@@ -780,23 +780,24 @@ const styles = ScaledSheet.create({
     marginTop: '10@ms',
   },
   dropdown: {
-    height: '40@ms',
+    height: '50@ms',
     borderColor: 'gray',
     borderWidth: 0.5,
     borderRadius: '8@ms',
     paddingHorizontal: '8@ms',
     color: ts.secondarytext,
     fontSize: '12@ms',
+    marginHorizontal:'2.5@ms'
   },
   icon: {
     marginRight: 5,
   },
   placeholderStyle: {
-    fontSize: '12@ms',
+    fontSize: '14@ms',
     color: ts.secondarytext,
   },
   selectedTextStyle: {
-    fontSize: '12@ms',
+    fontSize: '14@ms',
     fontFamily: ts.secondaryregular,
     color: ts.secondarytext,
   },

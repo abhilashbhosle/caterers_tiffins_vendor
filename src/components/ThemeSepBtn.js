@@ -19,7 +19,7 @@ export default function ThemeSepBtn(props) {
         },
         !props.border && gs.br10,
       ]}>
-      <Text style={[gs.fs15, {color: '#fff', fontFamily: ts.secondarymedium}]}>
+      <Text style={[gs.fs15, {color: props?.color?props.color:'#fff', fontFamily: ts.secondarymedium}]}>
         {props.btntxt}
       </Text>
     </View>

@@ -105,7 +105,7 @@ export default function CustomDrawer(props) {
           ]}>
           Manage your account
         </Text>
-        <DrawerItem
+        {/* <DrawerItem
           label={() => (
             <Flex
               direction="row"
@@ -150,7 +150,7 @@ export default function CustomDrawer(props) {
               ]}
             />
           )}
-        />
+        /> */}
         <DrawerItem
           label={() => (
             <Flex
@@ -521,7 +521,7 @@ export default function CustomDrawer(props) {
             />
           )}
         />
-        <DrawerItem
+        {/* <DrawerItem
           label={() => (
             <Flex
               direction="row"
@@ -569,7 +569,7 @@ export default function CustomDrawer(props) {
               ]}
             />
           )}
-        />
+        /> */}
         <Text
           style={[
             gs.ph15,

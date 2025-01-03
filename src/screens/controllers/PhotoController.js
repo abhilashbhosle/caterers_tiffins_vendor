@@ -2,27 +2,38 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
 import ImagePicker from 'react-native-image-crop-picker';
 import {showMessage} from 'react-native-flash-message';
-import {insertBannerService, insertLogoService, insertOtherService, insertPackageService, insertService, replaceBannerService, replaceLogoService, replaceOtherService, replacePackageService, replaceService} from '../services/PhotoService';
+import {
+  insertBannerService,
+  insertLogoService,
+  insertOtherService,
+  insertPackageService,
+  insertService,
+  replaceBannerService,
+  replaceLogoService,
+  replaceOtherService,
+  replacePackageService,
+  replaceService,
+} from '../services/PhotoService';
 
 // ======IMAGE SELECTION=======//
 export const imgUpload = createAsyncThunk(
   'imgUpload',
-  async ({selection, type,id}, {dispatch}) => {
+  async ({selection, type, id, typeOfUpload}, {dispatch}) => {
     try {
       //   dispatch(startLoader(true));
       let res = await ImagePicker.openPicker({
         width: 300,
         height: 300,
-        cropping: true,
+        cropping: typeOfUpload == 'normal' ? false : true,
       });
-      if(!id){
-      dispatch(handleInsertLogo({res: res}));
-      }
-      else{
-        dispatch(handleReplaceLogo({res:res,id:id}))
+      if (!id) {
+        dispatch(handleInsertLogo({res: res}));
+      } else {
+        dispatch(handleReplaceLogo({res: res, id: id}));
       }
       return {...res, type, selection};
     } catch (error) {
+      console.log('error in uploading', error);
       if (error.code === 'E_PICKER_CANCELLED') {
         showMessage({
           message: 'Request Cancelled!',
@@ -41,21 +52,28 @@ export const handleInsertLogo = createAsyncThunk(
   'handleInsertLogo',
   async ({res}, {dispatch}) => {
     try {
+      // Call the service
       let result = await insertLogoService({res});
-      return result;
+
+      // Return only serializable fields
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+
+      return serializableResult;
     } catch (error) {
+      console.log('error in inserting logo', error);
       return error;
-    } finally {
-      //   dispatch(startLoader(false));
     }
   },
 );
 // =======REPLACELOGO======//
 export const handleReplaceLogo = createAsyncThunk(
   'handleReplaceLogo',
-  async ({res,id}, {dispatch}) => {
+  async ({res, id}, {dispatch}) => {
     try {
-      let result = await replaceLogoService({res,id});
+      let result = await replaceLogoService({res, id});
       return result;
     } catch (error) {
       return error;
@@ -68,18 +86,18 @@ export const handleReplaceLogo = createAsyncThunk(
 // ======BANNER IMAGE SELECTION=======//
 export const imgUploadBanner = createAsyncThunk(
   'imgUploadBanner',
-  async ({selection, type,id}, {dispatch}) => {
+  async ({selection, type, id,typeofUpload}, {dispatch}) => {
     try {
       //   dispatch(startLoader(true));
       let res = await ImagePicker.openPicker({
         width: 300,
         height: 300,
-        cropping: true,
+        cropping:typeofUpload == 'normal' ? false : true,
       });
-      if(!id){
-      dispatch(handleInsertBanner({res: res}));
-      }else{
-        dispatch(handleReplaceBanner({res:res,id:id}))
+      if (!id) {
+        dispatch(handleInsertBanner({res: res}));
+      } else {
+        dispatch(handleReplaceBanner({res: res, id: id}));
       }
       return {...res, type, selection};
     } catch (error) {
@@ -102,7 +120,11 @@ export const handleInsertBanner = createAsyncThunk(
   async ({res}, {dispatch}) => {
     try {
       let result = await insertBannerService({res});
-      return result;
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {
@@ -113,10 +135,14 @@ export const handleInsertBanner = createAsyncThunk(
 // =====REPLACE BANNER======//
 export const handleReplaceBanner = createAsyncThunk(
   'handleInsertBanner',
-  async ({res,id}, {dispatch}) => {
+  async ({res, id}, {dispatch}) => {
     try {
-      let result = await replaceBannerService({res,id});
-      return result;
+      let result = await replaceBannerService({res, id});
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {
@@ -127,7 +153,7 @@ export const handleReplaceBanner = createAsyncThunk(
 // ======PACKAGE IMAGE SELECTION=======//
 export const packageUpload = createAsyncThunk(
   'packageUpload',
-  async ({selection, type,id,index}, {dispatch}) => {
+  async ({selection, type, id, index}, {dispatch}) => {
     try {
       //   dispatch(startLoader(true));
       let res = await ImagePicker.openPicker({
@@ -135,12 +161,13 @@ export const packageUpload = createAsyncThunk(
         height: 300,
         cropping: true,
       });
-      if(!id){
-      dispatch(handleInsertPackage({res: res}));
-      }else{
-        dispatch(handleReplacePackage({res:res,id:id,index}))
+      
+      if (!id) {
+        dispatch(handleInsertPackage({res: res}));
+      } else {
+        dispatch(handleReplacePackage({res: res, id: id, index}));
       }
-      return {...res, type, selection,index};
+      return {...res, type, selection, index};
     } catch (error) {
       if (error.code === 'E_PICKER_CANCELLED') {
         showMessage({
@@ -155,12 +182,16 @@ export const packageUpload = createAsyncThunk(
   },
 );
 // ========REPLACE PACKAGE========//
-const handleReplacePackage=createAsyncThunk(
+const handleReplacePackage = createAsyncThunk(
   'handleReplacePackage',
-  async ({res,id,index}, {dispatch}) => {
+  async ({res, id, index}, {dispatch}) => {
     try {
-      let result = await replacePackageService({res,id,index});
-      return result;
+      let result = await replacePackageService({res, id, index});
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {
@@ -174,7 +205,11 @@ export const handleInsertPackage = createAsyncThunk(
   async ({res}, {dispatch}) => {
     try {
       let result = await insertPackageService({res});
-      return result;
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {
@@ -185,7 +220,7 @@ export const handleInsertPackage = createAsyncThunk(
 // ======SERVICE IMAGE SELECTION=======//
 export const serviceUpload = createAsyncThunk(
   'serviceUpload',
-  async ({selection, type,id,index}, {dispatch}) => {
+  async ({selection, type, id, index}, {dispatch}) => {
     try {
       //   dispatch(startLoader(true));
       let res = await ImagePicker.openPicker({
@@ -193,12 +228,12 @@ export const serviceUpload = createAsyncThunk(
         height: 300,
         cropping: true,
       });
-      if(!id){
-      dispatch(handleInsertServ({res: res}));
-      }else{
-        dispatch(handleReplaceServ({res:res,id:id,index}))
+      if (!id) {
+        dispatch(handleInsertServ({res: res}));
+      } else {
+        dispatch(handleReplaceServ({res: res, id: id, index}));
       }
-      return {...res, type, selection,index};
+      return {...res, type, selection, index};
     } catch (error) {
       if (error.code === 'E_PICKER_CANCELLED') {
         showMessage({
@@ -213,12 +248,16 @@ export const serviceUpload = createAsyncThunk(
   },
 );
 // ========REPLACE SERVICE========//
-const handleReplaceServ=createAsyncThunk(
+const handleReplaceServ = createAsyncThunk(
   'handleReplaceServ',
-  async ({res,id,index}, {dispatch}) => {
+  async ({res, id, index}, {dispatch}) => {
     try {
-      let result = await replaceService({res,id,index});
-      return result;
+      let result = await replaceService({res, id, index});
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {
@@ -232,7 +271,11 @@ export const handleInsertServ = createAsyncThunk(
   async ({res}, {dispatch}) => {
     try {
       let result = await insertService({res});
-      return result;
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {
@@ -244,7 +287,7 @@ export const handleInsertServ = createAsyncThunk(
 // ======OTHER IMAGE SELECTION=======//
 export const otherUpload = createAsyncThunk(
   'otherUpload',
-  async ({selection, type,id,index}, {dispatch}) => {
+  async ({selection, type, id, index}, {dispatch}) => {
     try {
       //   dispatch(startLoader(true));
       let res = await ImagePicker.openPicker({
@@ -252,12 +295,12 @@ export const otherUpload = createAsyncThunk(
         height: 300,
         cropping: true,
       });
-      if(!id){
-      dispatch(handleInsertOther({res: res}));
-      }else{
-        dispatch(handleReplaceOther({res:res,id:id,index}))
+      if (!id) {
+        dispatch(handleInsertOther({res: res}));
+      } else {
+        dispatch(handleReplaceOther({res: res, id: id, index}));
       }
-      return {...res, type, selection,index};
+      return {...res, type, selection, index};
     } catch (error) {
       if (error.code === 'E_PICKER_CANCELLED') {
         showMessage({
@@ -272,11 +315,16 @@ export const otherUpload = createAsyncThunk(
   },
 );
 // ========REPLACE OTHER========//
-const handleReplaceOther=createAsyncThunk(
+const handleReplaceOther = createAsyncThunk(
   'handleReplaceOther',
-  async ({res,id,index}, {dispatch}) => {
+  async ({res, id, index}, {dispatch}) => {
     try {
-      let result = await replaceOtherService({res,id,index});
+      let result = await replaceOtherService({res, id, index});
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
       return result;
     } catch (error) {
       return error;
@@ -291,6 +339,11 @@ export const handleInsertOther = createAsyncThunk(
   async ({res}, {dispatch}) => {
     try {
       let result = await insertOtherService({res});
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
       return result;
     } catch (error) {
       return error;
@@ -300,15 +353,14 @@ export const handleInsertOther = createAsyncThunk(
   },
 );
 
-
 const gallerySlice = createSlice({
   name: 'photo',
   initialState: {
     img: {},
     bannerimg: {},
-    packageImg:{},
-    serviceImg:{},
-    otherImg:{},
+    packageImg: {},
+    serviceImg: {},
+    otherImg: {},
     logoRes: {
       data: '',
       error: null,
@@ -319,36 +371,36 @@ const gallerySlice = createSlice({
       error: null,
       loading: false,
     },
-    packageRes:{
+    packageRes: {
       data: [],
       error: null,
       loading: false,
     },
-    serviceRes:{
+    serviceRes: {
       data: [],
       error: null,
       loading: false,
     },
-    otherRes:{
+    otherRes: {
       data: [],
       error: null,
       loading: false,
-    }
+    },
   },
   reducers: {
     emptyLocalImgs: (state, action) => {
-     state.img={}
-     state.bannerimg={}
+      state.img = {};
+      state.bannerimg = {};
     },
     emptyPackage: (state, action) => {
-      state.packageImg={}
-     },
-     emptyService: (state, action) => {
-      state.serviceImg={}
-     },
-     emptyOther: (state, action) => {
-      state.otherImg={}
-     },
+      state.packageImg = {};
+    },
+    emptyService: (state, action) => {
+      state.serviceImg = {};
+    },
+    emptyOther: (state, action) => {
+      state.otherImg = {};
+    },
   },
   extraReducers: builder => {
     builder.addCase(imgUpload.fulfilled, (state, action) => {
@@ -358,13 +410,13 @@ const gallerySlice = createSlice({
       state.bannerimg = action.payload;
     });
     builder.addCase(packageUpload.fulfilled, (state, action) => {
-      state.packageImg =action?.payload && action.payload;
+      state.packageImg = action?.payload && action.payload;
     });
     builder.addCase(serviceUpload.fulfilled, (state, action) => {
-      state.serviceImg =action?.payload && action.payload;
+      state.serviceImg = action?.payload && action.payload;
     });
     builder.addCase(otherUpload.fulfilled, (state, action) => {
-      state.otherImg = action.payload&& action.payload;
+      state.otherImg = action.payload && action.payload;
     });
     // =========INSERT LOGO=======//
     builder.addCase(handleInsertLogo.pending, (state, action) => {
@@ -455,8 +507,8 @@ const gallerySlice = createSlice({
         loading: false,
       };
     });
-     // =======REPLACE PACKAGE======//
-     builder.addCase(handleReplacePackage.pending, (state, action) => {
+    // =======REPLACE PACKAGE======//
+    builder.addCase(handleReplacePackage.pending, (state, action) => {
       state.packageRes = {
         data: null,
         error: null,
@@ -571,5 +623,6 @@ const gallerySlice = createSlice({
     // ==========
   },
 });
-export const {emptyLocalImgs,emptyPackage,emptyService,emptyOther} = gallerySlice.actions;
+export const {emptyLocalImgs, emptyPackage, emptyService, emptyOther} =
+  gallerySlice.actions;
 export default gallerySlice.reducer;

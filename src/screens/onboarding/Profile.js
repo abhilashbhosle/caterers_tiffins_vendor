@@ -44,7 +44,7 @@ export default function Profile({navigation}) {
           </Text>
           <Formik
             initialValues={{
-              name: '',
+              // name: '',
               serviceName: '',
               companyPhone: '',
               landline1: '',
@@ -54,7 +54,7 @@ export default function Profile({navigation}) {
               dispatch(
                 profileUpdate({
                   serviceName: values.serviceName,
-                  name: values.name,
+                  // name: values.name,
                   companyPhone: `+91-${values.companyPhone}`,
                   landline1: `${values.landline1}`,
                   landline2: values?.landline2 ? `+91-${values.landline2}` : '',
@@ -73,7 +73,7 @@ export default function Profile({navigation}) {
               touched,
             }) => (
               <>
-                <TextInput
+                {/* <TextInput
                   label="Enter Your Name"
                   mode="outlined"
                   style={styles.input}
@@ -91,7 +91,7 @@ export default function Profile({navigation}) {
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
                     {errors.name}
                   </Text>
-                )}
+                )} */}
                 <TextInput
                   label="Enter Catering Service Name / Display Name"
                   mode="outlined"

@@ -36,23 +36,23 @@ export default function Kyc({navigation}) {
             />
           </TouchableOpacity>
           <Center>
-            <Text style={[styles.heading]}>Add KYC & License Details</Text>
+            <Text style={[styles.heading]}>Add License Details</Text>
             <Divider style={[gs.mv15, {backgroundColor: theme}]} />
           </Center>
           <Formik
             initialValues={{
-              aadharNo: '',
-              panNo: '',
-              gstinNo: '',
+              // aadharNo: '',
+              // panNo: '',
+              // gstinNo: '',
               fssaiNo: '',
             }}
             onSubmit={values => {
               dispatch(
                 kycUpdate({
-                  aadharNo: values.aadharNo,
-                  panNo:values.panNo,
-                  gstinNo:values.gstinNo,
-                  fssaiNo:values.fssaiNo,
+                  // aadharNo: values.aadharNo,
+                  // panNo:values.panNo,
+                  // gstinNo:values.gstinNo,
+                  fssaiNo: values.fssaiNo,
                   navigation,
                 }),
               );
@@ -68,7 +68,7 @@ export default function Kyc({navigation}) {
               touched,
             }) => (
               <>
-                <Text
+                {/* <Text
                   style={[
                     gs.fs15,
                     {fontFamily: ts.secondaryregular, color: ts.primarytext},
@@ -94,8 +94,8 @@ export default function Kyc({navigation}) {
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
                     {errors.aadharNo}
                   </Text>
-                )}
-                <Text
+                )} */}
+                {/* <Text
                   style={[
                     gs.fs15,
                     {fontFamily: ts.secondaryregular, color: ts.primarytext},
@@ -148,7 +148,7 @@ export default function Kyc({navigation}) {
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
                     {errors.gstinNo}
                   </Text>
-                )}
+                )} */}
                 <Text
                   style={[
                     gs.fs15,
@@ -156,7 +156,7 @@ export default function Kyc({navigation}) {
                     gs.mb5,
                     gs.mt10,
                   ]}>
-                  FSSAI License Number (Optional)
+                  FSSAI License Number
                 </Text>
                 <TextInput
                   mode="outlined"
@@ -170,9 +170,9 @@ export default function Kyc({navigation}) {
                   onBlur={handleBlur('fssaiNo')}
                   textColor={ts.primarytext}
                   maxLength={14}
-                  keyboardType='numeric'
+                  keyboardType="numeric"
                 />
-                 {errors.fssaiNo && touched.fssaiNo && (
+                {errors.fssaiNo && touched.fssaiNo && (
                   <Text style={[{color: 'red'}, gs.fs12, gs.mb5, gs.ml10]}>
                     {errors.fssaiNo}
                   </Text>
@@ -193,6 +193,15 @@ export default function Kyc({navigation}) {
                       width={width / 2.5}
                       btntxt="SUBMIT"
                     />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('HomeStack');
+                    }}>
+                    <Text style={[{...styles.subtxt, color: theme}, gs.fs15]}>
+                      skip
+                    </Text>
                   </TouchableOpacity>
                 </Center>
               </>

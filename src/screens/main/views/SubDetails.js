@@ -45,13 +45,25 @@ function SubDetails({viewDetails, setViewDetails, plan, flow}) {
                 style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
                 Benifits:
               </Text>
-              {plan?.benefits?.map((e, i) => (
+              {/* {plan?.benefits?.map((e, i) => (
                 <Text
                   style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}
                   key={i}>
                   - {e}
                 </Text>
-              ))}
+              ))} */}
+              {plan?.benefits &&
+                Object.entries(plan.benefits).map(([key, benefit], index) => (
+                  <Text
+                    className="sub-plan-para"
+                    key={key}
+                    style={[
+                      {...styles.heading, color: ts.primarytext},
+                      gs.mv3,
+                    ]}>
+                    - {benefit}
+                  </Text>
+                ))}
             </View>
           </ScrollView>
         </Actionsheet.Content>
@@ -60,10 +72,10 @@ function SubDetails({viewDetails, setViewDetails, plan, flow}) {
   );
 }
 const styles = ScaledSheet.create({
-	heading: {
-		fontSize: '13@ms',
-		color: ts.secondarytext,
-		fontFamily: ts.secondaryregular,
-	  },
+  heading: {
+    fontSize: '13@ms',
+    color: ts.secondarytext,
+    fontFamily: ts.secondaryregular,
+  },
 });
 export default memo(SubDetails);

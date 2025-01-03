@@ -22,7 +22,7 @@ export default function HomeStack() {
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   return (
     <Drawer.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="Inquiries"
       screenOptions={
         {
           headerShown: false,
@@ -31,8 +31,8 @@ export default function HomeStack() {
       
       drawerContent={props=><CustomDrawer {...props}/>}
       >
-      <Drawer.Screen name="Dashboard" component={Dashboard} 
-      />
+      {/* <Drawer.Screen name="Dashboard" component={Dashboard} 
+      /> */}
       <Drawer.Screen name="Inquiries" component={Inquiries} />
       <Drawer.Screen name="Reviews" component={Reviews} />
       <Drawer.Screen name="Manage Cuisine" component={ManageCuisine} />
@@ -40,7 +40,7 @@ export default function HomeStack() {
       <Drawer.Screen name="Packages" component={Packages} />
       <Drawer.Screen name="Business Profile" component={BusinessProfile} />
       <Drawer.Screen name="Photo Gallery" component={PhotoGallery} />
-      <Drawer.Screen name="Branches" component={Branches} />
+      {/* <Drawer.Screen name="Branches" component={Branches} /> */}
       <Drawer.Screen name="Subscription" component={Subscription} />
       <Drawer.Screen name="Settings" component={Settings} />
     </Drawer.Navigator>

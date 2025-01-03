@@ -8,6 +8,9 @@ import {Platform} from 'react-native';
 // =====INSEERT LOGO SERVICE========//
 
 export const insertLogoService = async ({res, dispatch}) => {
+  console.log("entered inside insert logo service", {uri: res.path,
+    name: res.filename || 'img',
+    type: res.mime},)
   try {
     // dispatch(startLoader(true));
     const formData = new FormData();
@@ -19,6 +22,7 @@ export const insertLogoService = async ({res, dispatch}) => {
     });
     formData.append('action_type', 'insert');
     let token = await AsyncStorage.getItem('token');
+    console.log("formdata",formData)
     let result = await axios.post(
       `${endpoints.baseUrl}upload-vendor-brand-logo`,
       formData,
@@ -38,6 +42,7 @@ export const insertLogoService = async ({res, dispatch}) => {
     }
     return result;
   } catch (error) {
+    console.log("service error",error)
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',

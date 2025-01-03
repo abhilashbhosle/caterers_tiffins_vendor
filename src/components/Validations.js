@@ -16,7 +16,7 @@ export const registrationScheme = yup.object().shape({
 });
 
 export const profileSchema = yup.object().shape({
-  name: yup.string().required('Name is required'),
+  // name: yup.string().required('Name is required'),
   serviceName: yup.string().required('Service Name is required'),
   companyPhone: yup
     .string()
@@ -27,31 +27,31 @@ export const profileSchema = yup.object().shape({
     ),
 });
 export const kycShema = yup.object().shape({
-  aadharNo: yup
-    .string()
-    .required('Aadhar card number is required')
-    .min(12, ({min}) => `Aadhar card number must be ${min} characters`)
-    .matches(
-      noSpecialChars,
-      'Aadhar card number cannot contain special characters',
-    ),
+  // aadharNo: yup
+  //   .string()
+  //   .required('Aadhar card number is required')
+  //   .min(12, ({min}) => `Aadhar card number must be ${min} characters`)
+  //   .matches(
+  //     noSpecialChars,
+  //     'Aadhar card number cannot contain special characters',
+  //   ),
 
-  panNo: yup
-    .string()
-    .required('Pan card number is required')
-    .min(10, ({min}) => `Pan card number must be ${min} characters`)
-    .matches(
-      panCardFormat,
-      'PAN card number must be in the format AAAAA9999A and in uppercase',
-    ),
+  // panNo: yup
+  //   .string()
+  //   .required('Pan card number is required')
+  //   .min(10, ({min}) => `Pan card number must be ${min} characters`)
+  //   .matches(
+  //     panCardFormat,
+  //     'PAN card number must be in the format AAAAA9999A and in uppercase',
+  //   ),
 
-  gstinNo: yup
-    .string()
-    .min(15, ({min}) => `GSTIN number must be ${min} characters`)
-    .matches(
-      gstinFormat,
-      'GSTIN number must contains only numbers and uppercase letters',
-    ),
+  // gstinNo: yup
+  //   .string()
+  //   .min(15, ({min}) => `GSTIN number must be ${min} characters`)
+  //   .matches(
+  //     gstinFormat,
+  //     'GSTIN number must contains only numbers and uppercase letters',
+  //   ),
 
   fssaiNo: yup
     .string()

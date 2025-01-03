@@ -6,6 +6,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Alert,
+  Pressable,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -43,6 +44,7 @@ import {
   deleteService,
   gateGalleryService,
 } from '../../services/PhotoService';
+import ThemeSepBtn from '../../../components/ThemeSepBtn';
 
 export default function PhotoGallery({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -60,6 +62,19 @@ export default function PhotoGallery({navigation}) {
   const servUpdates = useSelector(state => state.photo.serviceRes);
   const localOtherData = useSelector(state => state.photo.otherImg);
   const otherUpdates = useSelector(state => state.photo.otherRes);
+  const [enableCrop, setEnableCrop] = useState(true);
+  const [enableCropSheet, setEnableCropSheet] = useState(false);
+  const [selection, setSelection] = useState({
+    type: '',
+    id: '',
+  });
+  const handleEnableSheet = (type, id) => {
+    setEnableCropSheet(true);
+    setSelection({
+      type: type,
+      id: id ? id : null,
+    });
+  };
   useEffect(() => {
     (async () => {
       let flow = await AsyncStorage.getItem('flow');
@@ -105,14 +120,22 @@ export default function PhotoGallery({navigation}) {
   });
 
   // ======LOGO UPLOAD======//
-  const handleUploadLogo = () => {
+  const handleUploadLogo = type => {
     setLogo({...logo, add: true});
-    dispatch(imgUpload({selection: 'logo', type: 'insert'}));
+    dispatch(
+      imgUpload({selection: 'logo', type: 'insert', typeOfUpload: type}),
+    );
   };
   // =====BANNER UPLOAD======//
-  const handleBannerUpload = () => {
+  const handleBannerUpload = typeOfUpload => {
     setBanner({...banner, add: true});
-    dispatch(imgUploadBanner({selection: 'banner', type: 'insert'}));
+    dispatch(
+      imgUploadBanner({
+        selection: 'banner',
+        type: 'insert',
+        typeOfUpload: typeOfUpload,
+      }),
+    );
   };
   // =====PACKAGE UPLOAD=====//
   const handlePackageUpload = () => {
@@ -127,12 +150,20 @@ export default function PhotoGallery({navigation}) {
     dispatch(otherUpload({selection: 'service', type: 'insert'}));
   };
   // ======LOGO EDIT=====//
-  const handleLogoEdit = id => {
-    dispatch(imgUpload({selection: 'logo', type: 'replace', id: id}));
+  const handleLogoEdit = (id, typeofUpload) => {
+    dispatch(
+      imgUpload({
+        selection: 'logo',
+        type: 'replace',
+        id: id,
+        typeOfUpload: typeofUpload,
+      }),
+    );
   };
   // ======BANNER EDIT======//
-  const handleBannerEdit = id => {
-    dispatch(imgUploadBanner({selection: 'banner', type: 'replace', id: id}));
+  const handleBannerEdit = (id,typeofUpload) => {
+    console.log("type of up",typeofUpload)
+    dispatch(imgUploadBanner({selection: 'banner', type: 'replace', id: id,typeofUpload:typeofUpload}));
   };
   // ========EDIT PACKAGE========//
   const handlePackageEdit = (id, i) => {
@@ -338,7 +369,11 @@ export default function PhotoGallery({navigation}) {
                         style={[{...styles.iconContainer}]}
                         activeOpacity={0.7}
                         onPress={() => {
-                          handleLogoEdit(gallery['vendor-brand-logo'][0].id);
+                          // handleLogoEdit(gallery['vendor-brand-logo'][0].id);
+                          handleEnableSheet(
+                            'logoEdit',
+                            gallery['vendor-brand-logo'][0].id,
+                          );
                         }}>
                         <MaterialIcons
                           name="edit"
@@ -385,7 +420,13 @@ export default function PhotoGallery({navigation}) {
                   </Flex>
                 )}
                 {!localImageData?.path && (
-                  <TouchableOpacity onPress={handleUploadLogo}>
+                  <TouchableOpacity
+                    onPress={
+                      // handleUploadLogo
+                      () => {
+                        handleEnableSheet('logoUpload', null);
+                      }
+                    }>
                     <AntIcons
                       name="pluscircle"
                       style={[gs.fs30, gs.mv18, {color: theme}]}
@@ -439,7 +480,7 @@ export default function PhotoGallery({navigation}) {
                         style={styles.iconContainer}
                         activeOpacity={0.7}
                         onPress={() => {
-                          handleBannerEdit(gallery['vendor-banner'][0].id);
+                          handleEnableSheet('bannerEdit',gallery['vendor-banner'][0].id);
                         }}>
                         <MaterialIcons
                           name="edit"
@@ -486,7 +527,13 @@ export default function PhotoGallery({navigation}) {
                   </Flex>
                 )}
                 {!localBannerData?.path && (
-                  <TouchableOpacity onPress={handleBannerUpload}>
+                  <TouchableOpacity
+                    onPress={
+                      // handleBannerUpload
+                      () => {
+                        handleEnableSheet('bannerUpload', null);
+                      }
+                    }>
                     <AntIcons
                       name="pluscircle"
                       style={[gs.fs30, gs.mv18, {color: theme}]}
@@ -532,12 +579,12 @@ export default function PhotoGallery({navigation}) {
                           width: width / 3.6,
                           opacity: localPackageData?.index == i ? 0.5 : 1,
                         }}
-                        onLoadStart={()=>{
-                          console.log("loadstart",i)
+                        onLoadStart={() => {
+                          console.log('loadstart', i);
                         }}
-                        onLoadEnd={()=>{console.log(
-                          "loadend",i
-                        )}}
+                        onLoadEnd={() => {
+                          console.log('loadend', i);
+                        }}
                         imageStyle={gs.br10}
                         resizeMode="cover">
                         <Flex direction="row" justify="flex-end">
@@ -793,6 +840,64 @@ export default function PhotoGallery({navigation}) {
           </Flex>
         </Card>
       </ScrollView>
+      <Actionsheet
+        isOpen={enableCropSheet}
+        onClose={() => {
+          setEnableCropSheet(!enableCropSheet);
+        }}>
+        <Actionsheet.Content
+          style={[{backgroundColor: '#fff', alignItems: 'flex-start'}]}>
+          <Pressable
+            onPress={() => {
+              if (selection.type == 'logoUpload') {
+                handleUploadLogo('normal');
+              } else if (selection.type == 'logoEdit') {
+                handleLogoEdit(selection.id, 'normal');
+              } else if (selection.type == 'bannerUpload') {
+                handleBannerUpload('normal');
+              }
+              else if (selection.type == 'bannerEdit'){
+                handleBannerEdit(selection.id,'normal')
+              }
+              setEnableCropSheet(false);
+              setSelection({type: '', id: null});
+            }}>
+            <Text
+              style={[
+                gs.p10,
+                gs.fs15,
+                {fontFamily: ts.secondarymedium, color: theme},
+              ]}>
+              Upload Image
+            </Text>
+          </Pressable>
+          <Divider style={[gs.ph10]} />
+          <Pressable
+            onPress={() => {
+              if (selection.type == 'logoUpload') {
+                handleUploadLogo('crop');
+              } else if (selection.type == 'logoEdit') {
+                handleLogoEdit(selection.id, 'crop');
+              } else if (selection.type == 'bannerUpload') {
+                handleBannerUpload('crop');
+              }
+              else if (selection.type == 'bannerEdit'){
+                handleBannerEdit(selection.id,'crop')
+              }
+              setEnableCropSheet(false);
+              setSelection({type: '', id: null});
+            }}>
+            <Text
+              style={[
+                gs.p10,
+                gs.fs15,
+                {fontFamily: ts.secondarymedium, color: theme},
+              ]}>
+              Upload Crop Image
+            </Text>
+          </Pressable>
+        </Actionsheet.Content>
+      </Actionsheet>
     </ScreenWrapper>
   );
 }

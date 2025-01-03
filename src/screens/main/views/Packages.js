@@ -176,95 +176,34 @@ export default function Packages({navigation}) {
                 </Flex>
               </Center>
             </Card>
-            {/* =======CHOOSE YOUR CATERING TYPE========= */}
-            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+            {/* =====ENTER STARTING PRICE / PLATE========= */}
+            <Card
+              style={[
+                gs.p15,
+                {backgroundColor: '#fff'},
+                gs.mt10,
+                gs.mb20,
+                gs.mh10,
+              ]}>
               <Center>
-                <Text style={styles.title}>
-                  Choose your Catering type below
-                </Text>
-                <Text style={styles.subtitke}>
-                  If you provide both table & buffet service, check both.
-                </Text>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-around"
-                  width={'80%'}
-                  style={[gs.mt15]}>
-                  {packs?.servingTypes?.map((e, i) => (
-                    <Flex direction="row" alignItems="center" key={i}>
-                      <Text
-                        style={[
-                          gs.fs14,
-                          {color: theme, fontFamily: ts.secondaryregular},
-                        ]}>
-                        {e.serving_type_name == 'Buffet Service'
-                          ? 'Buffet'
-                          : e.serving_type_name}
-                      </Text>
-                      <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          handleCateringType(i);
-                        }}>
-                        <FontAwesomeIcon
-                          name={e?.selected == '0' ? 'toggle-off' : 'toggle-on'}
-                          style={[
-                            gs.ml10,
-                            {
-                              ...styles.toggleicon,
-                              color:
-                                e?.selected == '1' ? theme : ts.secondarytext,
-                            },
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    </Flex>
-                  ))}
-                </Flex>
-              </Center>
-            </Card>
-            {/* =====ENTER CATERING CAPACITY========= */}
-            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
-              <Center>
-                <Text style={styles.title}>
-                  Enter your Catering Capacity below
-                </Text>
-                <View
-                  style={[
-                    {justifyContent: 'center', alignItems: 'center'},
-                    gs.mt10,
-                  ]}>
-                  <Text style={styles.subtitke}>Minimum Capacity</Text>
-                  <TextInput
-                    style={{...styles.input, width: width - 80}}
-                    placeholder="Enter Minimum Capacity - Eg: 100 plates"
-                    outlineColor={ts?.secondarytext}
-                    activeOutlineColor={theme}
-                    value={values?.miniPlatesCap?.toString()}
-                    onChangeText={text => {
-                      setValues({...values, miniPlatesCap: text});
-                    }}
-                    mode="outlined"
-                    keyboardType="numeric"
-                    textColor={ts.secondarytext}
-                  />
-                </View>
+                <Text style={styles.title}>Enter Starting price / plate</Text>
                 <View
                   style={[
                     {justifyContent: 'center', alignItems: 'center'},
                     gs.mt20,
                   ]}>
-                  <Text style={styles.subtitke}>Maximum Capacity</Text>
+                  <Text style={styles.subtitke}>
+                    Enter Starting price / plate
+                  </Text>
                   <TextInput
                     style={{...styles.input, width: width - 80}}
-                    placeholder="Enter Maximum Capacity - Eg: 700 plates"
+                    placeholder="Eg: 350"
                     outlineColor={ts.secondarytext}
                     activeOutlineColor={theme}
                     mode="outlined"
-                    value={values?.maxPlatesCap?.toString()}
+                    value={values?.minPrice}
                     onChangeText={text => {
-                      setValues({...values, maxPlatesCap: text});
+                      setValues({...values, minPrice: text});
                     }}
                     keyboardType="numeric"
                     textColor={ts.secondarytext}
@@ -395,34 +334,95 @@ export default function Packages({navigation}) {
                 </Flex>
               </Center>
             </Card>
-            {/* =====ENTER STARTING PRICE / PLATE========= */}
-            <Card
-              style={[
-                gs.p15,
-                {backgroundColor: '#fff'},
-                gs.mt10,
-                gs.mb20,
-                gs.mh10,
-              ]}>
+            {/* =======CHOOSE YOUR CATERING TYPE========= */}
+            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
               <Center>
-                <Text style={styles.title}>Enter Starting price / plate</Text>
+                <Text style={styles.title}>
+                  Choose your Serving type below
+                </Text>
+                <Text style={styles.subtitke}>
+                  If you provide both table & buffet service, check both.
+                </Text>
+                <Flex
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-around"
+                  width={'80%'}
+                  style={[gs.mt15]}>
+                  {packs?.servingTypes?.map((e, i) => (
+                    <Flex direction="row" alignItems="center" key={i}>
+                      <Text
+                        style={[
+                          gs.fs14,
+                          {color: theme, fontFamily: ts.secondaryregular},
+                        ]}>
+                        {e.serving_type_name == 'Buffet Service'
+                          ? 'Buffet'
+                          : e.serving_type_name}
+                      </Text>
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          handleCateringType(i);
+                        }}>
+                        <FontAwesomeIcon
+                          name={e?.selected == '0' ? 'toggle-off' : 'toggle-on'}
+                          style={[
+                            gs.ml10,
+                            {
+                              ...styles.toggleicon,
+                              color:
+                                e?.selected == '1' ? theme : ts.secondarytext,
+                            },
+                          ]}
+                        />
+                      </TouchableOpacity>
+                    </Flex>
+                  ))}
+                </Flex>
+              </Center>
+            </Card>
+            {/* =====ENTER CATERING CAPACITY========= */}
+            <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
+              <Center>
+                <Text style={styles.title}>
+                  Enter your Catering Capacity below
+                </Text>
+                <View
+                  style={[
+                    {justifyContent: 'center', alignItems: 'center'},
+                    gs.mt10,
+                  ]}>
+                  <Text style={styles.subtitke}>Minimum Capacity</Text>
+                  <TextInput
+                    style={{...styles.input, width: width - 80}}
+                    placeholder="Enter Minimum Capacity - Eg: 100 plates"
+                    outlineColor={ts?.secondarytext}
+                    activeOutlineColor={theme}
+                    value={values?.miniPlatesCap?.toString()}
+                    onChangeText={text => {
+                      setValues({...values, miniPlatesCap: text});
+                    }}
+                    mode="outlined"
+                    keyboardType="numeric"
+                    textColor={ts.secondarytext}
+                  />
+                </View>
                 <View
                   style={[
                     {justifyContent: 'center', alignItems: 'center'},
                     gs.mt20,
                   ]}>
-                  <Text style={styles.subtitke}>
-                    Enter Starting price / plate
-                  </Text>
+                  <Text style={styles.subtitke}>Maximum Capacity</Text>
                   <TextInput
                     style={{...styles.input, width: width - 80}}
-                    placeholder="Eg: 350"
+                    placeholder="Enter Maximum Capacity - Eg: 700 plates"
                     outlineColor={ts.secondarytext}
                     activeOutlineColor={theme}
                     mode="outlined"
-                    value={values?.minPrice}
+                    value={values?.maxPlatesCap?.toString()}
                     onChangeText={text => {
-                      setValues({...values, minPrice: text});
+                      setValues({...values, maxPlatesCap: text});
                     }}
                     keyboardType="numeric"
                     textColor={ts.secondarytext}
@@ -430,6 +430,7 @@ export default function Packages({navigation}) {
                 </View>
               </Center>
             </Card>
+
             <TouchableOpacity
               style={[styles.updatebtncontainer, gs.mh10]}
               onPress={handleUpdate}>
@@ -462,10 +463,11 @@ const styles = ScaledSheet.create({
     color: ts.secondarytext,
   },
   input: {
-    fontSize: '12@ms',
+    fontSize: '14@ms',
     fontFamily: ts.secondaryregular,
-    height: '40@ms',
+    // height: '40@ms',/\
     backgroundColor: '#fff',
+    textAlignVertical:'top'
   },
   serviceicon: {
     height: '35@ms',
