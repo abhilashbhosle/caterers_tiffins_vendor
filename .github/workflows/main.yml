@@ -48,8 +48,3 @@ jobs:
             android/app/build/outputs/apk/release/app-release.apk
             android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 3
-
-    post-run:
-      steps:
-        - name: Retry Cache Upload (if needed)
-          run: echo "Retrying cache upload if it failed in previous steps."
