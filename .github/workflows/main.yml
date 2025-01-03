@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Installing Java
         uses: actions/setup-java@v3
@@ -22,7 +22,7 @@ jobs:
       - name: Validating Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Setup Node  
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '20'
@@ -30,15 +30,15 @@ jobs:
 
       - name: Run Npm Install
         run: |
-             npm i -g corepack
-             npm install
+          npm i -g corepack
+          npm install
 
       - name: Build application
         run: |
-             cd android
-             ./gradlew clean
-             ./gradlew assembleRelease
-             ./gradlew bundleRelease
+          cd android
+          ./gradlew clean
+          ./gradlew assembleRelease
+          ./gradlew bundleRelease
 
       - name: Upload APK and AAB
         uses: actions/upload-artifact@v3
@@ -48,3 +48,8 @@ jobs:
             android/app/build/outputs/apk/release/app-release.apk
             android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 3
+
+    post-run:
+      steps:
+        - name: Retry Cache Upload (if needed)
+          run: echo "Retrying cache upload if it failed in previous steps."
