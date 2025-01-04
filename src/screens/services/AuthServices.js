@@ -45,10 +45,11 @@ export const getOtpService = async ({name, phoneNumber, type}) => {
   }
 };
 // =======GET LOGIN OTP========//
-export const getLoginOtpService = async ({companyId, password}) => {
+export const getLoginOtpService = async ({companyId, password,vendor_type}) => {
   let body = {
     company_id: companyId,
     password: password,
+    vendor_type:vendor_type
   };
   try {
     let res = await axios.post(
@@ -133,10 +134,12 @@ export const verifyLoginOtpService = async ({
   otp,
   navigation,
   dispatch,
+  vendor_type
 }) => {
   let body = {
     company_id: companyId,
     otp_code: otp,
+    vendor_type:vendor_type
   };
   try {
     let res = await axios.post(

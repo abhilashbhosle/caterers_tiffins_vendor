@@ -74,6 +74,7 @@ export default function Login() {
             getLoginOtp({
               companyId: values.companyId,
               password: values.password,
+              vendor_type:flow=="catering"?"Caterer":"Tiffin"
             }),
           );
         }}
@@ -182,6 +183,7 @@ export default function Login() {
                         otp: value,
                         navigation,
                         setEnableSubmitOtp,
+                        vendor_type:flow=="catering"?"Caterer":"Tiffin"
                       }),
                     );
                   }}

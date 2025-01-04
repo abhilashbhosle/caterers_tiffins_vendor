@@ -74,7 +74,11 @@ export const handleReplaceLogo = createAsyncThunk(
   async ({res, id}, {dispatch}) => {
     try {
       let result = await replaceLogoService({res, id});
-      return result;
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
     } catch (error) {
       return error;
     } finally {

@@ -492,6 +492,7 @@ export default function PhotoGallery({navigation}) {
                         activeOpacity={0.7}
                         onPress={() => {
                           handleBannerDel(gallery['vendor-banner'][0].id);
+                          // console.log(gallery['vendor-banner'][0].id)
                         }}>
                         <MaterialIcons
                           name="delete"

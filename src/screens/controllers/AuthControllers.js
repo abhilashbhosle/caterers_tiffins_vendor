@@ -31,10 +31,10 @@ export const getOtp = createAsyncThunk(
 // ======GET LOGIN OTP=======//
 export const getLoginOtp = createAsyncThunk(
   'getLoginOtp',
-  async ({companyId, password}, {dispatch}) => {
+  async ({companyId, password,vendor_type}, {dispatch}) => {
     try {
       dispatch(startLoader(true));
-      const res = await getLoginOtpService({companyId, password});
+      const res = await getLoginOtpService({companyId, password,vendor_type});
       return res.data;
     } catch (error) {
       return error;
@@ -75,7 +75,7 @@ export const verifyOtp = createAsyncThunk(
 // ======VERIFY LOGIN OTP=======//
 export const verifyLoginOtp = createAsyncThunk(
   'verifyLoginOtp',
-  async ({companyId, otp, navigation, setEnableSubmitOtp}, {dispatch}) => {
+  async ({companyId, otp, navigation, setEnableSubmitOtp,vendor_type}, {dispatch}) => {
     try {
       dispatch(startLoader(true));
       const res = await verifyLoginOtpService({
@@ -83,6 +83,7 @@ export const verifyLoginOtp = createAsyncThunk(
         otp,
         navigation,
         dispatch,
+        vendor_type
       });
       console.log('response', res.data);
       await AsyncStorage.setItem('token', res.data.data.accessToken);
