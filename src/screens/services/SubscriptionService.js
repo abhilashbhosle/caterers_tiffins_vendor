@@ -3,6 +3,7 @@ import {endpoints} from '../../endpoints';
 import axios from 'axios';
 import {showMessage} from 'react-native-flash-message';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
+import { getQueuedSubscription } from '../controllers/SubscriptionController';
 
 //=======GET CATERERS SEARCH SERVICES=======//
 export const getSubscriptionListService = async ({params}) => {
@@ -132,5 +133,40 @@ export const getQueuedSubscriptionService = async () => {
     } else {
       throw new Error(error.message);
     }
+  }
+};
+
+// =========CANCEL SUBSCRIPTION========//
+export const cancelSubscriptionService = async ({subscription_id,dispatch}) => {
+  try {
+    dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    console.log(subscription_id);
+    let res = await axios.post(
+      `${endpoints.baseUrl}vendor-rz-cancel-subscription`,
+      {
+        subscription_id
+      },
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    setTimeout(()=>{
+      dispatch(getQueuedSubscription())
+    },1000)
+    return res.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+    }
+  } finally {
+    dispatch(startLoader(false));
   }
 };

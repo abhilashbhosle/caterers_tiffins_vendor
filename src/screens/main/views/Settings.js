@@ -25,7 +25,11 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
 import ThemeSepBtn from '../../../components/ThemeSepBtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getFlow} from '../../../redux/slicers/CommomSlicer';
+import {
+  getFlow,
+  logout,
+  startLoader,
+} from '../../../redux/slicers/CommomSlicer';
 import {
   getVendorDetails,
   getVendorPassword,
@@ -37,6 +41,8 @@ import {
   deleteFsService,
   getCredentials,
   getSettings,
+  getVendorFSNum,
+  updateFssaiService,
   updateGstinService,
 } from '../../services/SettingsService';
 import {
@@ -60,6 +66,7 @@ export default function Settings({navigation}) {
   const [aadharBack, setAadharBack] = useState(null);
   const [pan, setPan] = useState(null);
   const [fs, setFs] = useState(null);
+  const [fsnum, setFsnum] = useState(null);
   const [eye, setEye] = useState(false);
   const [gst, setGst] = useState(null);
   const [originalPass, setOriginalPass] = useState(null);
@@ -108,6 +115,11 @@ export default function Settings({navigation}) {
         setOriginalPass(pass);
       }
       let inf = await getSettings({dispatch, loading: true});
+      const fsData=await getVendorFSNum();
+      if(fsData?.data?.fssai_number){
+        setFsnum(fsData?.data?.fssai_number);
+      }
+      // console.log(fsData)
       setAadhar(inf?.data?.data['vendor-enca']);
       setAadharBack(inf?.data?.data['vendor-enca-back']);
       setPan(inf?.data?.data['vendor-encp']);
@@ -281,6 +293,33 @@ export default function Settings({navigation}) {
     await updateGstinService({number: gst, dispatch});
   };
 
+  // ======SUBMIT FSSAI NUMBER========//
+  const submitFsNum = async () => {
+    if (fsnum) {
+      updateFssaiService({
+        fssai_number: fsnum,
+        company_id: details?.company_id,
+        phone_number: details?.phone_number,
+        dispatch
+      });
+    }
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    dispatch(startLoader(true));
+    setTimeout(() => {
+      dispatch(logout(true));
+    }, 1000);
+    setTimeout(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'OnboardStack'}],
+      });
+      dispatch(logout(false));
+    }, 2000);
+  };
+
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -322,6 +361,9 @@ export default function Settings({navigation}) {
             </View>
           </Flex>
           {/* <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} /> */}
+          <TouchableOpacity activeOpacity={0.7} onPress={handleLogout}>
+            <MaterialIcons name="logout" style={[gs.fs30, {color: theme}]} />
+          </TouchableOpacity>
         </Flex>
         <Text
           style={[
@@ -371,7 +413,7 @@ export default function Settings({navigation}) {
         <Text style={styles.heading}>Documents</Text>
         <View style={[gs.mv10, {backgroundColor: '#fff'}]}>
           {/* =====AADHAR CARD====== */}
-          <View style={styles.labelcontainer}>
+          {/* <View style={styles.labelcontainer}>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -556,9 +598,9 @@ export default function Settings({navigation}) {
                 </Center>
               </View>
             )}
-          </View>
+          </View> */}
           {/* =====PAN CARD====== */}
-          <View style={styles.labelcontainer}>
+          {/* <View style={styles.labelcontainer}>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -663,11 +705,11 @@ export default function Settings({navigation}) {
                 </Center>
               </View>
             )}
-          </View>
+          </View> */}
 
           {/* =====GSTIN Number====== */}
 
-          <View style={styles.labelcontainer}>
+          {/* <View style={styles.labelcontainer}>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -709,7 +751,7 @@ export default function Settings({navigation}) {
                 </TouchableOpacity>
               </View>
             )}
-          </View>
+          </View> */}
           {/* =====FSSAI LICENSE====== */}
           <View style={styles.labelcontainer}>
             <TouchableOpacity
@@ -728,7 +770,7 @@ export default function Settings({navigation}) {
                 justifyContent="space-between">
                 <Text style={styles.accordianTitle}>FSSAI License</Text>
                 <FeatherIcon
-                  name={show.fssaiEnable?"chevron-up": "chevron-down"}
+                  name={show.fssaiEnable ? 'chevron-up' : 'chevron-down'}
                   style={[gs.fs20, {color: ts.secondarytext}]}
                 />
               </Flex>
@@ -819,6 +861,52 @@ export default function Settings({navigation}) {
               </View>
             )}
           </View>
+
+          {/* =====FSSAI Number====== */}
+          <View style={styles.labelcontainer}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                setShow({
+                  aadharEnable: false,
+                  panEnable: false,
+                  gstinEnable: !show.gstinEnable,
+                  fssaiEnable: false,
+                });
+              }}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text style={styles.accordianTitle}>FSSAI Number</Text>
+                <FeatherIcon
+                  name={show.gstinEnable ? 'chevron-up' : 'chevron-down'}
+                  style={[gs.fs20, {color: ts.secondarytext}]}
+                />
+              </Flex>
+            </TouchableOpacity>
+            {show.gstinEnable && (
+              <View style={styles.accordianitem}>
+                <Text style={[styles.heading, gs.mb5]}>
+                  Enter your FSSAI number below
+                </Text>
+                <TextInput
+                  style={{...styles.input, backgroundColor: '#f5f5f5'}}
+                  mode="outlined"
+                  activeOutlineColor={theme}
+                  outlineColor={'#999'}
+                  outlineStyle={[gs.br8]}
+                  value={fsnum}
+                  onChangeText={text => setFsnum(text)}
+                  textColor={ts.secondarytext}
+                  maxLength={14}
+                />
+                <TouchableOpacity style={[gs.mv20]} onPress={submitFsNum}>
+                  <ThemeSepBtn themecolor={theme} btntxt="Submit" height={40} />
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
           <Divider style={[gs.mv20, {backgroundColor: theme}]} />
           <Text style={styles.heading}>Links</Text>
           {/* ====ABOUT US====== */}
@@ -869,7 +957,7 @@ export default function Settings({navigation}) {
               </Flex>
             </TouchableOpacity>
           </View>
-          <Divider style={[gs.mv20, {backgroundColor: theme}]} />
+          {/* <Divider style={[gs.mv20, {backgroundColor: theme}]} />
           <Text style={styles.heading}>Help Desk / Support</Text>
           <TouchableOpacity
             style={[gs.mv20]}
@@ -883,7 +971,7 @@ export default function Settings({navigation}) {
               btntxt="Raise a Ticket"
               height={40}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={gs.h20}></View>
         </View>
       </KeyboardAwareScrollView>

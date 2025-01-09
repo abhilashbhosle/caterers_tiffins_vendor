@@ -19,11 +19,11 @@ export const getInquiryService = async ({limit, page, sort,date,search}) => {
     return res;
   } catch (error) {
     if (error.response && error.response.data) {
-      showMessage({
-        message: 'Request Failed!',
-        description: error.response.data.message,
-        type: 'danger',
-      });
+      // showMessage({
+      //   message: 'Request Failed!',
+      //   description: error.response.data.message,
+      //   type: 'danger',
+      // });
       return error.response.data;
     } else {
       return error.message;

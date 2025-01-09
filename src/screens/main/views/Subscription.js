@@ -5,6 +5,7 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -12,7 +13,7 @@ import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {gs} from '../../../../GlobalStyles';
 import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
-import {Center, Flex, Spinner} from 'native-base';
+import {Actionsheet, Center, Flex, Spinner} from 'native-base';
 import {ScaledSheet} from 'react-native-size-matters';
 import {Card} from 'react-native-paper';
 import {plan_data} from '../../../constants/Constant';
@@ -21,6 +22,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {getFlow} from '../../../redux/slicers/CommomSlicer';
 import {
+  cancelChange,
   createOneTimeSub,
   getQueuedSubscription,
   getSubscriptionList,
@@ -42,14 +44,15 @@ export default function Subscription({navigation}) {
   const [monthly, setMonthly] = useState(false);
   const [vendor, setVendor] = useState(null);
   const dispatch = useDispatch();
-  let {subListData, subListError, subListLoading, queuedData} = useSelector(
-    state => state.subscription,
-  );
+  let {subListData, subListError, subListLoading, queuedData, canceltriggered} =
+    useSelector(state => state.subscription);
   const [openCouponSheet, setOpenCouponSheet] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [viewDetails, setViewDetails] = useState(false);
   const [details, setDetails] = useState(null);
   const [showActiveSubs, setShowActivesubs] = useState(false);
+  const [activeSheet, setActiveSheet] = useState(false);
+  const [activeDetails, setActiveDetails] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -66,6 +69,7 @@ export default function Subscription({navigation}) {
     dispatch(getFlow(flow));
     let params = {
       vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
+      mode:"test"
     };
     dispatch(getSubscriptionList({params}));
     dispatch(getQueuedSubscription());
@@ -74,12 +78,19 @@ export default function Subscription({navigation}) {
   useMemo(() => {
     if (
       queuedData?.activeSubscription?.id ||
-      queuedData?.queuedSubscriptions?.length
+      queuedData?.queuedSubscriptions?.length ||
+      queuedData?.pendingSubscriptions?.length
     ) {
       setShowActivesubs(true);
     }
   }, [queuedData]);
 
+  useEffect(() => {
+    if (canceltriggered) {
+      setShowActivesubs(false);
+      dispatch(cancelChange(true));
+    }
+  }, [canceltriggered]);
   //========REFS========//
   const topRef = useRef(null);
   const bottomRef = useRef(null);
@@ -94,6 +105,11 @@ export default function Subscription({navigation}) {
       setOpenCouponSheet(true);
       setSelectedPlan(item);
     } catch (error) {}
+  };
+
+  const handleViewDetails = ({details}) => {
+    setActiveSheet(true);
+    setActiveDetails(details);
   };
 
   const renderItem = ({item, index}) => {
@@ -117,6 +133,7 @@ export default function Subscription({navigation}) {
       </TouchableOpacity>
     );
   };
+  // console.log(subListData)
   const renderPlans = ({item}) => {
     return (
       <View
@@ -152,7 +169,7 @@ export default function Subscription({navigation}) {
             </Text>
           </View>
           <Center>
-            <Flex direction="row" alignItems="center" style={[gs.mv20]}>
+            <Flex direction="row" alignItems="center" style={[gs.mt20]}>
               <MaterialIcons name="currency-rupee" style={[gs.fs22]} />
               <Text
                 style={[
@@ -179,41 +196,44 @@ export default function Subscription({navigation}) {
                 - {e}
               </Text>
             ))} */}
-            {item?.benefits &&
-              Object.entries(item.benefits).map(([key, benefit], index) => (
-                <Text
-                  key={key}
-                  style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
-                  - {benefit}
-                </Text>
-              ))}
-          </View>
-          {item?.benefits?.length > 6 ? (
+            <View
+              style={{
+                height: Platform.OS == 'android' ? height / 3.9 : height / 3.5,
+              }}>
+              {item?.benefits &&
+                Object.entries(item.benefits)
+                  .slice(0, Platform.OS == 'ios' ? 8 : 5)
+                  .map(([key, benefit], index) => (
+                    <Text
+                      key={key}
+                      style={[
+                        {...styles.heading, color: ts.primarytext},
+                        gs.mv3,
+                      ]}>
+                      - {benefit}
+                    </Text>
+                  ))}
+            </View>
             <Center>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  setViewDetails(true);
-                  setSelectedPlan(item);
-                }}>
-                <Text
-                  style={[
-                    {
-                      ...styles.heading,
-                      color:
-                        item?.subscriptionType == 'popular'
-                          ? '#459412'
-                          : item?.subscriptionType == 'branded'
-                          ? '#8e11a5'
-                          : theme,
-                    },
-                    gs.mv3,
-                  ]}>
-                  View plan details..
-                </Text>
-              </TouchableOpacity>
+              {item?.benefits &&
+              Object.entries(item.benefits)?.length > Platform.OS == 'ios' ? (
+                8
+              ) : 5 ? (
+                <TouchableOpacity
+                  style={[gs.pb10]}
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    handleViewDetails({
+                      details: item.benefits,
+                    });
+                  }}>
+                  <Text style={[{color: ts.secondarytext}, gs.fs14]}>
+                    view details{' '}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
             </Center>
-          ) : null}
+          </View>
 
           <Center>
             <TouchableOpacity
@@ -357,7 +377,24 @@ export default function Subscription({navigation}) {
           )}
         </View>
       </ScrollView>
-
+      <Actionsheet
+        isOpen={activeSheet}
+        onClose={() => {
+          setActiveSheet(false);
+        }}>
+        <Actionsheet.Content style={{backgroundColor: '#fff', width: '100%'}}>
+          <ScrollView>
+            {activeDetails &&
+              Object.entries(activeDetails).map(([key, benefit], index) => (
+                <Text
+                  key={key}
+                  style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
+                  - {benefit}
+                </Text>
+              ))}
+          </ScrollView>
+        </Actionsheet.Content>
+      </Actionsheet>
       <CouponSheet
         openCouponSheet={openCouponSheet}
         setOpenCouponSheet={setOpenCouponSheet}
@@ -401,7 +438,7 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: '20@ms',
-    marginTop: '30@ms',
+    marginTop: '5@ms',
   },
   toggleicon: {
     fontSize: '35@ms',

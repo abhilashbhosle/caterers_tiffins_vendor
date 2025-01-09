@@ -42,6 +42,34 @@ export const getCredentials = async ({phone,dispatch}) => {
     dispatch(startLoader(false));
   }
 };
+// ===GET VENDOR FSSAI NUMBER===///
+export const getVendorFSNum = async () => {
+  try {
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.get(
+      `${endpoints.baseUrl}get-vendor-enc-info`,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+ 
+    return res.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  }
+};
 
 // ===========GET SETTING DETAILS===========//
 export const getSettings = async ({dispatch, loading}) => {
@@ -638,6 +666,53 @@ export const updateGstinService = async ({number,dispatch}) => {
       showMessage({
         message: 'Success!',
         description: 'GSTIN Number Updated Successfully.',
+        type: 'success',
+      });
+      }
+ 
+    return res;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};
+
+//====SUBMIT FSSAI=========//
+export const updateFssaiService = async ({fssai_number,company_id,phone_number,dispatch}) => {
+    let vendor_id= await AsyncStorage.getItem("vendor_id")
+  try {
+    let body={
+      fssai_number,
+      vendor_id,
+      company_id,
+      phone_number
+    }
+    dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.post(
+      `${endpoints.baseUrl}vendor-update-enc`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (res.data.status == 'success') {
+      showMessage({
+        message: 'Success!',
+        description: 'FSSAI Number Updated Successfully.',
         type: 'success',
       });
       }

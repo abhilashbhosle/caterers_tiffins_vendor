@@ -21,7 +21,6 @@ import RazorpayCheckout from 'react-native-razorpay';
 function SubDetails({viewDetails, setViewDetails, plan, flow}) {
   const {height, width} = Dimensions.get('screen');
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
-  console.log(plan);
   return (
     <TouchableWithoutFeedback
       onPress={() => {

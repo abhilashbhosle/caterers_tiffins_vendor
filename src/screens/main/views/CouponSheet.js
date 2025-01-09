@@ -52,8 +52,10 @@ function CouponSheet({
     };
     try {
       let res = await calculatePayService({body, dispatch});
+
       setDetails(res);
     } catch (error) {
+      console.log(error)
     } finally {
       setOpenCouponSheet(true);
     }

@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
-import {createOneTimeSubService, getQueuedSubscriptionService, getSubscriptionListService} from '../services/SubscriptionService';
+import {cancelSubscriptionService, createOneTimeSubService, getQueuedSubscriptionService, getSubscriptionListService} from '../services/SubscriptionService';
 
 // ======GET LIST OF SUBSCRIPTION=======//
 export const getSubscriptionList = createAsyncThunk(
@@ -47,6 +47,21 @@ export const getQueuedSubscription = createAsyncThunk(
     }
   },
 );
+// ======CANCEL SUBSCRIPTION=======//
+export const cancelSubscription = createAsyncThunk(
+  'cancelSubscription',
+  async ({subscription_id}, {dispatch}) => {
+    try {
+      dispatch(startLoader(true))
+      const res = await cancelSubscriptionService({subscription_id,dispatch});
+      return res.data;
+    } catch (error) {
+      throw(error.message);
+    } finally {
+      dispatch(startLoader(false))
+    }
+  },
+);
 
 const subSlice = createSlice({
   name: 'subSlice',
@@ -54,9 +69,14 @@ const subSlice = createSlice({
     subListData: [],
     subListError: null,
     subListLoading: false,
-    queuedData:[]
+    queuedData:[],
+    canceltriggered:false
   },
-  reducers: {},
+  reducers: {
+    cancelChange: (state, action) => {
+      state.canceltriggered=action.payload;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(getSubscriptionList.pending, (state, action) => {
@@ -74,7 +94,10 @@ const subSlice = createSlice({
       .addCase(getQueuedSubscription.fulfilled, (state, action) => {
         state.queuedData = action.payload;
       })
+      .addCase(cancelSubscription.fulfilled,(state,action)=>{
+        state.canceltriggered=true;
+      })
   },
 });
-export const {} = subSlice.actions;
+export const {cancelChange} = subSlice.actions;
 export default subSlice.reducer;
