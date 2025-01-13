@@ -25,7 +25,8 @@ import {
 import {useDispatch} from 'react-redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {color} from 'native-base/lib/typescript/theme/styled-system';
-import { getQueuedSubscription } from '../../controllers/SubscriptionController';
+import {getQueuedSubscription} from '../../controllers/SubscriptionController';
+import { showMessage } from 'react-native-flash-message';
 
 function CouponSheet({
   openCouponSheet,
@@ -55,7 +56,7 @@ function CouponSheet({
 
       setDetails(res);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
       setOpenCouponSheet(true);
     }
@@ -70,14 +71,17 @@ function CouponSheet({
     try {
       let res = await handlePayService({body, dispatch});
       if (res?.order.id) {
-        handlePayment({order_id:res.order?.id,order_amount:res?.order?.amount});
+        handlePayment({
+          order_id: res.order?.id,
+          order_amount: res?.order?.amount,
+        });
       }
     } catch (error) {
     } finally {
       setOpenCouponSheet(true);
     }
   };
-  const handlePayment = ({order_id,order_amount}) => {
+  const handlePayment = ({order_id, order_amount}) => {
     var options = {
       // description: 'Credits towards consultation',
       // image: 'https://i.imgur.com/3g7nmJC.png',
@@ -91,19 +95,29 @@ function CouponSheet({
         name: vendor?.vendor_service_name,
       },
       theme: {color: '#F37254'},
-      order_id:!subscribe?order_id:"",
-      subscription_id:subscribe?order_id:"",
+      order_id: !subscribe ? order_id : '',
+      subscription_id: subscribe ? order_id : '',
     };
     RazorpayCheckout.open(options)
       .then(data => {
         // handle success
-        alert(`Success: ${data.razorpay_payment_id}`);
+        // alert(`Success: ${data.razorpay_payment_id}`);
+        showMessage({
+          message: 'Success!',
+          description: 'Your subscription is successful!',
+          type: 'success',
+        });
         setOpenCouponSheet(false);
-        dispatch(getQueuedSubscription())
+        dispatch(getQueuedSubscription());
       })
       .catch(error => {
         // handle failure
-        alert(`Error: ${error.description}`);
+        // alert(`Error: ${error.description}`);
+        showMessage({
+          message: 'Request Cancelled!',
+          description: error?.description,
+          type: 'danger',
+        });
       });
   };
   // =======CREATE SUBSCRIPTION========//
@@ -117,7 +131,7 @@ function CouponSheet({
     try {
       let res = await handleSubscriptionService({body, dispatch});
       if (res) {
-        handlePayment({order_id:res.id,order_amount:details?.finalAmount});
+        handlePayment({order_id: res.id, order_amount: details?.finalAmount});
       }
     } catch (error) {
     } finally {
@@ -195,10 +209,10 @@ function CouponSheet({
               style={[
                 gs.fs16,
                 {
-                  color:theme,
+                  color: theme,
                   fontFamily: ts.secondarymedium,
                 },
-                gs.mt10
+                gs.mt10,
               ]}>
               Plan Details
             </Text>
@@ -340,8 +354,7 @@ function CouponSheet({
                   direction="row"
                   alignItems="center"
                   justifyContent="space-between"
-                  width={'80%'}
-                  >
+                  width={'80%'}>
                   <Text
                     style={[
                       gs.fs14,

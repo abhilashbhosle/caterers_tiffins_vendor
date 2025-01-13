@@ -60,11 +60,21 @@ export default function SubscribedPlans({
         {queuedData?.activeSubscription?.id ? (
           <>
             <Flex
+              alignItems="center"
+              justifyContent="space-between"
+              direction="row"
+              style={[gs.mt20]}>
+              <Text style={styles.keys}>Vendor Type</Text>
+              <Text style={{...styles.values, color: theme,fontFamily:ts.secondarysemibold}}>
+                {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
+              </Text>
+            </Flex>
+            <Flex
               direction="row"
               alignItems="center"
               justifyContent="space-between"
-              style={[gs.mt20]}>
-              <Text style={styles.keys}>Your Subscription Status</Text>
+              style={[gs.mt10]}>
+              <Text style={styles.keys}>Subscription Status</Text>
               <Flex direction="row" alignItems="center">
                 <AntIcons name="check" style={[gs.fs22, {color: ts.accent3}]} />
                 <Text
@@ -75,16 +85,6 @@ export default function SubscribedPlans({
                   Active
                 </Text>
               </Flex>
-            </Flex>
-            <Flex
-              alignItems="center"
-              justifyContent="space-between"
-              direction="row"
-              style={[gs.mt10]}>
-              <Text style={styles.keys}>Vendor Type</Text>
-              <Text style={{...styles.values, color: theme}}>
-                {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
-              </Text>
             </Flex>
             <Flex
               alignItems="center"
@@ -111,14 +111,9 @@ export default function SubscribedPlans({
               justifyContent="space-between"
               direction="row"
               style={[gs.mt10]}>
-              <Text style={styles.keys}>Subscription Tyoe</Text>
+              <Text style={styles.keys}>Subscription Type</Text>
               <Text style={styles.values}>
-                {queuedData?.activeSubscription?.subscription_pattern ==
-                  'one_time_monthly' ||
-                queuedData?.activeSubscription?.subscription_pattern ==
-                  'one_time_yearly'
-                  ? 'One-Time'
-                  : 'Reccuring'}
+                {queuedData?.activeSubscription?.subscription_pattern }
               </Text>
             </Flex>
             <Flex
@@ -131,7 +126,7 @@ export default function SubscribedPlans({
                 {queuedData?.activeSubscription?.final_amount}
               </Text>
             </Flex>
-            <Flex
+            {/* <Flex
               alignItems="center"
               justifyContent="space-between"
               direction="row"
@@ -140,7 +135,7 @@ export default function SubscribedPlans({
               <Text style={styles.values}>
                 {queuedData?.activeSubscription?.discount_amount}
               </Text>
-            </Flex>
+            </Flex> */}
             <Flex
               alignItems="center"
               justifyContent="space-between"
@@ -172,10 +167,7 @@ export default function SubscribedPlans({
               style={[gs.mt10]}>
               <Text style={styles.keys}>Days Remaining</Text>
               <Text style={styles.values}>
-                {calculateRemainingDays(
-                  queuedData?.activeSubscription?.start_date,
-                  queuedData?.activeSubscription?.end_date,
-                )}
+              {queuedData?.activeSubscription?.remaining_days}
               </Text>
             </Flex>
             {queuedData?.activeSubscription?.subscription_pattern ==
@@ -236,7 +228,7 @@ export default function SubscribedPlans({
                   alignItems="center"
                   justifyContent="space-between"
                   style={[gs.mt20]}>
-                  <Text style={styles.keys}>Your Subscription Status</Text>
+                  <Text style={styles.keys}>Subscription Status</Text>
                   <Flex direction="row" alignItems="center">
                     <AntIcons
                       name="check"
@@ -251,7 +243,7 @@ export default function SubscribedPlans({
                     </Text>
                   </Flex>
                 </Flex>
-                <Flex
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -260,8 +252,57 @@ export default function SubscribedPlans({
                   <Text style={{...styles.values, color: theme}}>
                     {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
                   </Text>
-                </Flex>
+                </Flex> */}
+               
+                {/* <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction="row"
+                  style={[gs.mt10]}>
+                  <Text style={styles.keys}>Subscription Tyoe</Text>
+                  <Text style={styles.values}>
+                    {e?.subscription_pattern == 'one_time_yearly' || e?.subscription_pattern=="one_time_monthly"
+                      ? 'One-Time'
+                      : 'Reccuring'}
+                  </Text>
+                </Flex> */}
+                {/* <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction="row"
+                  style={[gs.mt10]}>
+                  <Text style={styles.keys}>Subscription Charges</Text>
+                  <Text style={styles.values}>{e?.final_amount}</Text>
+                </Flex> */}
+                {/* <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction="row"
+                  style={[gs.mt10]}>
+                  <Text style={styles.keys}>Discount Amount</Text>
+                  <Text style={styles.values}>{e?.discount_amount}</Text>
+                </Flex> */}
                 <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction="row"
+                  style={[gs.mt10]}>
+                  <Text style={styles.keys}>Subscription Start Date</Text>
+                  <Text style={styles.values}>
+                    {moment(e?.start_date).format('MMMM DD, YYYY')}
+                  </Text>
+                </Flex>
+                {/* <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction="row"
+                  style={[gs.mt10]}>
+                  <Text style={styles.keys}>Subscription End Date</Text>
+                  <Text style={styles.values}>
+                    {moment(e?.end_date).format('DD-MMM-YYYY')}
+                  </Text>
+                </Flex> */}
+                 <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -280,55 +321,17 @@ export default function SubscribedPlans({
                     {e?.subscription_display_name}
                   </Text>
                 </Flex>
-                <Flex
+                  <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
                   style={[gs.mt10]}>
-                  <Text style={styles.keys}>Subscription Tyoe</Text>
+                  <Text style={styles.keys}>Subscription Type</Text>
                   <Text style={styles.values}>
-                    {e?.subscription_pattern == 'one_time_yearly' || e?.subscription_pattern=="one_time_monthly"
-                      ? 'One-Time'
-                      : 'Reccuring'}
+                    {e?.subscription_pattern}
                   </Text>
                 </Flex>
-                <Flex
-                  alignItems="center"
-                  justifyContent="space-between"
-                  direction="row"
-                  style={[gs.mt10]}>
-                  <Text style={styles.keys}>Subscription Charges</Text>
-                  <Text style={styles.values}>{e?.final_amount}</Text>
-                </Flex>
-                <Flex
-                  alignItems="center"
-                  justifyContent="space-between"
-                  direction="row"
-                  style={[gs.mt10]}>
-                  <Text style={styles.keys}>Discount Amount</Text>
-                  <Text style={styles.values}>{e?.discount_amount}</Text>
-                </Flex>
-                <Flex
-                  alignItems="center"
-                  justifyContent="space-between"
-                  direction="row"
-                  style={[gs.mt10]}>
-                  <Text style={styles.keys}>Subscription Start Date</Text>
-                  <Text style={styles.values}>
-                    {moment(e?.start_date).format('DD-MMM-YYYY')}
-                  </Text>
-                </Flex>
-                <Flex
-                  alignItems="center"
-                  justifyContent="space-between"
-                  direction="row"
-                  style={[gs.mt10]}>
-                  <Text style={styles.keys}>Subscription End Date</Text>
-                  <Text style={styles.values}>
-                    {moment(e?.end_date).format('DD-MMM-YYYY')}
-                  </Text>
-                </Flex>
-                <Flex
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -337,7 +340,7 @@ export default function SubscribedPlans({
                   <Text style={styles.values}>
                     {calculateRemainingDays(e?.start_date, e?.end_date)}
                   </Text>
-                </Flex>
+                </Flex> */}
               </View>
             ))
           : null}
@@ -350,7 +353,7 @@ export default function SubscribedPlans({
                   alignItems="center"
                   justifyContent="space-between"
                   style={[gs.mt20]}>
-                  <Text style={styles.keys}>Your Subscription Status</Text>
+                  <Text style={styles.keys}>Subscription Status</Text>
                   <Flex direction="row" alignItems="center">
                     <AntIcons
                       name="check"
@@ -365,7 +368,7 @@ export default function SubscribedPlans({
                     </Text>
                   </Flex>
                 </Flex>
-                <Flex
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -373,6 +376,16 @@ export default function SubscribedPlans({
                   <Text style={styles.keys}>Vendor Type</Text>
                   <Text style={{...styles.values, color: theme}}>
                     {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
+                  </Text>
+                </Flex> */}
+                 <Flex
+                  alignItems="center"
+                  justifyContent="space-between"
+                  direction="row"
+                  style={[gs.mt10]}>
+                  <Text style={styles.keys}>Subscription Start Date</Text>
+                  <Text style={styles.values}>
+                  {moment(e?.start_date).format('MMMM DD, YYYY')}
                   </Text>
                 </Flex>
                 <Flex
@@ -401,38 +414,27 @@ export default function SubscribedPlans({
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Subscription Type</Text>
                   <Text style={styles.values}>
-                    {e?.subscription_pattern == 'one_time_yearly'|| e?.subscription_pattern=="one_time_monthly"
-                      ? 'One-Time'
-                      : 'Reccuring'}
+                    {e?.subscription_pattern}
                   </Text>
                 </Flex>
-                <Flex
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Subscription Charges</Text>
                   <Text style={styles.values}>{e?.final_amount}</Text>
-                </Flex>
-                <Flex
+                </Flex> */}
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Discount Amount</Text>
                   <Text style={styles.values}>{e?.discount_amount}</Text>
-                </Flex>
-                <Flex
-                  alignItems="center"
-                  justifyContent="space-between"
-                  direction="row"
-                  style={[gs.mt10]}>
-                  <Text style={styles.keys}>Subscription Start Date</Text>
-                  <Text style={styles.values}>
-                    {moment(e?.start_date).format('DD-MMM-YYYY')}
-                  </Text>
-                </Flex>
-                <Flex
+                </Flex> */}
+               
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -441,7 +443,7 @@ export default function SubscribedPlans({
                   <Text style={styles.values}>
                     {moment(e?.end_date).format('DD-MMM-YYYY')}
                   </Text>
-                </Flex>
+                </Flex> */}
                 <Flex
                   alignItems="center"
                   justifyContent="space-between"
@@ -449,7 +451,9 @@ export default function SubscribedPlans({
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Days Remaining</Text>
                   <Text style={styles.values}>
-                    {calculateRemainingDays(e?.start_date, e?.end_date)}
+                    {/* {calculateRemainingDays(e?.start_date, e?.end_date)}
+                     */}
+                     {e?.remaining_days}
                   </Text>
                 </Flex>
               </View>

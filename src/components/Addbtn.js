@@ -24,10 +24,10 @@ export default function Addbtn(props) {
           gs.br10,
         ]}>
         <Flex direction="row" alignItems="center">
-          <MaterialIcons
+          {/* <MaterialIcons
             name="add"
             style={[gs.fs24, {color: '#fff'}, gs.mr10]}
-          />
+          /> */}
           <Text
             style={[gs.fs15, {color: '#fff', fontFamily: ts.secondarymedium}]}>
             {props.btntxt}

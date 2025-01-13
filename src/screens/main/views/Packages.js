@@ -297,8 +297,8 @@ export default function Packages({navigation}) {
 
                   <Flex direction="row" alignItems="center">
                     <Image
-                      source={require('../../../assets/Packages/takeaway.png')}
-                      style={styles.serviceicon}
+                      source={require('../../../assets/Packages/dinein.png')}
+                      style={[{...styles.serviceicon},gs.mt2]}
                     />
                     <Text
                       style={[

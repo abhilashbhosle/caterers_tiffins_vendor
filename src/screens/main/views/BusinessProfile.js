@@ -511,6 +511,8 @@ export default function BusinessProfile({navigation}) {
               textInputProps={{
                 placeholderTextColor: ts.secondarytext,
                 returnKeyType: 'search',
+                multiline:true,
+                numberOfLines:3
               }}
               GooglePlacesSearchQuery={{fields: 'geometry'}}
               disableScroll={true}

@@ -69,6 +69,7 @@ export default function ManageOccasions({navigation}) {
       </Card>
     );
   };
+  console.log(occassions)
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -108,8 +109,7 @@ export default function ManageOccasions({navigation}) {
               numColumns={2}
               ListEmptyComponent={() => {
                 return (
-                  <Text
-                    style={[gs.fs14, {color: ts.secondarytext}, gs.mt15]}>
+                  <Text style={[gs.fs14, {color: ts.secondarytext}, gs.mt15]}>
                     You have no Occasions added.
                   </Text>
                 );
@@ -128,7 +128,11 @@ export default function ManageOccasions({navigation}) {
               screen: 'AddOccasions',
             })
           }>
-          <Addbtn btntxt="Add more Occasions" />
+          {occassions.filter((e, i) => e.selected == 1)?.length? (
+            <Addbtn btntxt="Edit Occasions" />
+          ) : (
+            <Addbtn btntxt="Add more Occasions" />
+          )}
         </TouchableOpacity>
       </View>
     </ScreenWrapper>

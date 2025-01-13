@@ -99,7 +99,7 @@ const handleAddOccassions=async()=>{
           contentContainerStyle={[gs.mb20]}
         />
         <TouchableOpacity style={[gs.mb20]} onPress={handleAddOccassions}>
-          <Addbtn btntxt="Add Occasions" />
+          <Addbtn btntxt="Save" />
         </TouchableOpacity>
       </View>
     </ScreenWrapper>

@@ -170,7 +170,7 @@ export default function AddCuisine({navigation}) {
         {index == expanded &&
           item?.children?.map((e, i) => {
             return (
-              <View style={styles.accordianitem}>
+              <View style={styles.accordianitem} key={i}>
                 <Flex direction="row" alignItems="center" key={i}>
                   <TouchableOpacity
                     key={i}
@@ -273,7 +273,7 @@ export default function AddCuisine({navigation}) {
         />
 
         <TouchableOpacity style={[gs.mb10]} onPress={handleAddCuisine}>
-          <Addbtn btntxt="Add Cuisines" />
+          <Addbtn btntxt="Save" />
         </TouchableOpacity>
       </View>
     </ScreenWrapper>

@@ -36,7 +36,7 @@ export default function ManageCuisine({navigation}) {
   useEffect(() => {
     if (cuisine?.length) {
       let arr = [];
-      cuisine.map((e, i) => {
+      cuisine?.map((e, i) => {
         e.children.filter(item => {
           if (item.selected == 1) {
             arr.push(item);
@@ -80,8 +80,8 @@ export default function ManageCuisine({navigation}) {
               flexWrap="wrap"
               alignItems="center"
               style={[gs.mt20]}>
-              {cuisine.map((e, i) =>
-                e.children.map(
+              {cuisine?.map((e, i) =>
+                e?.children.map(
                   (item, index) =>
                     item.selected == 1 && (
                       <View
@@ -114,7 +114,11 @@ export default function ManageCuisine({navigation}) {
               screen: 'AddCuisine',
             })
           }>
-          <Addbtn btntxt="Add more Cuisines" />
+          {!isEmpty ? (
+            <Addbtn btntxt="Edit Cuisines" />
+          ) : (
+            <Addbtn btntxt="Add more Cuisines" />
+          )}
         </TouchableOpacity>
       </View>
     </ScreenWrapper>
