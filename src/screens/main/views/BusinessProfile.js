@@ -21,6 +21,7 @@ import {Dropdown} from 'react-native-element-dropdown';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {showMessage} from 'react-native-flash-message';
+import moment from 'moment';
 
 export default function BusinessProfile({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -66,6 +67,7 @@ export default function BusinessProfile({navigation}) {
     streetName: '',
     staffs: '',
     workingDays: '',
+    street_address:''
   });
   const [fromDay, setFromDay] = useState('');
   const [toDay, setToday] = useState('');
@@ -84,9 +86,23 @@ export default function BusinessProfile({navigation}) {
       dispatch(getProfile());
     })();
   }, []);
+  const addDayNight = time => {
+    let t = parseInt(time.split(' ')[0]);
+    if (t < 12) {
+      return `${time} AM`;
+    } else if (t == 12) {
+      return `${time} PM`;
+    } else if (t > 12) {
+      return `${t - 12 < 10 && 0}${t - 12}:${time.split(':')[1]}:${
+        time.split(':')[2]
+      } PM`;
+    }
+  };
   useEffect(() => {
     if (profileDetails) {
-      ref.current?.setAddressText(profileDetails.formatted_address);
+      if (profileDetails?.formatted_address) {
+        ref?.current?.setAddressText(profileDetails?.formatted_address);
+      }
       setProfile({
         ...profile,
         about: profileDetails?.about_description,
@@ -107,17 +123,22 @@ export default function BusinessProfile({navigation}) {
         address: profileDetails?.formatted_address,
         latitude: profileDetails?.latitude,
         longitude: profileDetails?.longitude,
-        pincode: profileDetails?.pincode || '111111',
+        pincode: profileDetails?.pincode,
         placeId: profileDetails?.place_id,
         state: profileDetails?.state,
         streetName: profileDetails?.street_name,
         staffs: profileDetails?.total_staffs_approx,
+        street_address:profileDetails?.street_address
         // workingDays: profileDetails?.working_days_hours,
       });
       setFromDay(profileDetails?.start_day);
       setToday(profileDetails?.end_day);
-      setFromTime(profileDetails?.start_time);
-      setTotime(profileDetails?.end_time);
+      setFromTime(
+        profileDetails?.start_time && addDayNight(profileDetails?.start_time),
+      );
+      setTotime(
+        profileDetails?.end_time && addDayNight(profileDetails?.end_time),
+      );
     }
   }, [profileDetails]);
 
@@ -134,11 +155,7 @@ export default function BusinessProfile({navigation}) {
         `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${place}&key=${GOOGLE_KEY}`,
       );
       const data = await response.json();
-      console.log('data', data);
-      console.log(
-        'has own',
-        data.results.filter(e => e.hasOwnProperty('business_status')),
-      );
+
       if (
         data.results &&
         data.results.length == 1 &&
@@ -156,25 +173,25 @@ export default function BusinessProfile({navigation}) {
       }
     }
   };
-  const formatTime = (time) => {
-    const [hour, minute, secondPeriod] = time.split(':');
-    if(hour>10){
-      return time
+  const formatTime = time => {
+    let t = time.split(' ');
+    if (t[t.length - 1] == 'AM' || t[t.length - 1] == 'PM') {
+      return time;
+    } else {
+      const t = parseInt(time.split(':')[0]);
+      if (t < 12) {
+        return `${time} AM`;
+      } else {
+        return `${time} PM`;
+      }
     }
-    const [second, period] = secondPeriod.split(' ');
-  console.log('period',period)
-    const formattedHour = hour.padStart(2, '0');
-  
-    return `${formattedHour}:${minute}:${second} ${period}`;
   };
-  
-
   handleUpdate = async () => {
     let data = profile.address;
     // let tempData = data?.description
     //   ? data.description.split(',')
     //   : data.split(',');
-    let checkPlace = await handleCheckPlace(ref.current.getAddressText());
+    let checkPlace = await handleCheckPlace(ref?.current?.getAddressText());
     let tempData = ref?.current?.getAddressText()?.split(',');
     // ====CHECK WHETHER THE PLACE EXIST OR NOT======//
 
@@ -183,7 +200,7 @@ export default function BusinessProfile({navigation}) {
       let temp = {
         street_name: tempData[0],
         area: tempData[1].trim(),
-        pincode: '11111',
+        pincode: profile?.pincode,
         latitude: profile?.geometry
           ? profile.geometry.location.lat
           : profile.latitude,
@@ -202,8 +219,8 @@ export default function BusinessProfile({navigation}) {
         vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
         working_days_start: fromDay,
         working_days_end: toDay,
-        working_hours_start: formatTime(fromTime),
-        working_hours_end: formatTime(toTime),
+        working_hours_start: fromTime && formatTime(fromTime),
+        working_hours_end: toTime && formatTime(toTime),
         total_staffs_approx: profile?.staffs,
         about_description: profile?.about,
         working_since: profile?.since,
@@ -219,20 +236,15 @@ export default function BusinessProfile({navigation}) {
         instagram_link: profile?.instagram,
         facebook_link: profile?.facebook,
         point_of_contact_name: profile?.contactPersonName,
+        street_address:profile?.street_address
       };
-      console.log(temp)
+      // console.log("temp",temp)
       businessUpdateService({body: temp, dispatch});
     }
-
   };
 
   // ========SETTING SELECTED TIME=======//
   const parseTimeString = timeString => {
-    console.log(
-      'entered into parse time string',
-      timeString,
-      typeof timeString,
-    );
     const [time, modifier] = timeString.split(' ');
     let [hours, minutes, seconds] = time.split(':');
 
@@ -249,7 +261,7 @@ export default function BusinessProfile({navigation}) {
     }
     const date = new Date();
     date.setHours(hours);
-    
+
     date.setMinutes(minutes);
     date.setSeconds(seconds);
     date.setMilliseconds(0);
@@ -270,20 +282,19 @@ export default function BusinessProfile({navigation}) {
     let dt = new Date(date).toLocaleTimeString();
     parseTimeString(dt);
     if (working.toTimeVisible) {
-      setTotime(dt);
+      setTotime(moment.utc(date).local().format('hh:mm:ss A'));
     } else if (working.fromTimeVisible) {
-      setFromTime(dt);
+      setFromTime(moment.utc(date).local().format('hh:mm:ss A'));
     }
     hideDatePicker();
   };
-
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
       <ThemeHeaderWrapper
         lefttxt="Business Profile"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <KeyboardAwareScrollView
         enableOnAndroid={true}
@@ -398,7 +409,7 @@ export default function BusinessProfile({navigation}) {
                         marginBottom: 0,
                         marginLeft: 10,
                       }}>
-                      {fromTime || "00:00"}
+                      {fromTime || '00:00'}
                     </Text>
                   </Flex>
                 </TouchableOpacity>
@@ -460,7 +471,7 @@ export default function BusinessProfile({navigation}) {
                         marginBottom: 0,
                         marginLeft: 10,
                       }}>
-                      {toTime || "00:00"}
+                      {toTime || '00:00'}
                     </Text>
                   </Flex>
                 </TouchableOpacity>
@@ -504,15 +515,14 @@ export default function BusinessProfile({navigation}) {
           ]}>
           <View style={{width: width - 80}}>
             <Text style={{...styles.subtitke, color: theme}}>
-              Enter Full Address
+              Select your Area
             </Text>
-
             <GooglePlacesAutocomplete
               textInputProps={{
                 placeholderTextColor: ts.secondarytext,
                 returnKeyType: 'search',
-                multiline:true,
-                numberOfLines:3
+                multiline: true,
+                numberOfLines: 3,
               }}
               GooglePlacesSearchQuery={{fields: 'geometry'}}
               disableScroll={true}
@@ -520,10 +530,15 @@ export default function BusinessProfile({navigation}) {
               placeholder="Try A2B, Mg road, Bangalore, etc."
               fetchDetails={true}
               onPress={(data, details) => {
+                if (!details) {
+                  console.warn('Google API did not return details.');
+                  return;
+                }
+
                 setProfile({
                   ...profile,
                   address: data,
-                  geometry: details?.geometry,
+                  geometry: details.geometry || {},
                 });
               }}
               query={{
@@ -537,6 +552,8 @@ export default function BusinessProfile({navigation}) {
                   borderWidth: 1,
                   borderColor: '#999',
                   borderRadius: 8,
+                  height:80,
+                  textAlignVertical:'top'
                 },
                 description: {
                   color: ts.primarytext,
@@ -547,6 +564,44 @@ export default function BusinessProfile({navigation}) {
               // }
             />
           </View>
+          <View style={[gs.mv10]}>
+                <Text style={{...styles.subtitke, color: theme}}>
+                  Pincode
+                </Text>
+                <TextInput
+                  style={{...styles.input, width: width - 80}}
+                  placeholder=""
+                  outlineColor={ts.secondarytext}
+                  activeOutlineColor={theme}
+                  mode="outlined"
+                  outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                  value={profile?.pincode?.toString()}
+                  onChangeText={text => {
+                    setProfile({...profile, pincode: text});
+                  }}
+                  keyboardType="numeric"
+                  textColor={ts.secondarytext}
+                  maxLength={6}
+                />
+              </View>
+              <View style={[gs.mv10]}>
+                <Text style={{...styles.subtitke, color: theme}}>
+                  Street Address
+                </Text>
+                <TextInput
+                  style={{...styles.input, width: width - 80}}
+                  placeholder=""
+                  outlineColor={ts.secondarytext}
+                  activeOutlineColor={theme}
+                  mode="outlined"
+                  outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+                  value={profile?.street_address}
+                  onChangeText={text => {
+                    setProfile({...profile, street_address: text});
+                  }}
+                  textColor={ts.secondarytext}
+                />
+              </View>
         </Card>
         {/* =======ABOUT=========== */}
         <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
@@ -789,7 +844,7 @@ const styles = ScaledSheet.create({
     paddingHorizontal: '8@ms',
     color: ts.secondarytext,
     fontSize: '12@ms',
-    marginHorizontal:'2.5@ms'
+    marginHorizontal: '2.5@ms',
   },
   icon: {
     marginRight: 5,

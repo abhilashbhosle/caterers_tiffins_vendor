@@ -1,4 +1,4 @@
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import {View, Text, FlatList, TouchableOpacity, Linking, Alert} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
@@ -25,7 +25,7 @@ export default function Inquiries({navigation}) {
   const [page, setPage] = useState(1);
   const [inquiries, setInquiries] = useState([]);
   const [showSkell, setShowSkell] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState();
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(10);
   let {inquiry} = useSelector(state => state.inquiry);
@@ -45,7 +45,7 @@ export default function Inquiries({navigation}) {
             limit,
             page,
             sort: 'newest_first',
-            date:moment(date).format("YYYY-MM-DD"),
+            date: date && moment(date).format('YYYY-MM-DD'),
             search,
           }),
         );
@@ -56,14 +56,14 @@ export default function Inquiries({navigation}) {
           limit,
           page,
           sort: 'newest_first',
-          date:moment(date).format("YYYY-MM-DD"),
+          date: date && moment(date).format('YYYY-MM-DD'),
           search,
         }),
       );
     }
   }, [page]);
   useEffect(() => {
-    if (inquiry?.data?.length > 0) {
+    if (inquiry?.data?.length > 0 && inquiries<inquiry?.total) {
       setInquiries([...inquiries, ...inquiry.data]);
       setRefreshing(false);
       setShowSkell(false);
@@ -75,8 +75,8 @@ export default function Inquiries({navigation}) {
   }, [inquiry]);
   // =========FETCH MORE DATA=========//
   const fetchMoreData = () => {
-    // console.log('fetch more data called');
     if (inquiries.length < inquiry.total) {
+    console.log('fetch more data called');
       setPage(page + 1);
     }
   };
@@ -122,15 +122,13 @@ export default function Inquiries({navigation}) {
   };
 
   const hideDatePicker = () => {
-    setShowCal(false)
+    setShowCal(false);
   };
   const handleConfirm = dt => {
-    setDate(dt)
-    handleRefresh()
-    hideDatePicker()
-    
+    setDate(dt);
+    handleRefresh();
+    hideDatePicker();
   };
-
   const renderItem = ({item}) => {
     return (
       <View style={{...styles.cardContainer, marginHorizontal: 3}}>
@@ -146,9 +144,16 @@ export default function Inquiries({navigation}) {
             style={[
               gs.fs13,
               {color: ts.secondarytext, fontFamily: ts.secondaryregular},
-              gs.mv10,
+              gs.mv2,
             ]}>
             {item?.description}
+          </Text>
+          <Text
+            style={[
+              gs.fs13,
+              {color: ts.secondarytext, fontFamily: ts.secondaryregular},
+            ]}>
+            {moment(item?.enquiry_date).format('YYYY-MM-DD')}
           </Text>
           <Flex
             direction="row"
@@ -159,14 +164,21 @@ export default function Inquiries({navigation}) {
                 gs.fs13,
                 {color: ts.secondarytext, fontFamily: ts.secondaryregular},
               ]}>
-              {moment(item?.enquiry_date).format('MMM DD, hh:mm A')}
+              {item?.user_phone_number}
             </Text>
-            <TouchableOpacity style={styles.phonecontainer}>
+            <TouchableOpacity
+              style={styles.phonecontainer}
+              onPress={() => {
+                item?.user_phone_number
+                  ? Linking.openURL(`tel:${item?.user_phone_number}`)
+                  : Alert.alert('No Phone Number Found.');
+              }}>
               <Flex direction="row" alignItems="center">
                 <MaterialIcons
                   name="phone"
                   style={[gs.fs18, gs.mr5, {color: '#fff'}]}
                 />
+
                 <Text
                   style={[
                     gs.fs14,
@@ -187,7 +199,7 @@ export default function Inquiries({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Inquiries"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <View style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}>
         <View style={[gs.ph15]}>
@@ -214,8 +226,11 @@ export default function Inquiries({navigation}) {
               onPress={() => {
                 setShowCal(true);
               }}
-              style={{justifyContent:'center',alignItems:'center'}}
-              >
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: 100,
+              }}>
               <MaterialIcons
                 name="calendar-month"
                 style={[gs.fs26, {color: theme}]}
@@ -226,8 +241,8 @@ export default function Inquiries({navigation}) {
                   {fontFamily: ts.secondaryregular, color: theme},
                   gs.mv7,
                 ]}>
-                  {moment(date).format("YYYY-MM-DD")}
-                </Text>
+                {date ? moment(date)?.format('YYYY-MM-DD') : null}
+              </Text>
             </TouchableOpacity>
           </Flex>
           <Flex
@@ -294,7 +309,7 @@ export default function Inquiries({navigation}) {
           ListEmptyComponent={() => {
             return (
               inquiries?.length == 0 &&
-              !showSkell && (
+              !showSkell &&  !refreshing &&(
                 <Center>
                   <View style={[gs.mt10]}>
                     <Text

@@ -37,13 +37,14 @@ export default function SubscribedPlans({
     dispatch(cancelSubscription({subscription_id: id}));
   };
 
+  
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
       <ThemeHeaderWrapper
         lefttxt="Subscription"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
 
       <ScrollView style={[{flex: 1, backgroundColor: '#fff'}, gs.ph15]}>
@@ -113,7 +114,7 @@ export default function SubscribedPlans({
               style={[gs.mt10]}>
               <Text style={styles.keys}>Subscription Type</Text>
               <Text style={styles.values}>
-                {queuedData?.activeSubscription?.subscription_pattern }
+                {queuedData?.activeSubscription?.subscription_pattern_display_text }
               </Text>
             </Flex>
             <Flex
@@ -328,7 +329,7 @@ export default function SubscribedPlans({
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Subscription Type</Text>
                   <Text style={styles.values}>
-                    {e?.subscription_pattern}
+                    {e?.subscription_pattern_display_text}
                   </Text>
                 </Flex>
                 {/* <Flex
@@ -414,7 +415,7 @@ export default function SubscribedPlans({
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Subscription Type</Text>
                   <Text style={styles.values}>
-                    {e?.subscription_pattern}
+                    {e?.subscription_pattern_display_text}
                   </Text>
                 </Flex>
                 {/* <Flex

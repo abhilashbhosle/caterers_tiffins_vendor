@@ -56,7 +56,7 @@ export default function ManageCuisine({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Cuisines"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <View style={[{flex: 1, backgroundColor: '#fff'}, gs.ph15, gs.pv20]}>
         <Flex

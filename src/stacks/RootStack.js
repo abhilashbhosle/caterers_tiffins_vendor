@@ -80,8 +80,8 @@ export default function RootStack() {
       )}
       <FlashMessage
         position="top"
-        textStyle={[gs.fs15]}
-        titleStyle={[gs.fs18]}
+        // textStyle={[gs.fs15]}
+        // titleStyle={[gs.fs18]}
         style={{
           marginTop: Platform.OS == 'android' ? StatusBar.currentHeight : null,
         }}

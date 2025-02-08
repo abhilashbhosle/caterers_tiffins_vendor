@@ -323,7 +323,7 @@ export default function PhotoGallery({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Photo Gallery"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <ScrollView style={[{flex: 1, backgroundColor: '#fff'}]}>
         {/* =====BRAND LOGO====== */}

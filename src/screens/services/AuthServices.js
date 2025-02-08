@@ -114,7 +114,7 @@ export const verifyOtpService = async ({
         type: 'success',
       });
       dispatch(clearRegStates());
-      navigation.navigate('Location');
+      navigation.navigate('Profile');
     }
     return res;
   } catch (error) {

@@ -326,7 +326,7 @@ export default function Settings({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Settings"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <KeyboardAwareScrollView
         style={[{flex: 1, backgroundColor: '#fff'}, gs.p20]}

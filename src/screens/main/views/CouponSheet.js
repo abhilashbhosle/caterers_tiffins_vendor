@@ -19,6 +19,8 @@ import {RAZORPAY_KEY} from '@env';
 import RazorpayCheckout from 'react-native-razorpay';
 import {
   calculatePayService,
+  cancelOneTime,
+  cancelRecurring,
   handlePayService,
   handleSubscriptionService,
 } from '../../services/SubscriptionService';
@@ -26,7 +28,7 @@ import {useDispatch} from 'react-redux';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {color} from 'native-base/lib/typescript/theme/styled-system';
 import {getQueuedSubscription} from '../../controllers/SubscriptionController';
-import { showMessage } from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 
 function CouponSheet({
   openCouponSheet,
@@ -113,11 +115,51 @@ function CouponSheet({
       .catch(error => {
         // handle failure
         // alert(`Error: ${error.description}`);
-        showMessage({
-          message: 'Request Cancelled!',
-          description: error?.description,
-          type: 'danger',
-        });
+        setOpenCouponSheet(false);
+        if (!subscribe) {
+          (async () => {
+            try {
+              let body = {
+                orderId: order_id,
+              };
+              let res = await cancelOneTime({body, dispatch});
+         
+              showMessage({
+                message: 'Success!',
+                description: 'Payment cancelled successfully!',
+                type: 'success',
+              });
+            } catch (err) {
+           
+              showMessage({
+                message: 'Request Cancelled!',
+                description: error?.description,
+                type: 'danger',
+              });
+            }
+          })();
+        }else if(subscribe){
+          setOpenCouponSheet(false);
+          (async () => {
+            try {
+              let body = {
+                razorpaySubscriptionId: order_id,
+              };
+              let res = await cancelRecurring({body, dispatch});
+              showMessage({
+                message: 'Success!',
+                description: 'Payment cancelled successfully!',
+                type: 'success',
+              });
+            } catch (err) {
+              showMessage({
+                message: 'Request Cancelled!',
+                description: error?.description,
+                type: 'danger',
+              });
+            }
+          })();
+        }
       });
   };
   // =======CREATE SUBSCRIPTION========//
@@ -216,164 +258,186 @@ function CouponSheet({
               ]}>
               Plan Details
             </Text>
-            <Flex style={[gs.mt10]} direction="row" alignItems="center">
-              <Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    Plan Name
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {plan?.subscriptionTypeDisplayName}
-                  </Text>
-                </Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    Plan Type
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {planType}
-                  </Text>
-                </Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    Price
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {details?.finalAmount}/-
-                  </Text>
-                </Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    Discount Price
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {details?.discountAmount}
-                  </Text>
-                </Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    Start Date
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {details?.startDate}
-                  </Text>
-                </Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    End Date
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {details?.expiryDate}
-                  </Text>
-                </Flex>
-                <Flex
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  width={'80%'}>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    Due Date
-                  </Text>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      gs.ml10,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    {details?.paymentTerms}
-                  </Text>
-                </Flex>
+            <Flex style={[gs.mt10]}>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Plan Name
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {plan?.subscriptionTypeDisplayName}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Plan Type
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {planType}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Amount
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {details?.subAmount?.split('.')[0]}
+                </Text>
+              </Flex>
+
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Discount Amount
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {details?.discountAmount}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Final Amount
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {details?.finalAmount}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Start Date
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {details?.startDate}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between">
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  End Date
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {details?.expiryDate}
+                </Text>
+              </Flex>
+              <Flex
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                // width={'85%'}
+              >
+                <Text
+                  style={[
+                    gs.fs14,
+                    {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                  ]}>
+                  Due Date
+                </Text>
+                <Text
+                  style={[
+                    gs.fs14,
+                    // gs.ml10,
+                    {
+                      color: ts.secondarytext,
+                      fontFamily: ts.secondaryregular,
+                    },
+                  ]}>
+                  {details?.paymentTerms}
+                </Text>
               </Flex>
             </Flex>
             <Center style={[gs.mt15]}>
@@ -388,7 +452,7 @@ function CouponSheet({
                       gs.fs14,
                       {color: ts.primarytext, fontFamily: ts.secondarymedium},
                     ]}>
-                    Subscribe
+                    {planType} Recurring Activated
                   </Text>
                   {subscribe ? (
                     <MaterialIcons

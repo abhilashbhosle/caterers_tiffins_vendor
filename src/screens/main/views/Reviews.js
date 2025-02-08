@@ -168,7 +168,7 @@ export default function Reviews({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Customer Reviews"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <View style={{flex: 1, backgroundColor: '#fff'}}>
         <View style={[gs.mv20, gs.ph20]}>

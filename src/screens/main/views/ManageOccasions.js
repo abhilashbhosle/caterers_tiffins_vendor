@@ -76,7 +76,7 @@ export default function ManageOccasions({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Occasions"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <View
         style={[

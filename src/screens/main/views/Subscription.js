@@ -155,12 +155,7 @@ export default function Subscription({navigation}) {
             style={[
               styles.header,
               {
-                backgroundColor:
-                  item?.subscriptionType == 'popular'
-                    ? '#459412'
-                    : item?.subscriptionType == 'branded'
-                    ? '#8e11a5'
-                    : theme,
+                backgroundColor:item?.subscriptionTypeDisplayColor
               },
             ]}>
             <Text style={[styles.headtxt]}>
@@ -239,12 +234,7 @@ export default function Subscription({navigation}) {
             <TouchableOpacity
               style={{
                 ...styles.subscribebtn,
-                backgroundColor:
-                  item?.subscriptionType == 'popular'
-                    ? '#459412'
-                    : item?.subscriptionType == 'branded'
-                    ? '#8e11a5'
-                    : theme,
+                backgroundColor:item?.subscriptionTypeDisplayColor
               }}
               activeOpacity={0.7}
               onPress={() => {
@@ -297,7 +287,7 @@ export default function Subscription({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="Subscription"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       <ScrollView style={{backgroundColor: '#fff', flex: 1}}>
         <View>
@@ -346,7 +336,7 @@ export default function Subscription({navigation}) {
                   ]}
                 />
                 <Text style={styles.heading}>
-                  {!monthly ? 'Monthly' : 'Yearly'}
+                  {!monthly ? 'Yearly' : 'Monthly'}
                 </Text>
               </TouchableOpacity>
             </Flex>

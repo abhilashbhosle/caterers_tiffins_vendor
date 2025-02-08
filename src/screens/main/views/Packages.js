@@ -107,7 +107,7 @@ export default function Packages({navigation}) {
       <ThemeHeaderWrapper
         lefttxt="My Packages"
         navigation={navigation}
-        notifyIcon={false}
+        notifyIcon={true}
       />
       {flow == 'catering' ? (
         packs?.foodTypes && (
