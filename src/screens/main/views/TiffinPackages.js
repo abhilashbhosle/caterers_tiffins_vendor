@@ -17,6 +17,7 @@ import {
   packageUpdateService,
 } from '../../services/PackageService';
 import Updatebtn from '../../../components/Updatebtn';
+import OctIcons from 'react-native-vector-icons/Octicons'
 
 function TiffinPackages() {
   const [packs, setPacks] = useState({});
@@ -80,9 +81,11 @@ function TiffinPackages() {
   const handleKitchenTypes = index => {
     const updatedFoodTypes = packs?.kitchenTypes.map((food, i) =>
       i === index
-        ? {...food, selected: food.selected === '1' ? '0' : '1'}
-        : food,
+        ? {...food, selected:1
+          }
+        :{...food,selected:0},
     );
+
     setPacks({...packs, kitchenTypes: updatedFoodTypes});
   };
   const handleUpdate = () => {
@@ -374,8 +377,8 @@ function TiffinPackages() {
                         onPress={() => {
                           handleKitchenTypes(i);
                         }}>
-                        <FontAwesomeIcon
-                          name={e.selected == '1' ? 'toggle-on' : 'toggle-off'}
+                        <OctIcons
+                          name={e.selected == '1' ? 'check-circle-fill' : 'circle'}
                           style={[
                             gs.ml10,
                             gs.mv10,
@@ -383,6 +386,7 @@ function TiffinPackages() {
                               ...styles.toggleicon,
                               color:
                                 e.selected == '1' ? theme : ts.secondarytext,
+                                fontSize:24
                             },
                           ]}
                         />

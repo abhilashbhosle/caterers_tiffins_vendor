@@ -957,7 +957,7 @@ export default function Settings({navigation}) {
               </Flex>
             </TouchableOpacity>
           </View>
-          {/* <Divider style={[gs.mv20, {backgroundColor: theme}]} />
+          <Divider style={[gs.mv20, {backgroundColor: theme}]} />
           <Text style={styles.heading}>Help Desk / Support</Text>
           <TouchableOpacity
             style={[gs.mv20]}
@@ -971,7 +971,7 @@ export default function Settings({navigation}) {
               btntxt="Raise a Ticket"
               height={40}
             />
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           <View style={gs.h20}></View>
         </View>
       </KeyboardAwareScrollView>

@@ -67,7 +67,7 @@ export default function BusinessProfile({navigation}) {
     streetName: '',
     staffs: '',
     workingDays: '',
-    street_address:''
+    street_address: '',
   });
   const [fromDay, setFromDay] = useState('');
   const [toDay, setToday] = useState('');
@@ -128,7 +128,7 @@ export default function BusinessProfile({navigation}) {
         state: profileDetails?.state,
         streetName: profileDetails?.street_name,
         staffs: profileDetails?.total_staffs_approx,
-        street_address:profileDetails?.street_address
+        street_address: profileDetails?.street_address,
         // workingDays: profileDetails?.working_days_hours,
       });
       setFromDay(profileDetails?.start_day);
@@ -193,13 +193,15 @@ export default function BusinessProfile({navigation}) {
     //   : data.split(',');
     let checkPlace = await handleCheckPlace(ref?.current?.getAddressText());
     let tempData = ref?.current?.getAddressText()?.split(',');
+
+    // console.log(tempData,"ghjhjkjkl");
     // ====CHECK WHETHER THE PLACE EXIST OR NOT======//
 
     let res = await BusinessProfileValidation(data, profile);
     if (res && checkPlace) {
       let temp = {
         street_name: tempData[0],
-        area: tempData[1].trim(),
+        area: tempData[0],
         pincode: profile?.pincode,
         latitude: profile?.geometry
           ? profile.geometry.location.lat
@@ -236,9 +238,9 @@ export default function BusinessProfile({navigation}) {
         instagram_link: profile?.instagram,
         facebook_link: profile?.facebook,
         point_of_contact_name: profile?.contactPersonName,
-        street_address:profile?.street_address
+        street_address: profile?.street_address,
       };
-      // console.log("temp",temp)
+      console.log("temp",temp)
       businessUpdateService({body: temp, dispatch});
     }
   };
@@ -329,6 +331,7 @@ export default function BusinessProfile({navigation}) {
                   setProfile({...profile, cateringName: text});
                 }}
                 textColor={ts.secondarytext}
+                placeholderTextColor= {"#9d9fa1"}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -347,6 +350,7 @@ export default function BusinessProfile({navigation}) {
                   setProfile({...profile, contactPersonName: text});
                 }}
                 textColor={ts.secondarytext}
+                placeholderTextColor= {"#9d9fa1"}
               />
             </View>
             {/* =======WORKING FROM===== */}
@@ -496,6 +500,7 @@ export default function BusinessProfile({navigation}) {
                   }}
                   keyboardType="numeric"
                   textColor={ts.secondarytext}
+                  placeholderTextColor= {"#9d9fa1"}
                 />
               </View>
             )}
@@ -513,13 +518,32 @@ export default function BusinessProfile({navigation}) {
             gs.mv10,
             gs.mh10,
           ]}>
+          <View style={[gs.mv10]}>
+            <Text style={{...styles.subtitke, color: theme}}>
+              Street Address
+            </Text>
+            <TextInput
+              style={{...styles.input, width: width - 80}}
+              placeholder=""
+              outlineColor={ts.secondarytext}
+              activeOutlineColor={theme}
+              mode="outlined"
+              outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+              value={profile?.street_address}
+              onChangeText={text => {
+                setProfile({...profile, street_address: text});
+              }}
+              textColor={ts.secondarytext}
+              placeholderTextColor= {"#9d9fa1"}
+            />
+          </View>
           <View style={{width: width - 80}}>
             <Text style={{...styles.subtitke, color: theme}}>
               Select your Area
             </Text>
             <GooglePlacesAutocomplete
               textInputProps={{
-                placeholderTextColor: ts.secondarytext,
+                placeholderTextColor: "#9d9fa1",
                 returnKeyType: 'search',
                 multiline: true,
                 numberOfLines: 3,
@@ -527,7 +551,7 @@ export default function BusinessProfile({navigation}) {
               GooglePlacesSearchQuery={{fields: 'geometry'}}
               disableScroll={true}
               ref={ref}
-              placeholder="Try A2B, Mg road, Bangalore, etc."
+              placeholder="Eg. Koramangala, Bengaluru, Karnataka"
               fetchDetails={true}
               onPress={(data, details) => {
                 if (!details) {
@@ -552,8 +576,8 @@ export default function BusinessProfile({navigation}) {
                   borderWidth: 1,
                   borderColor: '#999',
                   borderRadius: 8,
-                  height:80,
-                  textAlignVertical:'top'
+                  height: 80,
+                  textAlignVertical: 'top',
                 },
                 description: {
                   color: ts.primarytext,
@@ -564,44 +588,25 @@ export default function BusinessProfile({navigation}) {
               // }
             />
           </View>
-          <View style={[gs.mv10]}>
-                <Text style={{...styles.subtitke, color: theme}}>
-                  Pincode
-                </Text>
-                <TextInput
-                  style={{...styles.input, width: width - 80}}
-                  placeholder=""
-                  outlineColor={ts.secondarytext}
-                  activeOutlineColor={theme}
-                  mode="outlined"
-                  outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
-                  value={profile?.pincode?.toString()}
-                  onChangeText={text => {
-                    setProfile({...profile, pincode: text});
-                  }}
-                  keyboardType="numeric"
-                  textColor={ts.secondarytext}
-                  maxLength={6}
-                />
-              </View>
-              <View style={[gs.mv10]}>
-                <Text style={{...styles.subtitke, color: theme}}>
-                  Street Address
-                </Text>
-                <TextInput
-                  style={{...styles.input, width: width - 80}}
-                  placeholder=""
-                  outlineColor={ts.secondarytext}
-                  activeOutlineColor={theme}
-                  mode="outlined"
-                  outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
-                  value={profile?.street_address}
-                  onChangeText={text => {
-                    setProfile({...profile, street_address: text});
-                  }}
-                  textColor={ts.secondarytext}
-                />
-              </View>
+          <View style={[gs.mv5]}>
+            <Text style={{...styles.subtitke, color: theme}}>Pincode</Text>
+            <TextInput
+              style={{...styles.input, width: width - 80}}
+              placeholder=""
+              outlineColor={ts.secondarytext}
+              activeOutlineColor={theme}
+              mode="outlined"
+              outlineStyle={{color: ts.secondarytext, borderRadius: 10}}
+              value={profile?.pincode?.toString()}
+              onChangeText={text => {
+                setProfile({...profile, pincode: text});
+              }}
+              keyboardType="numeric"
+              textColor={ts.secondarytext}
+              maxLength={6}
+              
+            />
+          </View>
         </Card>
         {/* =======ABOUT=========== */}
         <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>

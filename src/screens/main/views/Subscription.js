@@ -181,7 +181,7 @@ export default function Subscription({navigation}) {
           </Center>
           <View style={[gs.mh20, gs.mt10]}>
             <Text style={[{...styles.heading, color: ts.primarytext}, gs.mv3]}>
-              Benifits:
+              Benefits:
             </Text>
             {/* {item?.benefits?.slice(0, 4)?.map((e, i) => (
               <Text
@@ -197,7 +197,7 @@ export default function Subscription({navigation}) {
               }}>
               {item?.benefits &&
                 Object.entries(item.benefits)
-                  .slice(0, Platform.OS == 'ios' ? 8 : 5)
+                  .slice(0, Platform.OS == 'ios' ? 8 : 4)
                   .map(([key, benefit], index) => (
                     <Text
                       key={key}

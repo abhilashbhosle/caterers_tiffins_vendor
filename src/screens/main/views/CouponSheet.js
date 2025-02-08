@@ -127,7 +127,7 @@ function CouponSheet({
               showMessage({
                 message: 'Success!',
                 description: 'Payment cancelled successfully!',
-                type: 'success',
+                type: 'warning',
               });
             } catch (err) {
            
@@ -149,7 +149,7 @@ function CouponSheet({
               showMessage({
                 message: 'Success!',
                 description: 'Payment cancelled successfully!',
-                type: 'success',
+                type: 'warning',
               });
             } catch (err) {
               showMessage({

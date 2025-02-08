@@ -26,13 +26,14 @@ export default function Reviews({navigation}) {
   const [value, setValue] = useState(data[1].value);
   const [isFocus, setIsFocus] = useState(false);
   const flow = useSelector(state => state.common.flow);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(100);
   const [page, setPage] = useState(1);
   const [reviews, setReviews] = useState([]);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
-  let {review} = useSelector(state => state.review);
+  let {review,loading} = useSelector(state => state.review);
   const [refreshing, setRefreshing] = useState(false);
   const [showSkell, setShowSkell] = useState(false);
+  const[total,setTotal]=useState(-1);
 
   useEffect(() => {
     (async () => {
@@ -63,14 +64,16 @@ export default function Reviews({navigation}) {
     }
   }, [page]);
   useEffect(() => {
-    if (review?.data?.length > 0) {
+    if (review?.data?.length > 0 && reviews.length<review.total) {
       setReviews([...reviews, ...review.data]);
       setRefreshing(false);
       setShowSkell(false);
+      setTotal(review?.total)
     } 
     if(review?.data?.length==0){
         setShowSkell(false);
         setRefreshing(false);
+        setTotal(0)
     }
   }, [review]);
   // =========FETCH MORE DATA=========//
@@ -102,6 +105,7 @@ export default function Reviews({navigation}) {
     setPage(1);
     },1000)
     setReviews([]);
+    setTotal(-1)
   };
   // =======SROTING CHANGES=========//
   handleSortChange = item => {
@@ -114,9 +118,9 @@ export default function Reviews({navigation}) {
     setRefreshing(true);
     handleRefresh();
   };
-
   const renderReviews = ({item}) => {
     return (
+     
       <View style={styles.reviewcontainer}>
         <Flex direction="row" width={'100%'}>
           {/* ====PROFILE======= */}
@@ -160,7 +164,7 @@ export default function Reviews({navigation}) {
           </View>
         </Flex>
       </View>
-    );
+    )
   };
   return (
     <ScreenWrapper>
@@ -205,7 +209,25 @@ export default function Reviews({navigation}) {
             />
           </Flex>
         </View>
-
+        {
+          total==0 && !showSkell && !review.loading?
+          <Center>
+          <View style={[gs.mt10]}>
+            <Text
+              style={[
+                gs.fs14,
+                {
+                  color: ts.secondarytext,
+                  fontFamily: ts.secondaryregular,
+                },
+              ]}>
+              No reviews
+            </Text>
+          </View>
+        </Center>
+        :
+        null
+        }
         {showSkell &&
           [1, 2, 3, 4, 5].map((e, i) => {
             return <ReviewSkel key={i} />;
@@ -221,25 +243,7 @@ export default function Reviews({navigation}) {
           ListFooterComponent={renderFooter}
           refreshing={refreshing}
           onRefresh={onRefresh}
-          ListEmptyComponent={() => {
-            return (
-              reviews?.length==0 && !showSkell&&
-              <Center>
-                <View style={[gs.mt10]}>
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {
-                        color: ts.secondarytext,
-                        fontFamily: ts.secondaryregular,
-                      },
-                    ]}>
-                    No reviews
-                  </Text>
-                </View>
-              </Center>
-            );
-          }}
+       
         />
       </View>
     </ScreenWrapper>

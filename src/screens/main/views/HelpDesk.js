@@ -45,7 +45,7 @@ export default function HelpDesk({navigation}) {
       <View
         style={[
           gs.ph10,
-          {flex: 1, backgroundColor: '#fff', justifyContent: 'space-between'},
+          {flex: 1, backgroundColor: '#fff'},
         ]}>
         <View>
           <Center>
