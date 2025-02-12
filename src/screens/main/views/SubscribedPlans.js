@@ -445,18 +445,17 @@ export default function SubscribedPlans({
                     {moment(e?.end_date).format('DD-MMM-YYYY')}
                   </Text>
                 </Flex> */}
-                <Flex
+                {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Days Remaining</Text>
                   <Text style={styles.values}>
-                    {/* {calculateRemainingDays(e?.start_date, e?.end_date)}
-                     */}
+                  
                      {e?.remaining_days}
                   </Text>
-                </Flex>
+                </Flex> */}
               </View>
             ))
           : null}

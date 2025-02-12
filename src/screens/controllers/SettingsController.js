@@ -11,8 +11,10 @@ import {
   replaceAadharService,
   replaceFsService,
   replacePanService,
+  updateProfileService,
 } from '../services/SettingsService';
 import {stat} from 'fs';
+import { profileUpdate } from './AuthControllers';
 
 // ======IMAGE SELECTION=======//
 export const imgUpload = createAsyncThunk(
@@ -56,6 +58,27 @@ export const handleInsertAadhar = createAsyncThunk(
       let result = await insertAadharService({res});
       return result;
     } catch (error) {
+      return error;
+    } finally {
+      //   dispatch(startLoader(false));
+    }
+  },
+);
+
+// =====UPDATE  PROFILE=======//
+export const updateProfile = createAsyncThunk(
+  'updateProfile',
+  async ({body}, {dispatch}) => {
+    try {
+      let result = await updateProfileService({body,dispatch});
+      console.log("entered in result",body)
+      const serializableResult = {
+        data: result?.data,
+        status: result?.status,
+      };
+      return serializableResult;
+    } catch (error) {
+      console.log("error")
       return error;
     } finally {
       //   dispatch(startLoader(false));
@@ -291,6 +314,9 @@ const settingSlice = createSlice({
       error: null,
       loading: false,
     },
+    profileData:'',
+    profileError:null,
+    profileLoading:false
   },
   reducers: {
     emptyLocalImgs: (state, action) => {
@@ -313,7 +339,22 @@ const settingSlice = createSlice({
     builder.addCase(fsUpload.fulfilled, (state, action) => {
       state.fsImg = action.payload;
     });
-
+    builder.addCase(updateProfile.pending,(state,action)=>{
+      state.profileData=null,
+      state.profileLoading=true,
+      state.profileError=null
+    });
+    builder.addCase(updateProfile.fulfilled, (state, action) => {
+      const { headers, ...serializableData } = action.payload;
+      state.profileData = serializableData;
+      state.profileLoading = false;
+      state.profileError = null;
+    });
+    builder.addCase(updateProfile.rejected,(state,action)=>{
+      state.profileData=null,
+      state.profileLoading=false,
+      state.profileError=action.error.message
+    })
     builder.addCase(handleInsertAadhar.pending, (state, action) => {
       state.aadharRes = {
         data: null,

@@ -100,6 +100,71 @@ export const getSettings = async ({dispatch, loading}) => {
     dispatch(startLoader(false));
   }
 };
+// =========UPDATE PROFILE==========//
+export const updateProfileService = async ({body, dispatch}) => {
+  try {
+      dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.post(`${endpoints.baseUrl}send-update-vendor-profile-otp`, body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    showMessage({
+      message: 'Success!',
+      description: "Otp sent successfully.",
+      type: 'success',
+    });
+    return res;
+  } catch (error) {
+    console.log(error)
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};
+// UPDATE OTP
+export const updateOtpService = async ({body, dispatch}) => {
+  try {
+      dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.post(`${endpoints.baseUrl}update-vendor-phone`, body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    showMessage({
+      message: 'Success!',
+      description: "Otp verified successfully.",
+      type: 'success',
+    });
+    return res;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};
 // ====INSERT AADHAR======//
 export const insertAadharService = async ({res, dispatch}) => {
   console.log('entered inside aadhar service')

@@ -46,3 +46,42 @@ export const submitTicketService = async ({issue, comments, dispatch}) => {
     dispatch(startLoader(false));
   }
 };
+// GET TICKETS SERVICE
+export const getTicketsService = async ({dispatch}) => {
+  try {
+    dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.get(
+      `${endpoints.baseUrl}list-vendor-tickets?current_page=1&limit=100`,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    // if (res.data.status == 'success') {
+    //   showMessage({
+    //     message: 'Success!',
+    //     description: 'Request Submitted.',
+    //     type: 'success',
+    //   });
+    // }
+    return res;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};
+
+

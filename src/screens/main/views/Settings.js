@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Alert,
+  Dimensions,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -14,7 +15,7 @@ import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
 import {useDispatch, useSelector} from 'react-redux';
 import {ts} from '../../../../ThemeStyles';
 import {gs} from '../../../../GlobalStyles';
-import {Center, Divider, Flex} from 'native-base';
+import {Actionsheet, Center, Divider, Flex} from 'native-base';
 import {ScaledSheet} from 'react-native-size-matters';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CredInputs from '../../../components/CredInputs';
@@ -44,6 +45,8 @@ import {
   getVendorFSNum,
   updateFssaiService,
   updateGstinService,
+  updateOtpService,
+  updateProfileService,
 } from '../../services/SettingsService';
 import {
   emptyLocalImgs,
@@ -51,9 +54,16 @@ import {
   imgUpload,
   imgUploadBack,
   panUpload,
+  updateProfile,
 } from '../../controllers/SettingsController';
 import {showMessage} from 'react-native-flash-message';
-import {color} from 'native-base/lib/typescript/theme/styled-system';
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+import { resetInquiry } from '../../controllers/InquiryController';
 
 export default function Settings({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -78,7 +88,18 @@ export default function Settings({navigation}) {
   const panDetails = useSelector(state => state.settings.panRes);
   const localFs = useSelector(state => state.settings.fsImg);
   const fsDetails = useSelector(state => state.settings.fsRes);
-
+  const [editSheet, setEditSheet] = useState(false);
+  const [name, setName] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const {height, width} = Dimensions.get('screen');
+  const [showOtp, setShowOtp] = useState(false);
+  const CELL_COUNT = 6;
+  const [value, setValue] = useState('');
+  const ref = useBlurOnFulfill({value, cellCount: CELL_COUNT});
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
   const [show, setShow] = useState({
     aadharEnable: false,
     panEnable: false,
@@ -105,6 +126,7 @@ export default function Settings({navigation}) {
       dispatch(getFlow(flow));
       let detail = await getVendorDetails(dispatch);
       setDetails(detail.data.data);
+
       // let creds = await getCredentials({
       //   phone: detail?.data?.data?.phone_number,
       //   dispatch,
@@ -115,8 +137,8 @@ export default function Settings({navigation}) {
         setOriginalPass(pass);
       }
       let inf = await getSettings({dispatch, loading: true});
-      const fsData=await getVendorFSNum();
-      if(fsData?.data?.fssai_number){
+      const fsData = await getVendorFSNum();
+      if (fsData?.data?.fssai_number) {
         setFsnum(fsData?.data?.fssai_number);
       }
       // console.log(fsData)
@@ -300,7 +322,7 @@ export default function Settings({navigation}) {
         fssai_number: fsnum,
         company_id: details?.company_id,
         phone_number: details?.phone_number,
-        dispatch
+        dispatch,
       });
     }
   };
@@ -308,6 +330,7 @@ export default function Settings({navigation}) {
   const handleLogout = async () => {
     await AsyncStorage.clear();
     dispatch(startLoader(true));
+    dispatch(resetInquiry());
     setTimeout(() => {
       dispatch(logout(true));
     }, 1000);
@@ -342,15 +365,29 @@ export default function Settings({navigation}) {
               </Text>
             </View>
             <View style={[gs.ph10, {width: '65%'}]}>
-              <Text
-                style={[
-                  gs.fs20,
-                  {fontFamily: ts.primarymedium, color: ts.primarytext},
-                  gs.mb5,
-                ]}
-                numberOfLines={1}>
-                {details?.point_of_contact_name}
-              </Text>
+              <Flex direction="row" alignItems="center">
+                <Text
+                  style={[
+                    gs.fs20,
+                    {fontFamily: ts.primarymedium, color: ts.primarytext},
+                    gs.mb5,
+                  ]}
+                  numberOfLines={1}>
+                  {details?.point_of_contact_name}
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    setEditSheet(true);
+                    setName(details?.point_of_contact_name);
+                    setPhone(details?.phone_number);
+                  }}>
+                  <MaterialIcons
+                    name="edit"
+                    style={[gs.fs20, {color: theme}, gs.mb5, gs.ml20]}
+                  />
+                </TouchableOpacity>
+              </Flex>
               <Text
                 style={[
                   gs.fs14,
@@ -975,6 +1012,139 @@ export default function Settings({navigation}) {
           <View style={gs.h20}></View>
         </View>
       </KeyboardAwareScrollView>
+      <Actionsheet
+        isOpen={editSheet}
+        onClose={() => {
+          setEditSheet(false);
+        }}>
+        <Actionsheet.Content
+          style={[
+            {backgroundColor: '#fff', width: '100%', height: height / 1.4},
+          ]}>
+          {!showOtp ? (
+            <>
+              <View style={[{width: '100%'}, gs.ph10]}>
+                <Text style={{...styles.heading, marginLeft: 2}}>Name</Text>
+                <TextInput
+                  style={{...styles.input}}
+                  mode="outlined"
+                  outlineColor={'#ddd'}
+                  activeOutlineColor={theme}
+                  outlineStyle={[gs.br8]}
+                  value={name}
+                  onChangeText={text => setName(text)}
+                  textColor={ts.secondarytext}
+                />
+              </View>
+              <View style={[{width: '100%'}, gs.ph10]}>
+                <Text style={{...styles.heading, marginLeft: 2}}>
+                  Phone Number
+                </Text>
+                <TextInput
+                  style={{...styles.input}}
+                  mode="outlined"
+                  outlineColor={'#ddd'}
+                  activeOutlineColor={theme}
+                  outlineStyle={[gs.br8]}
+                  value={phone}
+                  onChangeText={text => setPhone(text)}
+                  maxLength={10}
+                  textColor={ts.secondarytext}
+                  keyboardType="numeric"
+                />
+              </View>
+              <TouchableOpacity
+                style={[gs.mv20]}
+                onPress={async () => {
+                  let body = {
+                    username: name,
+                    phone_number: phone,
+                    phone_extension: '+91',
+                  };
+                  try {
+                    let res = await updateProfileService({body, dispatch});
+                    if (res?.data?.status == 'success') {
+                      setShowOtp(true);
+                    }
+                  } catch (error) {
+                    console.log('error in update profile');
+                  }
+                }}>
+                <ThemeSepBtn themecolor={theme} btntxt="Update" height={40} />
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <View style={[{width: '100%', backgroundColor: '#fff'}, gs.p10]}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowOtp(false);
+                  }}
+                  style={{backgroundColor: '#fff'}}>
+                  <FeatherIcon
+                    name="arrow-left"
+                    style={[gs.fs23, {color: theme, backgroundColor: '#fff'}]}
+                  />
+                </TouchableOpacity>
+              </View>
+              <CodeField
+                ref={ref}
+                {...props}
+                // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+                value={value}
+                onChangeText={setValue}
+                cellCount={CELL_COUNT}
+                rootStyle={styles.codeFieldRoot}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                renderCell={({index, symbol, isFocused}) => (
+                  <Text
+                    key={index}
+                    style={[
+                      styles.cell,
+                      isFocused && {...styles.focusCell, borderColor: theme},
+                      index !== 5 && gs.mr10,
+                    ]}
+                    onLayout={getCellOnLayoutHandler(index)}>
+                    {symbol || (isFocused ? <Cursor /> : null)}
+                  </Text>
+                )}
+              />
+              <TouchableOpacity
+                style={[gs.mv20]}
+                onPress={async () => {
+                  let body = {
+                    username: name,
+                    phone_number: phone,
+                    phone_extension: '+91',
+                    otp: value,
+                  };
+                  try {
+                    let res = await updateOtpService({body, dispatch});
+                    setValue('');
+                    setShowOtp(false);
+                    setEditSheet(false);
+                    setTimeout(async () => {
+                      let detail = await getVendorDetails(dispatch);
+                      setDetails(detail.data.data);
+                    }, 1000);
+                  } catch (error) {
+                    console.log('error in verify otp');
+                    setValue('');
+                    setShowOtp(false);
+                    setEditSheet(false);
+                  }
+                }}>
+                <ThemeSepBtn
+                  themecolor={theme}
+                  btntxt="Verify OTP"
+                  height={40}
+                />
+              </TouchableOpacity>
+            </>
+          )}
+        </Actionsheet.Content>
+      </Actionsheet>
     </ScreenWrapper>
   );
 }
@@ -1049,5 +1219,22 @@ const styles = ScaledSheet.create({
     borderRadius: 50,
     opacity: 0.7,
     marginTop: '10@ms',
+  },
+  codeFieldRoot: {
+    marginVertical: '25@ms',
+  },
+  cell: {
+    width: '40@ms',
+    height: '40@ms',
+    lineHeight: '38@ms',
+    fontSize: '24@ms',
+    borderWidth: 1.5,
+    borderColor: '#999',
+    textAlign: 'center',
+    color: ts.primarytext,
+    borderRadius: 10,
+  },
+  focusCell: {
+    borderWidth: 2,
   },
 });

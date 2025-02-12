@@ -25,7 +25,14 @@ const inquirySlice = createSlice({
 	  total:null
     },
   },
-  reducers: {},
+  reducers: {
+    resetInquiry: (state,action) => {
+      state.inquiry.data=[];
+      state.inquiry.error=null,
+      state.inquiry.loading=false,
+      state.inquiry.total=null
+    }
+  },
   extraReducers: builder => {
     builder.addCase(getInquiry.pending, (state, action) => {
       state.inquiry = {
@@ -53,5 +60,5 @@ const inquirySlice = createSlice({
     });
   },
 });
-export const {} = inquirySlice.actions;
+export const {resetInquiry} = inquirySlice.actions;
 export default inquirySlice.reducer;

@@ -1,4 +1,4 @@
-import {View, Text, useWindowDimensions, TouchableOpacity} from 'react-native';
+import {View, Text, useWindowDimensions, TouchableOpacity, Keyboard} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
@@ -242,6 +242,7 @@ export default function BusinessProfile({navigation}) {
       };
       console.log("temp",temp)
       businessUpdateService({body: temp, dispatch});
+      Keyboard.dismiss();
     }
   };
 

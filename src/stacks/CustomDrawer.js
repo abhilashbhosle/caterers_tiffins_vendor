@@ -18,6 +18,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow, logout, startLoader} from '../redux/slicers/CommomSlicer';
 import {getVendorDetails} from '../screens/services/AuthServices';
+import { resetInquiry } from '../screens/controllers/InquiryController';
 
 export default function CustomDrawer(props) {
   const flow = useSelector(state => state.common.flow);
@@ -40,6 +41,8 @@ export default function CustomDrawer(props) {
     await AsyncStorage.clear();
     dispatch(startLoader(true));
     props.navigation.toggleDrawer();
+    dispatch(resetInquiry());
+
     setTimeout(() => {
       dispatch(logout(true));
     }, 1000);
