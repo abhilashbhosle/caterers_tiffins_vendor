@@ -58,7 +58,7 @@ export default function Subscription({navigation}) {
     (async () => {
       try {
         let vd = await getVendorDetails(dispatch);
-        setVendor(vd.data.data);
+        setVendor(vd?.data?.data);
       } catch (error) {
         throw error;
       }
@@ -342,7 +342,9 @@ export default function Subscription({navigation}) {
             </Flex>
           </View>
           <Center>
-            <FlatList
+            {
+              subListData &&
+              <FlatList
               ref={topRef}
               keyExtractor={(item, index) => String(index)}
               data={subListData}
@@ -350,10 +352,13 @@ export default function Subscription({navigation}) {
               horizontal={true}
               showsHorizontalScrollIndicator={false}
             />
+            }
+           
           </Center>
           {subListLoading ? (
             <Spinner color={theme} />
           ) : (
+            subListData &&
             <Carousel
               loop={false}
               ref={bottomRef}

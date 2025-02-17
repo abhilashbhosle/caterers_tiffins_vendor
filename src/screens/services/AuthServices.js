@@ -467,6 +467,7 @@ export const getVendorDetails = async dispatch => {
     });
     return res;
   } catch (error) {
+    console.log(error,"error in getting vendor details")
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',

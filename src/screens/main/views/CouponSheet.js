@@ -110,7 +110,9 @@ function CouponSheet({
           type: 'success',
         });
         setOpenCouponSheet(false);
+        setTimeout(()=>{
         dispatch(getQueuedSubscription());
+        },1000)
       })
       .catch(error => {
         // handle failure
@@ -223,7 +225,7 @@ function CouponSheet({
                   width={'100%'}>
                   <TextInput
                     style={{...styles.input, width: width / 2.5}}
-                    placeholder="CANDT50"
+                    // placeholder="CANDT50"
                     placeholderTextColor={ts.secondarytext}
                     value={couponCode}
                     onChangeText={text => setCouponCode(text)}

@@ -11,6 +11,7 @@ export const getSubscriptionList = createAsyncThunk(
       const res = await getSubscriptionListService({params});
       return res;
     } catch (error) {
+      console.log("error in get subscription list",error)
       throw(error.message);
     } finally {
       dispatch(startLoader(false))
@@ -41,6 +42,7 @@ export const getQueuedSubscription = createAsyncThunk(
       const res = await getQueuedSubscriptionService();
       return res.data;
     } catch (error) {
+      console.log("error in get queued subscription",error)
       throw(error.message);
     } finally {
       dispatch(startLoader(false))

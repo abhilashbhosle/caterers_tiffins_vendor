@@ -7,6 +7,7 @@ import Notification from '../screens/main/views/Notification';
 import HelpDesk from '../screens/main/views/HelpDesk';
 import Aboutus from '../screens/main/views/Aboutus';
 import Faq from '../screens/main/views/Faq';
+import { Webview } from '../screens/main/views/WebView';
 
 const Stack=createNativeStackNavigator()
 export default function PageStack() {
@@ -20,6 +21,7 @@ export default function PageStack() {
 		<Stack.Screen name='HelpDesk' component={HelpDesk}/>
 		<Stack.Screen name='AboutUs' component={Aboutus}/>
 		<Stack.Screen name='Faq' component={Faq}/>
+		<Stack.Screen name='WebView' component={Webview}/>
 	</Stack.Navigator>
 	</>
   )
