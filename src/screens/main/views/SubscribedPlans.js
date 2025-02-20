@@ -1,4 +1,10 @@
-import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import React from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
@@ -9,7 +15,11 @@ import {ts} from '../../../../ThemeStyles';
 import AntIcons from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 import {ScaledSheet} from 'react-native-size-matters';
-import {cancelSubscription} from '../../controllers/SubscriptionController';
+import {
+  cancelSubscription,
+  getQueuedSubscription,
+  getSubscriptionList,
+} from '../../controllers/SubscriptionController';
 
 export default function SubscribedPlans({
   navigation,
@@ -18,6 +28,7 @@ export default function SubscribedPlans({
   theme,
 }) {
   let {queuedData} = useSelector(state => state.subscription);
+  const [refreshing, setRefreshing] = React.useState(false);
   const dispatch = useDispatch();
   function calculateRemainingDays(startDate, endDate) {
     // Convert start and end dates to Date objects
@@ -37,7 +48,19 @@ export default function SubscribedPlans({
     dispatch(cancelSubscription({subscription_id: id}));
   };
 
-  
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    let params = {
+      vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
+      mode: 'test',
+    };
+    dispatch(getSubscriptionList({params}));
+    dispatch(getQueuedSubscription());
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -47,7 +70,11 @@ export default function SubscribedPlans({
         notifyIcon={true}
       />
 
-      <ScrollView style={[{flex: 1, backgroundColor: '#fff'}, gs.ph15]}>
+      <ScrollView
+        style={[{flex: 1, backgroundColor: '#fff'}, gs.ph15]}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <Center>
           <Text
             style={[
@@ -66,7 +93,12 @@ export default function SubscribedPlans({
               direction="row"
               style={[gs.mt20]}>
               <Text style={styles.keys}>Vendor Type</Text>
-              <Text style={{...styles.values, color: theme,fontFamily:ts.secondarysemibold}}>
+              <Text
+                style={{
+                  ...styles.values,
+                  color: theme,
+                  fontFamily: ts.secondarysemibold,
+                }}>
                 {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
               </Text>
             </Flex>
@@ -114,7 +146,10 @@ export default function SubscribedPlans({
               style={[gs.mt10]}>
               <Text style={styles.keys}>Subscription Type</Text>
               <Text style={styles.values}>
-                {queuedData?.activeSubscription?.subscription_pattern_display_text }
+                {
+                  queuedData?.activeSubscription
+                    ?.subscription_pattern_display_text
+                }
               </Text>
             </Flex>
             <Flex
@@ -168,12 +203,13 @@ export default function SubscribedPlans({
               style={[gs.mt10]}>
               <Text style={styles.keys}>Days Remaining</Text>
               <Text style={styles.values}>
-              {queuedData?.activeSubscription?.remaining_days}
+                {queuedData?.activeSubscription?.remaining_days}
               </Text>
             </Flex>
             {queuedData?.activeSubscription?.subscription_pattern ==
-            'subscription-yearly' || 
-            queuedData?.activeSubscription?.subscription_pattern=="subscription-monthly"? (
+              'subscription-yearly' ||
+            queuedData?.activeSubscription?.subscription_pattern ==
+              'subscription-monthly' ? (
               <Center>
                 <TouchableOpacity
                   style={{
@@ -254,7 +290,7 @@ export default function SubscribedPlans({
                     {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
                   </Text>
                 </Flex> */}
-               
+
                 {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"
@@ -303,7 +339,7 @@ export default function SubscribedPlans({
                     {moment(e?.end_date).format('DD-MMM-YYYY')}
                   </Text>
                 </Flex> */}
-                 <Flex
+                <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -322,7 +358,7 @@ export default function SubscribedPlans({
                     {e?.subscription_display_name}
                   </Text>
                 </Flex>
-                  <Flex
+                <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
@@ -379,14 +415,14 @@ export default function SubscribedPlans({
                     {flow == 'catering' ? 'Catering Service' : 'Tiffin Service'}
                   </Text>
                 </Flex> */}
-                 <Flex
+                <Flex
                   alignItems="center"
                   justifyContent="space-between"
                   direction="row"
                   style={[gs.mt10]}>
                   <Text style={styles.keys}>Subscription Start Date</Text>
                   <Text style={styles.values}>
-                  {moment(e?.start_date).format('MMMM DD, YYYY')}
+                    {moment(e?.start_date).format('MMMM DD, YYYY')}
                   </Text>
                 </Flex>
                 <Flex
@@ -434,7 +470,7 @@ export default function SubscribedPlans({
                   <Text style={styles.keys}>Discount Amount</Text>
                   <Text style={styles.values}>{e?.discount_amount}</Text>
                 </Flex> */}
-               
+
                 {/* <Flex
                   alignItems="center"
                   justifyContent="space-between"

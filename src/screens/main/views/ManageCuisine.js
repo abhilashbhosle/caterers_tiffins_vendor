@@ -1,4 +1,4 @@
-import {View, Text, ScrollView} from 'react-native';
+import {View, Text, ScrollView, RefreshControl} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
@@ -22,6 +22,8 @@ export default function ManageCuisine({navigation}) {
   const dispatch = useDispatch();
   const cuisine = useSelector(state => state.cuisine?.cuisines);
   const [isEmpty, setIsEmpty] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+
   useFocusEffect(
     useCallback(() => {
       dispatch(getCuisine());
@@ -50,6 +52,14 @@ export default function ManageCuisine({navigation}) {
       }
     }
   }, [cuisine]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(getCuisine());
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -73,7 +83,9 @@ export default function ManageCuisine({navigation}) {
           {/* <MaterialIcons name="edit" style={[gs.fs24, {color: theme}]} /> */}
         </Flex>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false}  refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           {!isEmpty ? (
             <Flex
               direction="row"

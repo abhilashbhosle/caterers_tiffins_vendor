@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Pressable,
+  RefreshControl,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -64,6 +65,7 @@ export default function PhotoGallery({navigation}) {
   const otherUpdates = useSelector(state => state.photo.otherRes);
   const [enableCrop, setEnableCrop] = useState(true);
   const [enableCropSheet, setEnableCropSheet] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
   const [selection, setSelection] = useState({
     type: '',
     id: '',
@@ -161,9 +163,16 @@ export default function PhotoGallery({navigation}) {
     );
   };
   // ======BANNER EDIT======//
-  const handleBannerEdit = (id,typeofUpload) => {
-    console.log("type of up",typeofUpload)
-    dispatch(imgUploadBanner({selection: 'banner', type: 'replace', id: id,typeofUpload:typeofUpload}));
+  const handleBannerEdit = (id, typeofUpload) => {
+    console.log('type of up', typeofUpload);
+    dispatch(
+      imgUploadBanner({
+        selection: 'banner',
+        type: 'replace',
+        id: id,
+        typeofUpload: typeofUpload,
+      }),
+    );
   };
   // ========EDIT PACKAGE========//
   const handlePackageEdit = (id, i) => {
@@ -316,6 +325,16 @@ export default function PhotoGallery({navigation}) {
       setGallery(result?.data?.data);
     }
   };
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    let res = await gateGalleryService({dispatch, loading: true});
+    if (res?.data?.status == 'success') {
+      setGallery(res?.data?.data);
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   return (
     <ScreenWrapper>
@@ -325,7 +344,11 @@ export default function PhotoGallery({navigation}) {
         navigation={navigation}
         notifyIcon={true}
       />
-      <ScrollView style={[{flex: 1, backgroundColor: '#fff'}]}>
+      <ScrollView
+        style={[{flex: 1, backgroundColor: '#fff'}]}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         {/* =====BRAND LOGO====== */}
         <Card style={[gs.p15, {backgroundColor: '#fff'}]}>
           <View>
@@ -480,7 +503,10 @@ export default function PhotoGallery({navigation}) {
                         style={styles.iconContainer}
                         activeOpacity={0.7}
                         onPress={() => {
-                          handleEnableSheet('bannerEdit',gallery['vendor-banner'][0].id);
+                          handleEnableSheet(
+                            'bannerEdit',
+                            gallery['vendor-banner'][0].id,
+                          );
                         }}>
                         <MaterialIcons
                           name="edit"
@@ -856,9 +882,8 @@ export default function PhotoGallery({navigation}) {
                 handleLogoEdit(selection.id, 'normal');
               } else if (selection.type == 'bannerUpload') {
                 handleBannerUpload('normal');
-              }
-              else if (selection.type == 'bannerEdit'){
-                handleBannerEdit(selection.id,'normal')
+              } else if (selection.type == 'bannerEdit') {
+                handleBannerEdit(selection.id, 'normal');
               }
               setEnableCropSheet(false);
               setSelection({type: '', id: null});
@@ -881,9 +906,8 @@ export default function PhotoGallery({navigation}) {
                 handleLogoEdit(selection.id, 'crop');
               } else if (selection.type == 'bannerUpload') {
                 handleBannerUpload('crop');
-              }
-              else if (selection.type == 'bannerEdit'){
-                handleBannerEdit(selection.id,'crop')
+              } else if (selection.type == 'bannerEdit') {
+                handleBannerEdit(selection.id, 'crop');
               }
               setEnableCropSheet(false);
               setSelection({type: '', id: null});

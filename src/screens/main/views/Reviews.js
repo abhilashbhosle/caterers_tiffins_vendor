@@ -15,6 +15,7 @@ import {getReviews} from '../../controllers/ReviewController';
 import LottieView from 'lottie-react-native';
 import ReviewSkel from '../../../components/ReviewSkel';
 import moment from 'moment';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 export default function Reviews({navigation}) {
   const data = [
@@ -30,10 +31,10 @@ export default function Reviews({navigation}) {
   const [page, setPage] = useState(1);
   const [reviews, setReviews] = useState([]);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
-  let {review,loading} = useSelector(state => state.review);
+  let {review, loading} = useSelector(state => state.review);
   const [refreshing, setRefreshing] = useState(false);
   const [showSkell, setShowSkell] = useState(false);
-  const[total,setTotal]=useState(-1);
+  const [total, setTotal] = useState(-1);
 
   useEffect(() => {
     (async () => {
@@ -53,7 +54,7 @@ export default function Reviews({navigation}) {
           }),
         );
       }, 1000);
-    } else if(page) {
+    } else if (page) {
       dispatch(
         getReviews({
           limit,
@@ -64,16 +65,16 @@ export default function Reviews({navigation}) {
     }
   }, [page]);
   useEffect(() => {
-    if (review?.data?.length > 0 && reviews.length<review.total) {
+    if (review?.data?.length > 0 && reviews.length < review.total) {
       setReviews([...reviews, ...review.data]);
       setRefreshing(false);
       setShowSkell(false);
-      setTotal(review?.total)
-    } 
-    if(review?.data?.length==0){
-        setShowSkell(false);
-        setRefreshing(false);
-        setTotal(0)
+      setTotal(review?.total);
+    }
+    if (review?.data?.length == 0) {
+      setShowSkell(false);
+      setRefreshing(false);
+      setTotal(0);
     }
   }, [review]);
   // =========FETCH MORE DATA=========//
@@ -100,12 +101,12 @@ export default function Reviews({navigation}) {
   };
   // =======HANDLE REFRESH=========//
   handleRefresh = () => {
-    setPage(0)
-    setTimeout(()=>{
-    setPage(1);
-    },1000)
+    setPage(0);
+    setTimeout(() => {
+      setPage(1);
+    }, 1000);
     setReviews([]);
-    setTotal(-1)
+    setTotal(-1);
   };
   // =======SROTING CHANGES=========//
   handleSortChange = item => {
@@ -120,36 +121,43 @@ export default function Reviews({navigation}) {
   };
   const renderReviews = ({item}) => {
     return (
-     
       <View style={styles.reviewcontainer}>
         <Flex direction="row" width={'100%'}>
           {/* ====PROFILE======= */}
           <View width={'10%'}>
-            <Image
-              source={require('../../../assets/drawer/profile.jpg')}
-              style={styles.profileimg}
-              alt="profile"
-            />
+            <View style={{...styles.profileimg, backgroundColor: theme}}>
+              <Text
+                style={[
+                  {color: '#fff', fontFamily: ts.primarymedium},
+                  gs.fs16,
+                ]}>
+                {item?.username?.slice(0, 1)}
+              </Text>
+            </View>
           </View>
-          <View width={'85%'} style={[gs.ml10]}>
+          <View width={'85%'} style={[gs.ml10,gs.mt5]}>
             <Flex
               flexDirection="row"
               alignItems="center"
               justifyContent="space-between">
-              <Text
-                style={[
-                  gs.fs15,
-                  {color: ts.teritary, fontFamily: ts.secondaryregular},
-                ]}>
-                Andrew Hernandez
-              </Text>
+              <Flex direction="row" alignItems='center' >
+                <Text
+                  style={[
+                    gs.fs15,
+                    {color: ts.teritary, fontFamily: ts.secondaryregular},
+                  ]}>
+                  {item?.username}
+                </Text>
+                <EntypoIcon name='star' style={[{color:ts.accent3},gs.fs18,gs.mh5]}/>
+                <Text style={[gs.fs14,{color:'#000',fontFamily:ts.primaryregular}]}>{item?.rating?.slice(0,3)}</Text>
+              </Flex>
               <Text
                 style={[
                   gs.fs11,
                   {color: theme, fontFamily: ts.secondaryregular},
                 ]}>
                 {/* Jan 28th, 4:30pm */}
-                {moment(item?.review_data).format('MMM DD, hh:mm A')}
+                {moment(item?.review_date).format('YYYY-MM-DD')}
               </Text>
             </Flex>
             <View style={[gs.mt10]}>
@@ -164,7 +172,7 @@ export default function Reviews({navigation}) {
           </View>
         </Flex>
       </View>
-    )
+    );
   };
   return (
     <ScreenWrapper>
@@ -204,30 +212,26 @@ export default function Reviews({navigation}) {
                 // setValue(item.value);
                 // setIsFocus(false);
               }}
-              itemTextStyle={{color:ts.primarytext}}
-            
+              itemTextStyle={{color: ts.primarytext}}
             />
           </Flex>
         </View>
-        {
-          total==0 && !showSkell && !review.loading?
+        {total == 0 && !showSkell && !review.loading ? (
           <Center>
-          <View style={[gs.mt10]}>
-            <Text
-              style={[
-                gs.fs14,
-                {
-                  color: ts.secondarytext,
-                  fontFamily: ts.secondaryregular,
-                },
-              ]}>
-              No reviews
-            </Text>
-          </View>
-        </Center>
-        :
-        null
-        }
+            <View style={[gs.mt10]}>
+              <Text
+                style={[
+                  gs.fs14,
+                  {
+                    color: ts.secondarytext,
+                    fontFamily: ts.secondaryregular,
+                  },
+                ]}>
+                No reviews
+              </Text>
+            </View>
+          </Center>
+        ) : null}
         {showSkell &&
           [1, 2, 3, 4, 5].map((e, i) => {
             return <ReviewSkel key={i} />;
@@ -243,7 +247,6 @@ export default function Reviews({navigation}) {
           ListFooterComponent={renderFooter}
           refreshing={refreshing}
           onRefresh={onRefresh}
-       
         />
       </View>
     </ScreenWrapper>
@@ -262,7 +265,7 @@ const styles = ScaledSheet.create({
     paddingHorizontal: '8@ms',
     width: '180@ms',
     marginHorizontal: '15@ms',
-    color:ts.primarytext
+    color: ts.primarytext,
   },
   icon: {
     marginRight: 5,
@@ -275,11 +278,11 @@ const styles = ScaledSheet.create({
     zIndex: '999@ms',
     paddingHorizontal: '8@ms',
     fontSize: '14@ms',
-    color:ts.primarytext
+    color: ts.primarytext,
   },
   placeholderStyle: {
     fontSize: '16@ms',
-    color:ts.secondarytext
+    color: ts.secondarytext,
   },
   selectedTextStyle: {
     fontSize: '14@ms',
@@ -293,13 +296,14 @@ const styles = ScaledSheet.create({
   inputSearchStyle: {
     height: '40@ms',
     fontSize: '16@ms',
-    color:ts.primarytext
+    color: ts.primarytext,
   },
   profileimg: {
-    height: '30@ms',
-    width: '30@ms',
+    height: '35@ms',
+    width: '35@ms',
     borderRadius: 50,
-    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   reviewcontainer: {
     paddingHorizontal: '20@ms',

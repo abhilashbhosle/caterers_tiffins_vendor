@@ -29,6 +29,7 @@ export default function ManageOccasions({navigation}) {
   const {height, width} = useWindowDimensions();
   const dispatch = useDispatch();
   const occassions = useSelector(state => state.occassion?.occassions);
+  const [refreshing, setRefreshing] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   useFocusEffect(
     useCallback(() => {
@@ -69,7 +70,13 @@ export default function ManageOccasions({navigation}) {
       </Card>
     );
   };
-  console.log(occassions)
+  const onRefresh = () => {
+    setRefreshing(true);
+    dispatch(getOccasions());
+    setTimeout(() => {
+      setRefreshing(false)
+    }, 1000);
+  };
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -114,6 +121,8 @@ export default function ManageOccasions({navigation}) {
                   </Text>
                 );
               }}
+                 refreshing={refreshing}
+                        onRefresh={onRefresh}
             />
           </Center>
         </View>

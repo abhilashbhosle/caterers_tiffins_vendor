@@ -77,10 +77,11 @@ export default function Inquiries({navigation}) {
       setRefreshing(false);
       setShowSkell(false);
       setTotal(inquiry?.total);
-    }if (!inquiry?.data) {
+    }
+    if (!inquiry?.data) {
       setShowSkell(false);
       setRefreshing(false);
-      setTotal(0)
+      setTotal(0);
     }
   }, [inquiry]);
   // =========FETCH MORE DATA=========//
@@ -133,7 +134,7 @@ export default function Inquiries({navigation}) {
   };
 
   const hideDatePicker = () => {
-    setShowCal(false)
+    setShowCal(false);
   };
   const handleConfirm = dt => {
     setDate(dt);
@@ -152,20 +153,71 @@ export default function Inquiries({navigation}) {
             ]}>
             {item?.user_name}
           </Text>
-          <Text
+          {
+            item?.area?
+            <Text
             style={[
               gs.fs13,
               {color: ts.secondarytext, fontFamily: ts.secondaryregular},
               gs.mv2,
             ]}>
-            {item?.description}
+            {item?.area}
           </Text>
+          :
+          null
+          }
+         
+          {item?.cuisines?.length ? (
+            <Text
+              style={[
+                gs.fs13,
+                {color: ts.secondarytext, fontFamily: ts.secondaryregular},
+                gs.mv2,
+              ]}>
+              {item?.cuisines.map(
+                (e, i) =>
+                  `${e.cuisine_name}${
+                    i != item.cuisines?.length - 1 ? ',' : ''
+                  } `,
+              )}
+            </Text>
+          ) : null}
+          {item?.occasions?.length ? (
+            <Text
+              style={[
+                gs.fs13,
+                {color: ts.secondarytext, fontFamily: ts.secondaryregular},
+                gs.mv2,
+              ]}>
+              {item?.occasions.map(
+                (e, i) =>
+                  `${e.occasion_name}${
+                    i != item.occasions?.length - 1 ? ',' : ''
+                  } `,
+              )}
+            </Text>
+          ) : null}
+          {item?.service_types?.length ? (
+            <Text
+              style={[
+                gs.fs13,
+                {color: ts.secondarytext, fontFamily: ts.secondaryregular},
+                gs.mv2,
+              ]}>
+              {item?.service_types.map(
+                (e, i) =>
+                  `${e.service_type_name}${
+                    i != item.service_types?.length - 1 ? ',' : ''
+                  } `,
+              )}
+            </Text>
+          ) : null}
           <Text
             style={[
               gs.fs13,
               {color: ts.secondarytext, fontFamily: ts.secondaryregular},
             ]}>
-            {moment(item?.enquiry_date).format('YYYY-MM-DD')}
+            {moment(item?.enquiry_date).format('DD MMM, YYYY')}
           </Text>
           <Flex
             direction="row"
@@ -242,7 +294,7 @@ export default function Inquiries({navigation}) {
                 activeOpacity={0.7}
                 onPress={() => {
                   setShowCal(true);
-                  setDate()
+                  setDate();
                 }}>
                 <MaterialIcons
                   name="calendar-month"
@@ -258,7 +310,6 @@ export default function Inquiries({navigation}) {
                   ]}>
                   {date ? moment(date)?.format('YYYY-MM-DD') : 'Select Date'}
                 </Text>
-
               </Flex>
             </Flex>
           </Flex>

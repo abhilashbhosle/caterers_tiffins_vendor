@@ -1,4 +1,11 @@
-import {View, Text, ScrollView, Image, useWindowDimensions} from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  useWindowDimensions,
+  RefreshControl,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
@@ -26,6 +33,7 @@ export default function Packages({navigation}) {
   const {height, width} = useWindowDimensions();
   const dispatch = useDispatch();
   const [packs, setPacks] = useState({});
+    const [refreshing, setRefreshing] = React.useState(false);
   const packageDetails = useSelector(state => state.package.packages);
   const [values, setValues] = useState({
     miniPlatesCap: '',
@@ -101,6 +109,13 @@ export default function Packages({navigation}) {
       packageUpdateService({body, dispatch});
     }
   };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(getPackage());
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -114,7 +129,10 @@ export default function Packages({navigation}) {
           <KeyboardAwareScrollView
             enableOnAndroid={true}
             showsVerticalScrollIndicator={false}
-            style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}>
+            style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
             {/* =======CHOOSE TYPE========= */}
             <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mb10, gs.mh10]}>
               <Center>
@@ -298,7 +316,7 @@ export default function Packages({navigation}) {
                   <Flex direction="row" alignItems="center">
                     <Image
                       source={require('../../../assets/Packages/dinein.png')}
-                      style={[{...styles.serviceicon},gs.mt2]}
+                      style={[{...styles.serviceicon}, gs.mt2]}
                     />
                     <Text
                       style={[
@@ -337,9 +355,7 @@ export default function Packages({navigation}) {
             {/* =======CHOOSE YOUR CATERING TYPE========= */}
             <Card style={[gs.p15, {backgroundColor: '#fff'}, gs.mv10, gs.mh10]}>
               <Center>
-                <Text style={styles.title}>
-                  Choose your Serving type below
-                </Text>
+                <Text style={styles.title}>Choose your Serving type below</Text>
                 <Text style={styles.subtitke}>
                   If you provide both table & buffet service, check both.
                 </Text>
@@ -467,7 +483,7 @@ const styles = ScaledSheet.create({
     fontFamily: ts.secondaryregular,
     // height: '40@ms',/\
     backgroundColor: '#fff',
-    textAlignVertical:'top'
+    textAlignVertical: 'top',
   },
   serviceicon: {
     height: '35@ms',

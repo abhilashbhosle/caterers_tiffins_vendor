@@ -1,4 +1,11 @@
-import {View, Text, useWindowDimensions, TouchableOpacity, Keyboard} from 'react-native';
+import {
+  View,
+  Text,
+  useWindowDimensions,
+  TouchableOpacity,
+  Keyboard,
+  RefreshControl,
+} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
 import ThemeHeaderWrapper from '../../../components/ThemeHeaderWrapper';
@@ -30,6 +37,7 @@ export default function BusinessProfile({navigation}) {
   const dispatch = useDispatch();
   const profileDetails = useSelector(state => state.profile?.profile[0]);
   const [date, setDate] = useState(new Date());
+  const [refreshing, setRefreshing] = React.useState(false);
   const ref = useRef();
   const days = [
     {label: 'Monday', value: 'Monday'},
@@ -240,7 +248,7 @@ export default function BusinessProfile({navigation}) {
         point_of_contact_name: profile?.contactPersonName,
         street_address: profile?.street_address,
       };
-      console.log("temp",temp)
+      console.log('temp', temp);
       businessUpdateService({body: temp, dispatch});
       Keyboard.dismiss();
     }
@@ -291,6 +299,13 @@ export default function BusinessProfile({navigation}) {
     }
     hideDatePicker();
   };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(getProfile());
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  }, []);
   return (
     <ScreenWrapper>
       {/* =====HEADER======== */}
@@ -304,7 +319,10 @@ export default function BusinessProfile({navigation}) {
         showsVerticalScrollIndicator={false}
         style={[{flex: 1, backgroundColor: '#fff'}, gs.pt15]}
         contentContainerStyle={{flexGrow: 1}}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <Center>
           <Text
             style={[
@@ -332,7 +350,7 @@ export default function BusinessProfile({navigation}) {
                   setProfile({...profile, cateringName: text});
                 }}
                 textColor={ts.secondarytext}
-                placeholderTextColor= {"#9d9fa1"}
+                placeholderTextColor={'#9d9fa1'}
               />
             </View>
             <View style={[gs.mv10]}>
@@ -351,7 +369,7 @@ export default function BusinessProfile({navigation}) {
                   setProfile({...profile, contactPersonName: text});
                 }}
                 textColor={ts.secondarytext}
-                placeholderTextColor= {"#9d9fa1"}
+                placeholderTextColor={'#9d9fa1'}
               />
             </View>
             {/* =======WORKING FROM===== */}
@@ -501,7 +519,7 @@ export default function BusinessProfile({navigation}) {
                   }}
                   keyboardType="numeric"
                   textColor={ts.secondarytext}
-                  placeholderTextColor= {"#9d9fa1"}
+                  placeholderTextColor={'#9d9fa1'}
                 />
               </View>
             )}
@@ -535,7 +553,7 @@ export default function BusinessProfile({navigation}) {
                 setProfile({...profile, street_address: text});
               }}
               textColor={ts.secondarytext}
-              placeholderTextColor= {"#9d9fa1"}
+              placeholderTextColor={'#9d9fa1'}
             />
           </View>
           <View style={{width: width - 80}}>
@@ -544,7 +562,7 @@ export default function BusinessProfile({navigation}) {
             </Text>
             <GooglePlacesAutocomplete
               textInputProps={{
-                placeholderTextColor: "#9d9fa1",
+                placeholderTextColor: '#9d9fa1',
                 returnKeyType: 'search',
                 multiline: true,
                 numberOfLines: 3,
@@ -605,7 +623,6 @@ export default function BusinessProfile({navigation}) {
               keyboardType="numeric"
               textColor={ts.secondarytext}
               maxLength={6}
-              
             />
           </View>
         </Card>

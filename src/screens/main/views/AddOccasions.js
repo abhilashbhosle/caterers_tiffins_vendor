@@ -18,6 +18,7 @@ import { updateOccassionsService } from '../../services/OccassionService';
 export default function AddOccasions({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const [occasionsData, setOccasionsData] = useState([]);
+ 
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const dispatch = useDispatch();
   const occassions = useSelector(state => state.occassion?.occassions);
@@ -84,6 +85,7 @@ const handleAddOccassions=async()=>{
       </TouchableOpacity>
     );
   };
+
   return (
     <ScreenWrapper>
       <ThemeHeader
@@ -97,6 +99,7 @@ const handleAddOccassions=async()=>{
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[gs.mb20]}
+       
         />
         <TouchableOpacity style={[gs.mb20]} onPress={handleAddOccassions}>
           <Addbtn btntxt="Save" />

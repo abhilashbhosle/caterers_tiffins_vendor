@@ -11,10 +11,11 @@ import {ScaledSheet} from 'react-native-size-matters';
 export default function Aboutus({navigation}) {
   const data = [
     'About',
+    'Cancellation & Refund Policy',
     'Privacy Policy',
     'Security Policy',
     'Terms & Conditions',
-    'Disclaimer',
+    'Disclaimer'
   ];
   return (
     <ScreenWrapper>
@@ -54,6 +55,11 @@ export default function Aboutus({navigation}) {
                     url: 'https://www.cateringsandtiffins.com/terms-and-conditions',
                   });
                 } else if (e == 'Disclaimer') {
+                  navigation.navigate('WebView', {
+                    url: 'https://www.cateringsandtiffins.com/disclaimer',
+                  });
+                }
+                else if (e == 'Cancellation & Refund Policy') {
                   navigation.navigate('WebView', {
                     url: 'https://www.cateringsandtiffins.com/disclaimer',
                   });
