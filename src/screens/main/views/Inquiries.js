@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  BackHandler
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -25,6 +26,7 @@ import moment from 'moment';
 import InquirySkel from '../../../components/InquirySkel';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Inquiries({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -40,6 +42,41 @@ export default function Inquiries({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [showCal, setShowCal] = useState(false);
   const [total, setTotal] = useState(-1);
+  const handleBack=()=>{
+      Alert.alert(
+        'Exit App',
+        'Are you sure you want to exit this App?',
+        [
+          {
+            text:'Cancel',
+            onPress:()=>{
+                console.log('Cancel Pressed')
+            }
+          },
+          {
+            text:'Ok',
+            onPress:()=>{
+              BackHandler.exitApp()
+            }
+          }
+        ]
+      )
+    }
+  
+    useFocusEffect(
+      React.useCallback(() => {
+        const onBackPress = () => {
+        handleBack()
+          return true; // Returning true means the event is handled and should not propagate further
+        };
+  
+        BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  
+        return () => {
+          BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        };
+      }, [])
+    );
 
   useEffect(() => {
     (async () => {

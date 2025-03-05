@@ -7,7 +7,7 @@ import RootStack from './src/stacks/RootStack';
 import {store} from './src/redux/store';
 import {Provider} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
-import {Dimensions, Image, Platform} from 'react-native';
+import {Dimensions, Image, Platform, StatusBar, View} from 'react-native';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
@@ -23,10 +23,22 @@ export default function App() {
   //   }
   // },[])
   return showSplash ? (
-    <Image
-      source={require('./src/assets/splash/5.gif')}
-      style={{height, width}}
-    />
+    <View
+      style={[
+        {
+          backgroundColor: '#fff',
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+      ]}>
+      <StatusBar backgroundColor={'#fff'} barStyle="dark-content" />
+      <Image
+       source={require('./src/assets/splash/5.gif')}
+       style={{height, width}}
+       resizeMode='cover'
+      />
+    </View>
   ) : (
     <Provider store={store}>
       <PaperProvider>

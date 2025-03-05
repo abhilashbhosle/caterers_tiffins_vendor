@@ -61,7 +61,7 @@ export default function Aboutus({navigation}) {
                 }
                 else if (e == 'Cancellation & Refund Policy') {
                   navigation.navigate('WebView', {
-                    url: 'https://www.cateringsandtiffins.com/disclaimer',
+                    url: 'https://www.cateringsandtiffins.com/refund-policy',
                   });
                 }
               }}>
