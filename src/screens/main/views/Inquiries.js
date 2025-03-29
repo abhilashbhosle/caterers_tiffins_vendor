@@ -437,7 +437,7 @@ export default function Inquiries({navigation}) {
           display="spinner"
           date={date}
         />
-        <QuickLink theme={theme}/>
+        <QuickLink theme={theme} refreshing={refreshing}/>
       </View>
     </ScreenWrapper>
   );

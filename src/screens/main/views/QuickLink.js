@@ -8,21 +8,26 @@ import CouponSheet from './CouponSheet';
 import {useDispatch, useSelector} from 'react-redux';
 import {getVendorDetails} from '../../services/AuthServices';
 
-export default function QuickLink({theme}) {
+export default function QuickLink({theme,refreshing}) {
   const [open, setOpen] = useState(false);
   const [details, setDetails] = useState(null);
   const [openCouponSheet, setOpenCouponSheet] = useState(false);
   const flow = useSelector(state => state.common.flow);
   const [vendor, setVendor] = useState(null);
   const dispatch=useDispatch();
+  const getLink = async () => {
+    let res = await getQuickLink();
+    if (res.data?.data?.length > 0) {
+      setDetails(res.data?.data);
+      setOpen(true);
+    }
+  };
+  useEffect(()=>{
+    if(refreshing){
+      getLink();
+    }
+  },[refreshing])
   useEffect(() => {
-    const getLink = async () => {
-      let res = await getQuickLink();
-      if (res.data?.data?.length > 0) {
-        setDetails(res.data?.data);
-        setOpen(true);
-      }
-    };
     getLink();
     (async () => {
       try {
