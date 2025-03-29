@@ -27,6 +27,7 @@ import InquirySkel from '../../../components/InquirySkel';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useFocusEffect } from '@react-navigation/native';
+import QuickLink from './QuickLink';
 
 export default function Inquiries({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -428,7 +429,6 @@ export default function Inquiries({navigation}) {
           refreshing={refreshing}
           onRefresh={onRefresh}
         />
-
         <DateTimePickerModal
           isVisible={showCal}
           mode="date"
@@ -437,6 +437,7 @@ export default function Inquiries({navigation}) {
           display="spinner"
           date={date}
         />
+        <QuickLink theme={theme}/>
       </View>
     </ScreenWrapper>
   );

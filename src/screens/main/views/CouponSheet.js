@@ -38,7 +38,9 @@ function CouponSheet({
   plan,
   planType,
   details,
+  hideCouponInput,
   setDetails,
+  setOpen
 }) {
   const {height, width} = Dimensions.get('screen');
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
@@ -65,20 +67,30 @@ function CouponSheet({
   };
   const handlePay = async () => {
     setOpenCouponSheet(false);
-    let body = {
-      subscriptionTypeId: plan?.subscriptionTypeId,
-      subscriptionDuration: planType == 'Yearly' ? 'yearly' : 'monthly',
-      couponCode: couponCode,
-    };
+    let body = null;
+    hideCouponInput
+      ? (body = {
+          subscriptionTypeId: plan?.subscription_type_id,
+          subscriptionDuration: planType == 'Yearly' ? 'Yearly' : 'Monthly',
+          couponCode: plan?.couponCode,
+          quickLinkId: details?.id,
+        })
+      : (body = {
+          subscriptionTypeId: plan?.subscriptionTypeId,
+          subscriptionDuration: planType == 'Yearly' ? 'yearly' : 'monthly',
+          couponCode: couponCode,
+        });
     try {
       let res = await handlePayService({body, dispatch});
       if (res?.order.id) {
+        // console.log("order details",res.order.id, res.order.amount)
         handlePayment({
           order_id: res.order?.id,
           order_amount: res?.order?.amount,
         });
       }
     } catch (error) {
+      console.log('error in handle pay', error);
     } finally {
       setOpenCouponSheet(true);
     }
@@ -97,8 +109,8 @@ function CouponSheet({
         name: vendor?.vendor_service_name,
       },
       theme: {color: '#F37254'},
-      order_id: !subscribe ? order_id : '',
-      subscription_id: subscribe ? order_id : '',
+      order_id: hideCouponInput ? order_id : !subscribe ? order_id : '',
+      subscription_id: hideCouponInput ? '' : subscribe ? order_id : '',
     };
     RazorpayCheckout.open(options)
       .then(data => {
@@ -110,13 +122,14 @@ function CouponSheet({
           type: 'success',
         });
         setOpenCouponSheet(false);
-        setTimeout(()=>{
-        dispatch(getQueuedSubscription());
-        },1000)
+        setTimeout(() => {
+          dispatch(getQueuedSubscription());
+        }, 1000);
       })
       .catch(error => {
         // handle failure
         // alert(`Error: ${error.description}`);
+        console.log('error', error);
         setOpenCouponSheet(false);
         if (!subscribe) {
           (async () => {
@@ -125,14 +138,13 @@ function CouponSheet({
                 orderId: order_id,
               };
               let res = await cancelOneTime({body, dispatch});
-         
+
               showMessage({
                 message: 'Success!',
                 description: 'Payment cancelled successfully!',
                 type: 'warning',
               });
             } catch (err) {
-           
               showMessage({
                 message: 'Request Cancelled!',
                 description: error?.description,
@@ -140,7 +152,7 @@ function CouponSheet({
               });
             }
           })();
-        }else if(subscribe){
+        } else if (subscribe) {
           setOpenCouponSheet(false);
           (async () => {
             try {
@@ -162,7 +174,11 @@ function CouponSheet({
             }
           })();
         }
-      });
+      })
+      .finally(() => {
+        if(hideCouponInput)setOpen(false)
+      }
+      );
   };
   // =======CREATE SUBSCRIPTION========//
   const handleSubscription = async () => {
@@ -201,54 +217,61 @@ function CouponSheet({
             },
           ]}>
           <View style={[{width: '100%'}, gs.p15]}>
-            {!subscribe ? (
-              <>
-                <Text
-                  style={[
-                    gs.fs20,
-                    {
-                      color: ts.primarytext,
-                      fontFamily: ts.secondarymedium,
-                    },
-                  ]}>
-                  Do you have coupon code?
-                </Text>
-                <Text
-                  style={[gs.fs14, gs.mt10, gs.mb5, {color: ts.secondarytext}]}>
-                  Enter coupon code
-                </Text>
-                <Flex
-                  direction="row"
-                  align="center"
-                  //   justifyContent={'center'}
-                  mt={3}
-                  width={'100%'}>
-                  <TextInput
-                    style={{...styles.input, width: width / 2.5}}
-                    // placeholder="CANDT50"
-                    placeholderTextColor={ts.secondarytext}
-                    value={couponCode}
-                    onChangeText={text => setCouponCode(text)}
-                  />
-                  <TouchableOpacity
-                    style={{
-                      ...styles.subscribebtn,
-                      backgroundColor: theme,
-                      width: width / 2.5,
-                    }}
-                    activeOpacity={0.7}
-                    onPress={handleCalculatePay}>
+            {!subscribe
+              ? !hideCouponInput && (
+                  <>
                     <Text
                       style={[
-                        gs.fs15,
-                        {color: '#fff', fontFamily: ts.secondarymedium},
+                        gs.fs20,
+                        {
+                          color: ts.primarytext,
+                          fontFamily: ts.secondarymedium,
+                        },
                       ]}>
-                      APPLY
+                      Do you have coupon code?
                     </Text>
-                  </TouchableOpacity>
-                </Flex>
-              </>
-            ) : null}
+                    <Text
+                      style={[
+                        gs.fs14,
+                        gs.mt10,
+                        gs.mb5,
+                        {color: ts.secondarytext},
+                      ]}>
+                      Enter coupon code
+                    </Text>
+                    <Flex
+                      direction="row"
+                      align="center"
+                      //   justifyContent={'center'}
+                      mt={3}
+                      width={'100%'}>
+                      <TextInput
+                        style={{...styles.input, width: width / 2.5}}
+                        // placeholder="CANDT50"
+                        placeholderTextColor={ts.secondarytext}
+                        value={couponCode}
+                        onChangeText={text => setCouponCode(text)}
+                      />
+                      <TouchableOpacity
+                        style={{
+                          ...styles.subscribebtn,
+                          backgroundColor: theme,
+                          width: width / 2.5,
+                        }}
+                        activeOpacity={0.7}
+                        onPress={handleCalculatePay}>
+                        <Text
+                          style={[
+                            gs.fs15,
+                            {color: '#fff', fontFamily: ts.secondarymedium},
+                          ]}>
+                          APPLY
+                        </Text>
+                      </TouchableOpacity>
+                    </Flex>
+                  </>
+                )
+              : null}
             <Text
               style={[
                 gs.fs16,
@@ -442,37 +465,46 @@ function CouponSheet({
                 </Text>
               </Flex>
             </Flex>
-            <Center style={[gs.mt15]}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  setSubscribed(!subscribe);
-                }}>
-                <Flex direction="row" alignItems="center">
-                  <Text
-                    style={[
-                      gs.fs14,
-                      {color: ts.primarytext, fontFamily: ts.secondarymedium},
-                    ]}>
-                    {planType} Recurring Activated
-                  </Text>
-                  {subscribe ? (
-                    <MaterialIcons
-                      name="check-box"
-                      style={{...styles.checkbox, color: theme}}
-                    />
-                  ) : (
-                    <MaterialIcons
-                      name="check-box-outline-blank"
-                      style={{...styles.checkbox, color: theme}}
-                    />
-                  )}
-                </Flex>
-              </TouchableOpacity>
-            </Center>
+            {!hideCouponInput ? (
+              <Center style={[gs.mt15]}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    setSubscribed(!subscribe);
+                  }}>
+                  <Flex direction="row" alignItems="center">
+                    <Text
+                      style={[
+                        gs.fs14,
+                        {color: ts.primarytext, fontFamily: ts.secondarymedium},
+                      ]}>
+                      {planType} Recurring Activated
+                    </Text>
+                    {subscribe ? (
+                      <MaterialIcons
+                        name="check-box"
+                        style={{...styles.checkbox, color: theme}}
+                      />
+                    ) : (
+                      <MaterialIcons
+                        name="check-box-outline-blank"
+                        style={{...styles.checkbox, color: theme}}
+                      />
+                    )}
+                  </Flex>
+                </TouchableOpacity>
+              </Center>
+            ) : null}
+
             {/* =======PAY BUTTON======= */}
             <TouchableOpacity
-              onPress={subscribe ? handleSubscription : handlePay}>
+              onPress={
+                hideCouponInput
+                  ? handlePay
+                  : subscribe
+                  ? handleSubscription
+                  : handlePay
+              }>
               <Center style={{marginTop: 50}}>
                 <Flex direction="row" alignItems="center">
                   <Text
