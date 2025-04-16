@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1016368199262",
+    "project_id": "cateringsandtiffinsvendor",
+    "storage_bucket": "cateringsandtiffinsvendor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016368199262:android:134e4b20b747f0284da6cf",
+        "android_client_info": {
+          "package_name": "com.vendorcateringsandtiffins"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAUtaKZBfeE8kQV7wd3OP0m_10_7MEXbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

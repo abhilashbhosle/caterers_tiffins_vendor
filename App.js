@@ -8,11 +8,15 @@ import {store} from './src/redux/store';
 import {Provider} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
 import {Dimensions, Image, Platform, StatusBar, View} from 'react-native';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  
   useEffect(() => {
+    changeNavigationBarColor('#ffffff', true);
     setTimeout(() => {
+      changeNavigationBarColor('#ffffff', false);
       setShowSplash(false);
     }, 1800);
   }, []);

@@ -1,5 +1,5 @@
 import {View, Text, Image, SafeAreaView} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   DrawerContentScrollView,
   DrawerItem,
@@ -19,6 +19,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow, logout, startLoader} from '../redux/slicers/CommomSlicer';
 import {getVendorDetails} from '../screens/services/AuthServices';
 import { resetInquiry } from '../screens/controllers/InquiryController';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function CustomDrawer(props) {
   const flow = useSelector(state => state.common.flow);
@@ -27,6 +29,14 @@ export default function CustomDrawer(props) {
   const focused = routeNames[index];
   const dispatch = useDispatch();
   const [details, setDetails] = useState({});
+  useFocusEffect(
+    useCallback(() => {
+      changeNavigationBarColor('#ffffff', true);
+      return () => {
+        changeNavigationBarColor('#ffffff', false);
+      };
+    }, []),
+  );
 
   useEffect(() => {
     (async () => {

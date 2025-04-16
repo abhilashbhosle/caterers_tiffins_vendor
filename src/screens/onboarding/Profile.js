@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, useWindowDimensions} from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import OnboardCard from '../../components/OnboardCard';
 import {ScaledSheet} from 'react-native-size-matters';
 import {ts} from '../../../ThemeStyles';
@@ -14,12 +14,22 @@ import {TextInput} from 'react-native-paper';
 import {Formik} from 'formik';
 import {profileSchema} from '../../components/Validations';
 import {profileUpdate} from '../controllers/AuthControllers';
+import { useFocusEffect } from '@react-navigation/native';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default function Profile({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
   const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      changeNavigationBarColor('#ffffff', true);
+      return () => {
+        changeNavigationBarColor('#ffffff', false);
+      };
+    }, []),
+  );
   return (
     <OnboardCard>
       <KeyboardAwareScrollView

@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {gs} from '../../../GlobalStyles';
 import {ScaledSheet} from 'react-native-size-matters';
 import {ts} from '../../../ThemeStyles';
@@ -21,7 +21,7 @@ import {
 import {Center} from 'native-base';
 import ThemeSepBtn from '../../components/ThemeSepBtn';
 import CredInputs from '../../components/CredInputs';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {
   GetOtp,
   getOtp,
@@ -30,7 +30,7 @@ import {
 } from '../controllers/AuthControllers';
 import {Formik} from 'formik';
 import {registrationScheme} from '../../components/Validations';
-
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 export default function Register() {
   const flow = useSelector(state => state.common.flow);
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
@@ -48,7 +48,14 @@ export default function Register() {
   const navigation = useNavigation();
   const [timer, setTimer] = useState(30);
   const {getOtpData} = useSelector(state => state.auth);
-
+  useFocusEffect(
+    useCallback(() => {
+      changeNavigationBarColor('#ffffff', true);
+      return () => {
+        changeNavigationBarColor('#ffffff', false);
+      };
+    }, []),
+  );
   useEffect(() => {
     if (getOtpData?.status == 'success') {
       setEnableSubmitOtp(true);

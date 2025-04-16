@@ -8,7 +8,7 @@ import {
   Platform,
   Easing,
 } from 'react-native';
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {ScreenWrapper} from '../../components/ScreenWrapper';
 import ThemeWrapper from '../../components/ThemeWrapper';
 import {ScaledSheet} from 'react-native-size-matters';
@@ -18,13 +18,21 @@ import {Card} from 'react-native-paper';
 import {Center, Divider} from 'native-base';
 import ThemeSepBtn from '../../components/ThemeSepBtn';
 import * as Animatable from 'react-native-animatable';
-import { setFlow } from '../controllers/WelcomeController';
-import { useDispatch } from 'react-redux';
+import {setFlow} from '../controllers/WelcomeController';
+import {useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function Welcome({navigation}) {
   const {height, width} = Dimensions.get('screen');
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      changeNavigationBarColor('transparent', true); 
+    }, [])
+  );
+
   const fadeIn = {
     from: {
       opacity: 0,
@@ -78,9 +86,10 @@ export default function Welcome({navigation}) {
                     ]}>
                     Please choose your service
                   </Text>
-                  <TouchableWithoutFeedback onPress={()=>{
-                    setFlow('catering',dispatch,navigation)
-                    AsyncStorage.setItem('flow','catering')
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setFlow('catering', dispatch, navigation);
+                      AsyncStorage.setItem('flow', 'catering');
                     }}>
                     <View style={[gs.mv15]}>
                       <ThemeSepBtn
@@ -91,9 +100,10 @@ export default function Welcome({navigation}) {
                       />
                     </View>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback onPress={()=>{
-                    setFlow('tiffin',dispatch,navigation)
-                    AsyncStorage.setItem('flow','tiffin')
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setFlow('tiffin', dispatch, navigation);
+                      AsyncStorage.setItem('flow', 'tiffin');
                     }}>
                     <View style={[gs.mb20]}>
                       <ThemeSepBtn
@@ -122,6 +132,6 @@ const styles = ScaledSheet.create({
   },
   bottomcard: {
     marginBottom: '120@ms',
-    backgroundColor:'#fff'
+    backgroundColor: '#fff',
   },
 });

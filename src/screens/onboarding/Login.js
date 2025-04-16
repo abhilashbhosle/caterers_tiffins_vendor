@@ -1,5 +1,5 @@
 import {View, Text, Dimensions, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ScaledSheet} from 'react-native-size-matters';
 import {ts} from '../../../ThemeStyles';
 import {TextInput} from 'react-native-paper';
@@ -15,11 +15,16 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import {loginSchema} from '../../components/Validations';
-import {getLoginOtp, resendLoginOtp, verifyLoginOtp} from '../controllers/AuthControllers';
-import { resendLoginOtpService } from '../services/AuthServices';
+import {
+  getLoginOtp,
+  resendLoginOtp,
+  verifyLoginOtp,
+} from '../controllers/AuthControllers';
+import {resendLoginOtpService} from '../services/AuthServices';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default function Login() {
   const flow = useSelector(state => state.common.flow);
@@ -38,6 +43,14 @@ export default function Login() {
   const [timer, setTimer] = useState(30);
   const {getLoginOtpData} = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      changeNavigationBarColor('#ffffff', true);
+      return () => {
+        changeNavigationBarColor('#ffffff', false);
+      };
+    }, []),
+  );
 
   useEffect(() => {
     if (getLoginOtpData?.status == 'success') {
@@ -58,7 +71,9 @@ export default function Login() {
   const handleResendOtp = values => {
     setTimer(30);
     setValue('');
-    dispatch(resendLoginOtp({ companyId:values.companyId,password:values.password}));
+    dispatch(
+      resendLoginOtp({companyId: values.companyId, password: values.password}),
+    );
   };
 
   return (
@@ -74,7 +89,7 @@ export default function Login() {
             getLoginOtp({
               companyId: values.companyId,
               password: values.password,
-              vendor_type:flow=="catering"?"Caterer":"Tiffin"
+              vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
             }),
           );
         }}
@@ -131,38 +146,34 @@ export default function Login() {
                 {errors.password}
               </Text>
             )}
-            {
-              enableSubmitOtp?
-
+            {enableSubmitOtp ? (
               <CodeField
-              ref={ref}
-              {...props}
-              // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-              value={value}
-              onChangeText={setValue}
-              cellCount={CELL_COUNT}
-              rootStyle={styles.codeFieldRoot}
-              keyboardType="number-pad"
-              textContentType="oneTimeCode"
-              renderCell={({index, symbol, isFocused}) => (
-                <Text
-                  key={index}
-                  style={[
-                    styles.cell,
-                    isFocused && {...styles.focusCell, borderColor: theme},
-                    index !== 5 && gs.mr10,
-                  ]}
-                  onLayout={getCellOnLayoutHandler(index)}>
-                  {symbol || (isFocused ? <Cursor /> : null)}
-                </Text>
-              )}
-            />
-            :
-            <View style={[gs.mt20]}>
+                ref={ref}
+                {...props}
+                // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+                value={value}
+                onChangeText={setValue}
+                cellCount={CELL_COUNT}
+                rootStyle={styles.codeFieldRoot}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                renderCell={({index, symbol, isFocused}) => (
+                  <Text
+                    key={index}
+                    style={[
+                      styles.cell,
+                      isFocused && {...styles.focusCell, borderColor: theme},
+                      index !== 5 && gs.mr10,
+                    ]}
+                    onLayout={getCellOnLayoutHandler(index)}>
+                    {symbol || (isFocused ? <Cursor /> : null)}
+                  </Text>
+                )}
+              />
+            ) : (
+              <View style={[gs.mt20]}></View>
+            )}
 
-            </View>
-            }
-         
             <Center>
               {!enableSubmitOtp ? (
                 <TouchableOpacity onPress={handleSubmit} activeOpacity={0.7}>
@@ -183,7 +194,7 @@ export default function Login() {
                         otp: value,
                         navigation,
                         setEnableSubmitOtp,
-                        vendor_type:flow=="catering"?"Caterer":"Tiffin"
+                        vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
                       }),
                     );
                   }}
@@ -212,8 +223,7 @@ export default function Login() {
                   activeOpacity={0.7}
                   onPress={() => {
                     handleResendOtp(values);
-                  }}
-                >
+                  }}>
                   <Text
                     style={[
                       gs.mv20,
