@@ -330,9 +330,6 @@ export default function Settings({navigation}) {
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.clear();
-    dispatch(startLoader(true));
-    dispatch(resetInquiry());
     const deviceId = DeviceInfo.getDeviceId();
     let detail = await getVendorDetails();
     if (detail?.data?.data?.fcm_tokens?.length > 0) {
@@ -342,6 +339,10 @@ export default function Settings({navigation}) {
         }
       });
     }
+    await AsyncStorage.clear();
+    dispatch(startLoader(true));
+    dispatch(resetInquiry());
+  
     setTimeout(() => {
       dispatch(logout(true));
     }, 1000);

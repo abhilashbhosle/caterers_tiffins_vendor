@@ -17,10 +17,11 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {getFlow, logout, startLoader} from '../redux/slicers/CommomSlicer';
-import {getVendorDetails} from '../screens/services/AuthServices';
+import {getVendorDetails, manageFcmToken} from '../screens/services/AuthServices';
 import { resetInquiry } from '../screens/controllers/InquiryController';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import { useFocusEffect } from '@react-navigation/native';
+import DeviceInfo from 'react-native-device-info';
 
 export default function CustomDrawer(props) {
   const flow = useSelector(state => state.common.flow);
@@ -48,6 +49,15 @@ export default function CustomDrawer(props) {
   }, []);
 
   const handleLogout = async () => {
+    const deviceId = DeviceInfo.getDeviceId();
+    let detail = await getVendorDetails();
+    if (detail?.data?.data?.fcm_tokens?.length > 0) {
+      await detail?.data?.data?.fcm_tokens?.forEach(async token => {
+        if (token.device_id == deviceId) {
+          await manageFcmToken(token.fcm_token, deviceId, 'delete');
+        }
+      });
+    }
     await AsyncStorage.clear();
     dispatch(startLoader(true));
     props.navigation.toggleDrawer();
