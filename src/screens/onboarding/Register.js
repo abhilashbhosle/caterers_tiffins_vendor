@@ -48,14 +48,14 @@ export default function Register() {
   const navigation = useNavigation();
   const [timer, setTimer] = useState(30);
   const {getOtpData} = useSelector(state => state.auth);
-  useFocusEffect(
-    useCallback(() => {
-      changeNavigationBarColor('#ffffff', true);
-      return () => {
-        changeNavigationBarColor('#ffffff', false);
-      };
-    }, []),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     changeNavigationBarColor('#ffffff', true);
+  //     return () => {
+  //       changeNavigationBarColor('#ffffff', false);
+  //     };
+  //   }, []),
+  // );
   useEffect(() => {
     if (getOtpData?.status == 'success') {
       setEnableSubmitOtp(true);

@@ -43,14 +43,14 @@ export default function Login() {
   const [timer, setTimer] = useState(30);
   const {getLoginOtpData} = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  useFocusEffect(
-    useCallback(() => {
-      changeNavigationBarColor('#ffffff', true);
-      return () => {
-        changeNavigationBarColor('#ffffff', false);
-      };
-    }, []),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     changeNavigationBarColor('#ffffff', true);
+  //     return () => {
+  //       changeNavigationBarColor('#ffffff', false);
+  //     };
+  //   }, []),
+  // );
 
   useEffect(() => {
     if (getLoginOtpData?.status == 'success') {

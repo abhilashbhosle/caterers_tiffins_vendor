@@ -27,11 +27,11 @@ import { useFocusEffect } from '@react-navigation/native';
 export default function Welcome({navigation}) {
   const {height, width} = Dimensions.get('screen');
   const dispatch = useDispatch();
-  useFocusEffect(
-    useCallback(() => {
-      changeNavigationBarColor('transparent', true); 
-    }, [])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     changeNavigationBarColor('transparent', true); 
+  //   }, [])
+  // );
 
   const fadeIn = {
     from: {

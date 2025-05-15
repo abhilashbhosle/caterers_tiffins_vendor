@@ -26,6 +26,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
 import ThemeSepBtn from '../../../components/ThemeSepBtn';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DeviceInfo from 'react-native-device-info';
 import {
   getFlow,
   logout,
@@ -34,6 +35,7 @@ import {
 import {
   getVendorDetails,
   getVendorPassword,
+  manageFcmToken,
   resetPasswordService,
 } from '../../services/AuthServices';
 import {
@@ -63,7 +65,7 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { resetInquiry } from '../../controllers/InquiryController';
+import {resetInquiry} from '../../controllers/InquiryController';
 
 export default function Settings({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -331,6 +333,15 @@ export default function Settings({navigation}) {
     await AsyncStorage.clear();
     dispatch(startLoader(true));
     dispatch(resetInquiry());
+    const deviceId = DeviceInfo.getDeviceId();
+    let detail = await getVendorDetails();
+    if (detail?.data?.data?.fcm_tokens?.length > 0) {
+      await detail?.data?.data?.fcm_tokens?.forEach(async token => {
+        if (token.device_id == deviceId) {
+          await manageFcmToken(token.fcm_token, deviceId, 'delete');
+        }
+      });
+    }
     setTimeout(() => {
       dispatch(logout(true));
     }, 1000);

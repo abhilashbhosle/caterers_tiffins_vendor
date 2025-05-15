@@ -15,21 +15,21 @@ import {Formik} from 'formik';
 import {kycShema} from '../../components/Validations';
 import {kycUpdate} from '../controllers/AuthControllers';
 import { useFocusEffect } from '@react-navigation/native';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
+// import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default function Kyc({navigation}) {
   const flow = useSelector(state => state.common.flow);
   const dispatch = useDispatch();
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
-  useFocusEffect(
-    useCallback(() => {
-      changeNavigationBarColor('#ffffff', true);
-      return () => {
-        changeNavigationBarColor('#ffffff', false);
-      };
-    }, []),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     changeNavigationBarColor('#ffffff', true);
+  //     return () => {
+  //       changeNavigationBarColor('#ffffff', false);
+  //     };
+  //   }, []),
+  // );
   return (
     <OnboardCard>
       <KeyboardAwareScrollView

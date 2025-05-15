@@ -457,7 +457,9 @@ export const updateLocationService = async ({temp, navigation,dispatch}) => {
 // =======GET VENDOR========//
 export const getVendorDetails = async dispatch => {
   try {
+    if(dispatch){
     dispatch(startLoader(true));
+    }
     let token = await AsyncStorage.getItem('token');
     let res = await axios.get(`${endpoints.baseUrl}get-vendor-details`, {
       headers: {
@@ -476,9 +478,35 @@ export const getVendorDetails = async dispatch => {
       });
     }
   } finally {
+    if(dispatch){
     dispatch(startLoader(false));
+    }
   }
 };
+export const manageFcmToken = async (fcmToken, deviceId,action) => {
+  let body = {
+    fcm_token: fcmToken,
+    device_id: deviceId,
+    action:action
+  };
+  try {
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.post(
+      `${endpoints.baseUrl}manage-vendor-fcm-tokens`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    console.log(res.data, 'res in fcm token');
+    return res;
+  } catch (error) {
+    console.log("error in saving fcm token",error.response.data);
+  }
+}
 // =======GET VENDOR========//
 export const getVendorPassword = async () => {
   try {

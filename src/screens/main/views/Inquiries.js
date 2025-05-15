@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
-  BackHandler
+  BackHandler,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {ScreenWrapper} from '../../../components/ScreenWrapper';
@@ -26,8 +26,10 @@ import moment from 'moment';
 import InquirySkel from '../../../components/InquirySkel';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import QuickLink from './QuickLink';
+import messaging from '@react-native-firebase/messaging';
+import { requestUserPermission } from '../../controllers/Push';
 
 export default function Inquiries({navigation}) {
   const flow = useSelector(state => state.common.flow);
@@ -43,41 +45,43 @@ export default function Inquiries({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [showCal, setShowCal] = useState(false);
   const [total, setTotal] = useState(-1);
-  const handleBack=()=>{
-      Alert.alert(
-        'Exit App',
-        'Are you sure you want to exit this App?',
-        [
-          {
-            text:'Cancel',
-            onPress:()=>{
-                console.log('Cancel Pressed')
-            }
-          },
-          {
-            text:'Ok',
-            onPress:()=>{
-              BackHandler.exitApp()
-            }
-          }
-        ]
-      )
+  const handleBack = () => {
+    Alert.alert('Exit App', 'Are you sure you want to exit this App?', [
+      {
+        text: 'Cancel',
+        onPress: () => {
+          console.log('Cancel Pressed');
+        },
+      },
+      {
+        text: 'Ok',
+        onPress: () => {
+          BackHandler.exitApp();
+        },
+      },
+    ]);
+  };
+  useEffect(() => {
+    const initNotifications = async () => {
+      await requestUserPermission();
     }
-  
-    useFocusEffect(
-      React.useCallback(() => {
-        const onBackPress = () => {
-        handleBack()
-          return true; // Returning true means the event is handled and should not propagate further
-        };
-  
-        BackHandler.addEventListener('hardwareBackPress', onBackPress);
-  
-        return () => {
-          BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-        };
-      }, [])
-    );
+    initNotifications();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        handleBack();
+        return true; // Returning true means the event is handled and should not propagate further
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, []),
+  );
 
   useEffect(() => {
     (async () => {
@@ -191,20 +195,17 @@ export default function Inquiries({navigation}) {
             ]}>
             {item?.user_name}
           </Text>
-          {
-            item?.area?
+          {item?.area ? (
             <Text
-            style={[
-              gs.fs13,
-              {color: ts.secondarytext, fontFamily: ts.secondaryregular},
-              gs.mv2,
-            ]}>
-            {item?.area}
-          </Text>
-          :
-          null
-          }
-         
+              style={[
+                gs.fs13,
+                {color: ts.secondarytext, fontFamily: ts.secondaryregular},
+                gs.mv2,
+              ]}>
+              {item?.area}
+            </Text>
+          ) : null}
+
           {item?.cuisines?.length ? (
             <Text
               style={[
@@ -437,7 +438,7 @@ export default function Inquiries({navigation}) {
           display="spinner"
           date={date}
         />
-        <QuickLink theme={theme} refreshing={refreshing}/>
+        <QuickLink theme={theme} refreshing={refreshing} />
       </View>
     </ScreenWrapper>
   );
