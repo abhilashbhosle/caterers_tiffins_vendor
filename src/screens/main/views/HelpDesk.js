@@ -124,10 +124,10 @@ export default function HelpDesk({navigation}) {
           <TouchableOpacity
             style={[gs.mt10, gs.h30]}
             activeOpacity={0.7}
-            onPress={handleSubmit}>
+            onPress={help?.issue?.length && help?.comments?.length ? handleSubmit: null}>
             <ThemeSepBtn
               btntxt="Submit"
-              themecolor={theme}
+              themecolor={help?.issue?.length && help?.comments?.length? theme:'#ddd'}
               height={gs.h40.height}
               width={width - 40}
             />

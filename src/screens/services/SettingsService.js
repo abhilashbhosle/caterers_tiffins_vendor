@@ -754,7 +754,7 @@ export const updateGstinService = async ({number,dispatch}) => {
 
 //====SUBMIT FSSAI=========//
 export const updateFssaiService = async ({fssai_number,company_id,phone_number,dispatch}) => {
-    let vendor_id= await AsyncStorage.getItem("vendor_id")
+    let vendor_id= await JSON.parse(AsyncStorage.getItem("vendor_id"));
   try {
     let body={
       fssai_number,

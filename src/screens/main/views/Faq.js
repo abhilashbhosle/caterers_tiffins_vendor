@@ -8,16 +8,17 @@ import {ts} from '../../../../ThemeStyles';
 import {gs} from '../../../../GlobalStyles';
 import {Flex} from 'native-base';
 import {getFaqServices} from '../../services/FaqServices';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Faq({navigation}) {
   const [faq, setFaq] = useState();
   const [extIndex, setExtIndex] = useState(-1);
   const dispatch=useDispatch()
+   const flow = useSelector(state => state.common.flow);
   useEffect(() => {
     (async () => {
       try {
-        let res = await getFaqServices(dispatch);
+        let res = await getFaqServices(dispatch,flow=="catering"?"vendor-caterer":"vendor-tiffin");
         setFaq(res?.data?.data);
       } catch (err) {
         console.log('error in getfaq', err);

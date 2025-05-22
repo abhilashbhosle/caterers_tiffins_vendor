@@ -24,7 +24,8 @@ export const getOtpService = async ({name, phoneNumber, type}) => {
       },
     );
     if (res.data.status == 'success') {
-      AsyncStorage.setItem("vendor_id",res?.data?.data?.vendor_id)
+      AsyncStorage.setItem("vendor_id",JSON.stringify(res?.data?.data?.vendor_id))
+      // console.log('res in get otp', res.data.data.vendor_id);
       showMessage({
         message: 'Otp Sent!',
         description: 'Otp sent to your registered mobile number.',
@@ -63,7 +64,7 @@ export const getLoginOtpService = async ({companyId, password,vendor_type}) => {
       },
     );
     if (res.data.status == 'success') {
-      AsyncStorage.setItem("vendor_id",res?.data?.data?.vendor_id)
+      AsyncStorage.setItem("vendor_id", JSON.stringify(res?.data?.data?.vendor_id))
       showMessage({
         message: 'Otp Sent!',
         description: 'Otp sent to your registered mobile number.',

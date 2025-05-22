@@ -181,7 +181,7 @@ function TiffinPackages() {
               // direction="row"s
               // alignItems="center"
               // justifyContent="space-around"
-              width={'95%'}
+              width={'80%'}
               style={[gs.mt15]}>
               <Flex direction="row" alignItems="center">
                 <Image
@@ -259,7 +259,7 @@ function TiffinPackages() {
 
               <Flex direction="row" alignItems="center">
                 <Image
-                  source={require('../../../assets/Packages/takeaway.png')}
+                  source={require('../../../assets/Packages/dinein.png')}
                   style={styles.serviceicon}
                 />
                 <Text

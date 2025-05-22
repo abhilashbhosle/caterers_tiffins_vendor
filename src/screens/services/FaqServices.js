@@ -5,11 +5,11 @@ import {showMessage} from 'react-native-flash-message';
 import {startLoader} from '../../redux/slicers/CommomSlicer';
 
 // ===========GET FAQ===========//
-export const getFaqServices = async (dispatch) => {
+export const getFaqServices = async (dispatch,type) => {
 	dispatch(startLoader(true));
   try {
     let token = await AsyncStorage.getItem('token');
-    let res = await axios.get(`${endpoints.baseUrl}faq?current_page=1&limit=20&type=vendor`, {
+    let res = await axios.get(`${endpoints.baseUrl}faq?current_page=1&limit=20&type=${type}`, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Authorization: `Bearer ${token}`,
@@ -17,6 +17,7 @@ export const getFaqServices = async (dispatch) => {
     });
     return res;
   } catch (error) {
+    console.log('error in get faq', error);
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',

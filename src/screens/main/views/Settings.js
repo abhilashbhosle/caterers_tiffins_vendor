@@ -1196,16 +1196,17 @@ const styles = ScaledSheet.create({
     fontSize: '15@ms',
   },
   accordianitem: {
+    
     padding: '10@ms',
     backgroundColor: '#f5f5f5',
-    // marginTop: '-10@ms',
+    marginTop: '5@ms',
     borderBottomLeftRadius: '10@ms',
     borderBottomRightRadius: '10@ms',
-    borderBottomColor: '#999',
-    borderTopColor: 'transparent',
-    borderLeftColor: '#999',
-    borderRightColor: '#999',
-    borderWidth: 0.5,
+    // borderBottomColor: '#999',
+    // borderTopColor: 'transparent',
+    // borderLeftColor: '#999',
+    // borderRightColor: '#999',
+    // borderWidth: 0.5,
   },
   uploadbtn: {
     height: '40@ms',

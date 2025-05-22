@@ -154,7 +154,12 @@ export default function AddCuisine({navigation}) {
                 ]}
               />
             </TouchableOpacity>
-            <Text style={styles.accordianTitle}>{item.name}</Text>
+            <TouchableOpacity  onPress={() => {
+              setExpanded(prev => (prev == index ? -1 : index));
+            }}
+            style={styles.accordianTitleContainer}>
+            <Text style={{...styles.accordianTitle}}>{item.name}</Text>
+            </TouchableOpacity>
           </Flex>
           <TouchableOpacity
             style={[gs.p5]}
@@ -306,17 +311,25 @@ const styles = ScaledSheet.create({
     fontSize: '15@ms',
     top: '2@ms',
   },
+  accordianTitleContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '80%',
+    height: '40@ms',
+  },
   accordianitem: {
     // padding: '10@ms',
     backgroundColor: '#f5f5f5',
     marginTop: '10@ms',
-    borderBottomLeftRadius: '10@ms',
-    borderBottomRightRadius: '10@ms',
-    borderBottomColor: '#999',
-    borderTopColor: 'transparent',
-    borderLeftColor: '#999',
-    borderRightColor: '#999',
-    borderWidth: 0.5,
+    paddingBottom:'10@ms',
+    // borderBottomLeftRadius: '10@ms',
+    // borderBottomRightRadius: '10@ms',
+    // borderBottomColor: '#999',
+    // borderTopColor: 'transparent',
+    // borderLeftColor: 'transparent',
+    // borderRightColor: 'transparent',
+    // borderWidth: 0.5,
   },
   checkicon: {
     top: '2@ms',

@@ -237,7 +237,7 @@ export default function Packages({navigation}) {
                   // direction="row"s
                   // alignItems="center"
                   // justifyContent="space-around"
-                  width={'95%'}
+                  width={'80%'}
                   style={[gs.mt15]}>
                   <Flex direction="row" alignItems="center">
                     <Image
