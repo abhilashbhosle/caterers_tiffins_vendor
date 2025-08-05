@@ -33,6 +33,7 @@ import {
   startLoader,
 } from '../../../redux/slicers/CommomSlicer';
 import {
+  deleteAccount,
   getVendorDetails,
   getVendorPassword,
   manageFcmToken,
@@ -342,7 +343,7 @@ export default function Settings({navigation}) {
     await AsyncStorage.clear();
     dispatch(startLoader(true));
     dispatch(resetInquiry());
-  
+
     setTimeout(() => {
       dispatch(logout(true));
     }, 1000);
@@ -353,6 +354,50 @@ export default function Settings({navigation}) {
       });
       dispatch(logout(false));
     }, 2000);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: async () => {
+            const deviceId = DeviceInfo.getDeviceId();
+            let detail = await getVendorDetails();
+            if (detail?.data?.data?.fcm_tokens?.length > 0) {
+              await detail?.data?.data?.fcm_tokens?.forEach(async token => {
+                if (token.device_id == deviceId) {
+                  await manageFcmToken(token.fcm_token, deviceId, 'delete');
+                }
+              });
+            }
+            const res = await deleteAccount(null, dispatch);
+            await AsyncStorage.clear();
+            dispatch(startLoader(true));
+            dispatch(resetInquiry());
+            if (res.status == 'success') {
+              setTimeout(() => {
+                dispatch(logout(true));
+              }, 1000);
+              setTimeout(() => {
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'OnboardStack'}],
+                });
+                dispatch(logout(false));
+              }, 2000);
+            }
+          },
+        },
+      ],
+      {cancelable: false},
+    );
   };
 
   return (
@@ -802,7 +847,7 @@ export default function Settings({navigation}) {
             )}
           </View> */}
           {/* =====FSSAI LICENSE====== */}
-          <View style={styles.labelcontainer}>
+          <View style={[styles.labelcontainer, gs.ph15]}>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -912,7 +957,7 @@ export default function Settings({navigation}) {
           </View>
 
           {/* =====FSSAI Number====== */}
-          <View style={styles.labelcontainer}>
+          <View style={[styles.labelcontainer, gs.ph15]}>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
@@ -1006,6 +1051,26 @@ export default function Settings({navigation}) {
               </Flex>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[{justifyContent: 'center'}, gs.mt20]}
+            onPress={handleDeleteAccount}>
+            <Flex
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between">
+              <Flex direction="row" alignItems="center">
+                <MaterialIcons
+                  name="delete-outline"
+                  style={[{...styles.icon1, color: ts.primarytext}, gs.fs25]}
+                />
+                <Text
+                  style={[{top: 2, fontFamily: ts.secondarymedium}, gs.fs14]}>
+                  Delete Account
+                </Text>
+              </Flex>
+            </Flex>
+          </TouchableOpacity>
           <Divider style={[gs.mv20, {backgroundColor: theme}]} />
           <Text style={styles.heading}>Help Desk / Support</Text>
           <TouchableOpacity
@@ -1188,7 +1253,7 @@ const styles = ScaledSheet.create({
     borderWidth: 0.5,
     borderColor: '#999',
     marginVertical: '5@ms',
-    padding: '15@ms',
+    paddingVertical: '15@ms',
   },
   accordianTitle: {
     fontFamily: ts.secondaryregular,
@@ -1196,7 +1261,6 @@ const styles = ScaledSheet.create({
     fontSize: '15@ms',
   },
   accordianitem: {
-    
     padding: '10@ms',
     backgroundColor: '#f5f5f5',
     marginTop: '5@ms',

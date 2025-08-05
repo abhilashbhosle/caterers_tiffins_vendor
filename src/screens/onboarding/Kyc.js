@@ -22,14 +22,12 @@ export default function Kyc({navigation}) {
   const dispatch = useDispatch();
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     changeNavigationBarColor('#ffffff', true);
-  //     return () => {
-  //       changeNavigationBarColor('#ffffff', false);
-  //     };
-  //   }, []),
-  // );
+  useFocusEffect(
+    useCallback(() => {
+
+        // changeNavigationBarColor('#000000', true); 
+    }, [])
+  );
   return (
     <OnboardCard>
       <KeyboardAwareScrollView

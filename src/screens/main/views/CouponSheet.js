@@ -40,16 +40,17 @@ function CouponSheet({
   details,
   hideCouponInput,
   setDetails,
-  setOpen
+  setOpen,
 }) {
   const {height, width} = Dimensions.get('screen');
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const dispatch = useDispatch();
   const [couponCode, setCouponCode] = useState('');
-  const [subscribe, setSubscribed] = useState(true);
+  const [subscribe, setSubscribed] = useState(false);
+  const [couponStatus, setCouponStatus] = useState(null);
 
   const handleCalculatePay = async () => {
-    setOpenCouponSheet(false);
+    // setOpenCouponSheet(false);
     let body = {
       subscriptionTypeId: plan?.subscriptionTypeId,
       subscriptionDuration: planType == 'Yearly' ? 'yearly' : 'monthly',
@@ -57,14 +58,17 @@ function CouponSheet({
     };
     try {
       let res = await calculatePayService({body, dispatch});
-
       setDetails(res);
+      setCouponStatus(res?.couponStatus);
+      setCouponCode('');
     } catch (error) {
       console.log(error);
+      setCouponStatus('Invalid or Expired');
     } finally {
-      setOpenCouponSheet(true);
+      // setOpenCouponSheet(true);
     }
   };
+  console.log('couponSuccess', couponStatus);
   const handlePay = async () => {
     setOpenCouponSheet(false);
     let body = null;
@@ -82,17 +86,25 @@ function CouponSheet({
         });
     try {
       let res = await handlePayService({body, dispatch});
-      if (res?.order.id) {
+      if (res?.order?.id && couponCode != 'CNT100') {
         // console.log("order details",res.order.id, res.order.amount)
         handlePayment({
           order_id: res.order?.id,
           order_amount: res?.order?.amount,
         });
       }
+      if (couponCode == 'CNT100') {
+        setTimeout(() => {
+          dispatch(getQueuedSubscription());
+        }, 1000);
+        setOpenCouponSheet(false);
+      }
     } catch (error) {
       console.log('error in handle pay', error);
     } finally {
-      setOpenCouponSheet(true);
+      if (couponCode !== 'CNT100') {
+        setOpenCouponSheet(true);
+      }
     }
   };
   const handlePayment = ({order_id, order_amount}) => {
@@ -176,9 +188,8 @@ function CouponSheet({
         }
       })
       .finally(() => {
-        if(hideCouponInput)setOpen(false)
-      }
-      );
+        if (hideCouponInput) setOpen(false);
+      });
   };
   // =======CREATE SUBSCRIPTION========//
   const handleSubscription = async () => {
@@ -208,6 +219,8 @@ function CouponSheet({
         isOpen={openCouponSheet}
         onClose={() => {
           setOpenCouponSheet(false);
+          setCouponCode('');
+          setCouponStatus(null);
         }}>
         <Actionsheet.Content
           style={[
@@ -255,11 +268,14 @@ function CouponSheet({
                       <TouchableOpacity
                         style={{
                           ...styles.subscribebtn,
-                          backgroundColor: theme,
+                          backgroundColor:
+                            couponCode?.length > 0 ? theme : '#ddd',
                           width: width / 2.5,
                         }}
                         activeOpacity={0.7}
-                        onPress={handleCalculatePay}>
+                        onPress={
+                          couponCode?.length > 0 ? handleCalculatePay : null
+                        }>
                         <Text
                           style={[
                             gs.fs15,
@@ -269,6 +285,32 @@ function CouponSheet({
                         </Text>
                       </TouchableOpacity>
                     </Flex>
+                    {couponStatus ? (
+                      <Text
+                        style={[
+                          gs.fs11,
+                          gs.mt4,
+                          {
+                            fontStyle: 'italic',
+                            color:
+                              couponStatus == 'Invalid or Expired'
+                                ? ts.secondary
+                                : ts.teritary,
+                          },
+                        ]}>
+                        Coupon {couponStatus}
+                      </Text>
+                    ) : null}
+
+                    <Text
+                      style={[
+                        gs.fs11,
+                        gs.mt4,
+                        {fontStyle: 'italic', color: ts.secondarytext},
+                      ]}>
+                      'Use "CNT100" to claim free subscription for a{' '}
+                      {planType == 'Yearly' ? 'year' : 'month'}'
+                    </Text>
                   </>
                 )
               : null}
@@ -279,7 +321,7 @@ function CouponSheet({
                   color: theme,
                   fontFamily: ts.secondarymedium,
                 },
-                gs.mt10,
+                gs.mt2,
               ]}>
               Plan Details
             </Text>
@@ -347,7 +389,7 @@ function CouponSheet({
                       fontFamily: ts.secondaryregular,
                     },
                   ]}>
-                  {details?.subAmount?.split('.')[0]}
+                   ₹ {details?.subAmount?.split('.')[0]}
                 </Text>
               </Flex>
 
@@ -370,7 +412,7 @@ function CouponSheet({
                       fontFamily: ts.secondaryregular,
                     },
                   ]}>
-                  {details?.discountAmount}
+                   ₹ {details?.discountAmount}
                 </Text>
               </Flex>
               <Flex
@@ -392,7 +434,7 @@ function CouponSheet({
                       fontFamily: ts.secondaryregular,
                     },
                   ]}>
-                  {details?.finalAmount}
+                   ₹ {details?.finalAmount}
                 </Text>
               </Flex>
               <Flex
@@ -478,7 +520,7 @@ function CouponSheet({
                         gs.fs14,
                         {color: ts.primarytext, fontFamily: ts.secondarymedium},
                       ]}>
-                      {planType} Recurring Activated
+                      {planType} Recurring Autopay
                     </Text>
                     {subscribe ? (
                       <MaterialIcons

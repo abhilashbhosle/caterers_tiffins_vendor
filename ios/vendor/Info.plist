@@ -45,8 +45,8 @@
 	<string>Caterings and Tiffins would like to access your Microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Caterings and Tiffins would like to access your Photo Gallery.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized ads to you.</string>
+	<!-- <key>NSUserTrackingUsageDescription</key>
+	<string>This identifier will be used to deliver personalized ads to you.</string> -->
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

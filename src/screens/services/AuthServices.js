@@ -251,6 +251,38 @@ export const resendLoginOtpService = async ({companyId, password}) => {
     }
   }
 };
+// ===DELETE ACCOUNT ====//
+export const deleteAccount = async (body, dispatch) => {
+  try {
+    dispatch(startLoader(true));
+    let token = await AsyncStorage.getItem('token');
+    let res = await axios.post(`${endpoints.baseUrl}vendor-remove`, null, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    showMessage({
+      message: 'Account deleted succesfully!',
+      type: 'success',
+    });
+    return res.data;
+  } catch (error) {
+    dispatch(startLoader(false));
+    if (error.response && error.response.data) {
+      showMessage({
+        message: 'Request Failed!',
+        description: error.response.data.message,
+        type: 'danger',
+      });
+      return error.response.data;
+    } else {
+      return error.message;
+    }
+  } finally {
+    dispatch(startLoader(false));
+  }
+};
 // =====PROFILE UPDATE========//
 export const profileUpdateService = async ({
   serviceName,

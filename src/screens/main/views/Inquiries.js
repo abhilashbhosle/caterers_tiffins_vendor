@@ -206,7 +206,7 @@ export default function Inquiries({navigation}) {
             </Text>
           ) : null}
 
-          {item?.cuisines?.length ? (
+          {/* {item?.cuisines?.length ? (
             <Text
               style={[
                 gs.fs13,
@@ -220,8 +220,8 @@ export default function Inquiries({navigation}) {
                   } `,
               )}
             </Text>
-          ) : null}
-          {item?.occasions?.length ? (
+          ) : null} */}
+          {/* {item?.occasions?.length ? (
             <Text
               style={[
                 gs.fs13,
@@ -235,7 +235,7 @@ export default function Inquiries({navigation}) {
                   } `,
               )}
             </Text>
-          ) : null}
+          ) : null} */}
           {item?.service_types?.length ? (
             <Text
               style={[

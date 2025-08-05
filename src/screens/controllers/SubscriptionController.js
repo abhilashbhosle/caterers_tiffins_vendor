@@ -9,7 +9,7 @@ export const getSubscriptionList = createAsyncThunk(
     try {
       dispatch(startLoader(true))
       const res = await getSubscriptionListService({params});
-      return res;
+      return res?.filter((e)=>e?.plans?.length>0);
     } catch (error) {
       console.log("error in get subscription list",error)
       throw(error.message);

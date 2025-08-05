@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Add this line with your preferred color -->
+    <color name="notification_color">#FFD9822B</color>
+    
+    <!-- Other existing colors... -->
+</resources>

@@ -16,8 +16,10 @@ import {
   Alert,
 } from 'react-native';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-
+import notificationDispatcher from './src/utils/NotificationDispatcher';
 import messaging from '@react-native-firebase/messaging';
+import { showMessage } from 'react-native-flash-message';
+import { ts } from './ThemeStyles';
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('📩 Background Message:', remoteMessage);
@@ -35,10 +37,15 @@ export default function App() {
      
       // Foreground message handler
       const unsubscribe = messaging().onMessage(async remoteMessage => {
-        Alert.alert(
-          'New Notification',
-          remoteMessage.notification?.title || 'No Title',
-        );
+         showMessage({
+                message: remoteMessage.notification?.title,
+                description: remoteMessage.notification?.body,
+                type: 'default',
+                backgroundColor: ts.primary,
+                color:'#fff',
+                // icon: props => <Image source={require("./src/assets/ic_notification.png")} {...props} />,
+          });
+          notificationDispatcher.dispatchEvent('foregroundNotification', remoteMessage);
         console.log('📥 Foreground Message:', remoteMessage);
       });
 
@@ -48,7 +55,7 @@ export default function App() {
         .then(remoteMessage => {
           if (remoteMessage) {
             console.log(
-              '🚀 App opened from quit by notification:',
+              'App opened from quit by notification:',
               remoteMessage,
             );
             // You can handle navigation here
@@ -62,9 +69,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    // changeNavigationBarColor('#ffffff', true);
+    changeNavigationBarColor('#ffffff', true);
     setTimeout(() => {
-      // changeNavigationBarColor('#ffffff', false);
+      changeNavigationBarColor('#ffffff', false);
       setShowSplash(false);
     }, 1800);
   }, []);

@@ -30,14 +30,12 @@ export default function CustomDrawer(props) {
   const focused = routeNames[index];
   const dispatch = useDispatch();
   const [details, setDetails] = useState({});
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     changeNavigationBarColor('#ffffff', true);
-  //     return () => {
-  //       changeNavigationBarColor('#ffffff', false);
-  //     };
-  //   }, []),
-  // );
+  useFocusEffect(
+    useCallback(() => {
+   
+        changeNavigationBarColor('#000000', true); // Or keep same
+    }, [])
+  );
 
   useEffect(() => {
     (async () => {

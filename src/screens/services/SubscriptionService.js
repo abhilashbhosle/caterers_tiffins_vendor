@@ -76,6 +76,7 @@ export const handlePayService = async ({body, dispatch}) => {
     );
     return res.data;
   } catch (error) {
+    console.log("error",error);
     if (error.response && error.response.data) {
       showMessage({
         message: 'Request Failed!',

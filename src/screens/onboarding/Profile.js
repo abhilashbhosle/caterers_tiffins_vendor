@@ -22,14 +22,12 @@ export default function Profile({navigation}) {
   const theme = flow == 'catering' ? ts.secondary : ts.primary;
   const {height, width} = useWindowDimensions();
   const dispatch = useDispatch();
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     changeNavigationBarColor('#ffffff', true);
-  //     return () => {
-  //       changeNavigationBarColor('#ffffff', false);
-  //     };
-  //   }, []),
-  // );
+  useFocusEffect(
+    useCallback(() => {
+
+        changeNavigationBarColor('#000000', true); // Or keep same
+    }, [])
+  );
   return (
     <OnboardCard>
       <KeyboardAwareScrollView

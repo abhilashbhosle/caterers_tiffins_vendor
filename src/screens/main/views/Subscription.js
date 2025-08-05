@@ -69,7 +69,7 @@ export default function Subscription({navigation}) {
     dispatch(getFlow(flow));
     let params = {
       vendor_type: flow == 'catering' ? 'Caterer' : 'Tiffin',
-      mode:"test"
+      mode: 'live',
     };
     dispatch(getSubscriptionList({params}));
     dispatch(getQueuedSubscription());
@@ -155,7 +155,7 @@ export default function Subscription({navigation}) {
             style={[
               styles.header,
               {
-                backgroundColor:item?.subscriptionTypeDisplayColor
+                backgroundColor: item?.subscriptionTypeDisplayColor,
               },
             ]}>
             <Text style={[styles.headtxt]}>
@@ -193,14 +193,17 @@ export default function Subscription({navigation}) {
             ))} */}
             <View
               style={{
-                height: Platform.OS == 'android' ? height / 3.9 : height / 3.5,
+                maxHeight:
+                  Platform.OS === 'android' ? height / 3.9 : height / 3.5,
+                overflow: 'hidden',
               }}>
-              {item?.benefits &&
-                Object.entries(item.benefits)
-                  .slice(0, Platform.OS == 'ios' ? 8 : 4)
-                  .map(([key, benefit], index) => (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {item?.benefits &&
+                  Object.entries(item.benefits).map(([key, benefit]) => (
                     <Text
                       key={key}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
                       style={[
                         {...styles.heading, color: ts.primarytext},
                         gs.mv3,
@@ -208,6 +211,7 @@ export default function Subscription({navigation}) {
                       - {benefit}
                     </Text>
                   ))}
+              </ScrollView>
             </View>
             <Center>
               {item?.benefits &&
@@ -222,8 +226,8 @@ export default function Subscription({navigation}) {
                       details: item.benefits,
                     });
                   }}>
-                  <Text style={[{color: ts.secondarytext}, gs.fs14]}>
-                    view details{' '}
+                  <Text style={[{color: ts.teritary}, gs.fs14]}>
+                    view more{' '}
                   </Text>
                 </TouchableOpacity>
               ) : null}
@@ -234,7 +238,7 @@ export default function Subscription({navigation}) {
             <TouchableOpacity
               style={{
                 ...styles.subscribebtn,
-                backgroundColor:item?.subscriptionTypeDisplayColor
+                backgroundColor: item?.subscriptionTypeDisplayColor,
               }}
               activeOpacity={0.7}
               onPress={() => {
@@ -265,7 +269,7 @@ export default function Subscription({navigation}) {
         animated: true,
       });
     } else {
-      topRef.current.scrollToOffset({
+      topRef?.current?.scrollToOffset({
         offset: idx,
         animated: true,
       });
@@ -342,33 +346,32 @@ export default function Subscription({navigation}) {
             </Flex>
           </View>
           <Center>
-            {
-              subListData &&
+            {subListData?.length > 1 && (
               <FlatList
-              ref={topRef}
-              keyExtractor={(item, index) => String(index)}
-              data={subListData}
-              renderItem={renderItem}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            />
-            }
-           
+                ref={topRef}
+                keyExtractor={(item, index) => String(index)}
+                data={subListData}
+                renderItem={renderItem}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              />
+            )}
           </Center>
           {subListLoading ? (
             <Spinner color={theme} />
           ) : (
-            subListData &&
-            <Carousel
-              loop={false}
-              ref={bottomRef}
-              width={width}
-              height={height}
-              data={subListData}
-              onSnapToItem={index => scrollToIndex(index)}
-              renderItem={renderPlans}
-              style={[gs.mt10]}
-            />
+            subListData && (
+              <Carousel
+                loop={false}
+                ref={bottomRef}
+                width={width}
+                height={height}
+                data={subListData}
+                onSnapToItem={index => scrollToIndex(index)}
+                renderItem={renderPlans}
+                style={[gs.mt10]}
+              />
+            )
           )}
         </View>
       </ScrollView>
